@@ -39,9 +39,20 @@ function draw(){
  neb.addColorStop(0,"rgba(128,0,255,0.25)");neb.addColorStop(1,"transparent");
  x.fillStyle=neb;x.fillRect(0,0,c.width,c.height);
  x.fillStyle="#fff";
- for(const s of stars){x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill();
-   s.x+=s.dx;s.y+=s.dy;if(s.x<0)s.x=c.width;if(s.x>c.width)s.x=0;if(s.y<0)s.y=c.height;if(s.y>h)s.y=0;}
- requestAnimationFrame(draw);
+ for (const s of stars) {
+  x.beginPath();
+  x.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+  x.fill();
+
+  s.x += s.dx;
+  s.y += s.dy;
+
+  if (s.x < 0) s.x = c.width;
+  if (s.x > c.width) s.x = 0;
+  if (s.y < 0) s.y = c.height;
+  if (s.y > c.height) s.y = 0; 
+}
+requestAnimationFrame(draw);
 }draw();
 </script>
 
