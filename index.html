@@ -1,303 +1,245 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Hồi Âm Đam Mỹ – Cộng đồng đề xuất truyện</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hồi Âm Đam Mỹ – Cộng đồng đề xuất truyện</title>
 
-    <!-- Tailwind + FontAwesome + SweetAlert -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <style>
-        body {
-            font-family: 'Poppins',sans-serif;
-            color: #222;
-            overflow-x: hidden;
-        }
-
-        canvas#stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -10;
-            display: block;
-        }
-
-        .glass {
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-        }
-
-        .btn-gradient {
-            background: linear-gradient(135deg,#7b1fa2,#00bcd4);
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-        }
-
-        .table thead {
-            background: linear-gradient(90deg,#7b1fa2,#00bcd4);
-            color: #fff;
-        }
-
-        footer {
-            background: rgba(255,255,255,0.85);
-            text-align: center;
-            padding: 1rem;
-            font-weight: 500;
-            color: #4a148c;
-        }
-    </style>
+<style>
+body{font-family:'Poppins',sans-serif;color:#222;overflow-x:hidden;margin:0;}
+canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-10;display:block;}
+.glass{background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.4);border-radius:20px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.1);}
+.btn-gradient{background:linear-gradient(135deg,#7b1fa2,#00bcd4);color:#fff;
+  border:none;border-radius:30px;font-weight:600;}
+.table thead{background:linear-gradient(90deg,#7b1fa2,#00bcd4);color:#fff;}
+footer{background:rgba(255,255,255,0.85);text-align:center;padding:1rem;font-weight:500;color:#4a148c;}
+</style>
 </head>
 
 <body>
-    <!-- 🌠 Nền ngân hà -->
-    <canvas id="stars"></canvas>
-    <script>
-        const c = document.getElementById("stars"), x = c.getContext("2d");
-        function resize() { c.width = innerWidth; c.height = innerHeight; } window.onresize = resize; resize();
-        const stars = [...Array(220)].map(() => ({
-            x: Math.random() * c.width, y: Math.random() * c.height, r: Math.random() * 1.2 + 0.2,
-            dx: (Math.random() - .5) * 0.3, dy: (Math.random() - .5) * 0.3
-        }));
-        function draw() {
-            const g = x.createLinearGradient(0, 0, c.width, c.height);
-            g.addColorStop(0, "#050014"); g.addColorStop(1, "#16052F");
-            x.fillStyle = g; x.fillRect(0, 0, c.width, c.height);
-            const neb = x.createRadialGradient(c.width / 2, c.height / 2, 0, c.width / 2, c.height / 2, c.width / 1.2);
-            neb.addColorStop(0, "rgba(128,0,255,0.25)"); neb.addColorStop(1, "transparent");
-            x.fillStyle = neb; x.fillRect(0, 0, c.width, c.height);
-            x.fillStyle = "#fff";
-            for (const s of stars) {
-                x.beginPath(); x.arc(s.x, s.y, s.r, 0, Math.PI * 2); x.fill();
-                s.x += s.dx; s.y += s.dy; if (s.x < 0) s.x = c.width; if (s.x > c.width) s.x = 0; if (s.y < 0) s.y = c.height; if (s.y > c.height) s.y = 0;
-            }
-            requestAnimationFrame(draw);
-        } draw();
-    </script>
 
-    <!-- NAV -->
-    <nav class="fixed w-full backdrop-blur-md bg-white/70 shadow z-50">
-        <div class="max-w-6xl mx-auto flex justify-between items-center p-3">
-            <a href="#home" class="text-2xl font-bold text-indigo-600"><i class="fa-solid fa-headphones"></i> Hồi Âm Đam Mỹ</a>
-            <div class="space-x-6 text-gray-700 font-medium flex items-center">
-                <a href="#suggest" class="hover:text-indigo-500">Đề xuất</a>
-                <a href="#list" class="hover:text-indigo-500">Danh sách</a>
-                <a href="#reading" class="hover:text-indigo-500">Đang đọc</a>
-                <!-- Nút đăng nhập Admin -->
-                <button id="adminLoginBtn" class="text-pink-600 text-xl hover:text-pink-400" title="Đăng nhập quản trị">
-                    <i class="fa-solid fa-lock"></i>
-                </button>
-            </div>
-        </div>
-    </nav>
+<!-- 🌠 Nền ngân hà -->
+<canvas id="stars"></canvas>
+<script>
+const c=document.getElementById("stars"),x=c.getContext("2d");
+function resize(){c.width=innerWidth;c.height=innerHeight;}window.onresize=resize;resize();
+const stars=[...Array(220)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+0.2,
+dx:(Math.random()-.5)*0.3,dy:(Math.random()-.5)*0.3}));
+function draw(){
+ const g=x.createLinearGradient(0,0,c.width,c.height);
+ g.addColorStop(0,"#050014");g.addColorStop(1,"#16052F");
+ x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
+ const neb=x.createRadialGradient(c.width/2,c.height/2,0,c.width/2,c.height/2,c.width/1.2);
+ neb.addColorStop(0,"rgba(128,0,255,0.25)");neb.addColorStop(1,"transparent");
+ x.fillStyle=neb;x.fillRect(0,0,c.width,c.height);
+ x.fillStyle="#fff";
+ for(const s of stars){x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill();
+   s.x+=s.dx;s.y+=s.dy;if(s.x<0)s.x=c.width;if(s.x>c.width)s.x=0;if(s.y<0)s.y=c.height;if(s.y>h)s.y=0;}
+ requestAnimationFrame(draw);
+}draw();
+</script>
 
-    <!-- HOME -->
-    <section id="home" class="pt-28 text-center text-white">
-        <h2 class="text-3xl font-bold text-indigo-200"><i class="fa-solid fa-star text-pink-300"></i> Top Truyện Yêu Thích</h2>
-        <div id="topStories" class="flex flex-wrap justify-center gap-6 mt-6"></div>
-    </section>
+<!-- NAV Responsive -->
+<nav class="fixed w-full backdrop-blur-md bg-white/70 shadow z-50">
+  <div class="max-w-6xl mx-auto flex items-center justify-between p-3">
+    <a href="#home" class="text-xl sm:text-2xl font-bold text-indigo-600 flex items-center gap-2">
+      <i class="fa-solid fa-headphones"></i> Hồi Âm Đam Mỹ
+    </a>
+    <!-- mobile menu button -->
+    <button id="menuBtn" class="sm:hidden text-2xl text-indigo-600">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <!-- nav links -->
+    <div id="navLinks" class="hidden sm:flex flex-col sm:flex-row sm:items-center sm:space-x-6 absolute sm:static w-full sm:w-auto bg-white sm:bg-transparent left-0 top-14 sm:top-auto shadow sm:shadow-none text-gray-700 font-medium">
+      <a href="#suggest" class="px-3 py-2 hover:text-indigo-500">Đề xuất</a>
+      <a href="#list" class="px-3 py-2 hover:text-indigo-500">Danh sách</a>
+      <a href="#reading" class="px-3 py-2 hover:text-indigo-500">Đang đọc</a>
+      <button id="adminLoginBtn" class="px-3 py-2 text-pink-600 text-lg hover:text-pink-400" title="Đăng nhập quản trị"><i class="fa-solid fa-lock"></i></button>
+    </div>
+  </div>
+</nav>
+<script>
+document.getElementById('menuBtn').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('hidden'));
+</script>
 
-    <!-- FORM -->
-    <section id="suggest" class="max-w-4xl mx-auto mt-20 p-8 glass">
-        <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-feather"></i> Đề Xuất Truyện Mới</h2>
-        <form id="formSuggest" class="grid lg:grid-cols-2 gap-4 mt-4">
-            <input id="title" class="p-3 rounded-lg border border-indigo-200" placeholder="Tên truyện…" required>
-            <input id="linkStory" type="url" class="p-3 rounded-lg border border-indigo-200" placeholder="Link truyện…">
-            <div class="lg:col-span-2 flex space-x-5 items-center">
-                <span class="font-medium">Phiên bản:</span>
-                <label><input type="radio" name="version" value="Edit" required> Edit</label>
-                <label><input type="radio" name="version" value="Convert"> Convert</label>
-            </div>
-            <textarea id="note" class="lg:col-span-2 p-3 rounded-lg border border-indigo-200" rows="2" placeholder="Ghi chú (độ dài, thể loại…)"></textarea>
-            <button class="lg:col-span-2 mt-4 py-3 btn-gradient shadow transition"><i class="fa-solid fa-paper-plane"></i> Gửi đề xuất</button>
-        </form>
-    </section>
+<!-- HOME -->
+<section id="home" class="pt-28 text-center text-white px-4">
+  <h2 class="text-3xl font-bold text-indigo-200"><i class="fa-solid fa-star text-pink-300"></i> Top Truyện Yêu Thích</h2>
+  <div id="topStories" class="flex flex-wrap justify-center gap-6 mt-6"></div>
+</section>
 
-    <!-- LIST -->
-    <section id="list" class="max-w-6xl mx-auto mt-20 p-6 glass text-center">
-        <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-list"></i> Danh Sách Đề Xuất</h2>
-        <div class="overflow-auto mt-4">
-            <table class="w-full text-center text-sm lg:text-base table">
-                <thead><tr><th>Tên truyện</th><th>Bản dịch</th><th>Ghi chú</th><th>Vote</th></tr></thead>
-                <tbody id="storyList"></tbody>
-            </table>
-        </div>
-    </section>
+<!-- FORM -->
+<section id="suggest" class="max-w-4xl mx-auto mt-20 p-4 sm:p-8 glass mx-4 sm:mx-auto">
+  <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-feather"></i> Đề Xuất Truyện Mới</h2>
+  <form id="formSuggest" class="grid gap-4 mt-4">
+    <input id="title" class="p-3 rounded-lg border border-indigo-200 w-full" placeholder="Tên truyện…" required>
+    <input id="linkStory" type="url" class="p-3 rounded-lg border border-indigo-200 w-full" placeholder="Link truyện…">
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="font-medium">Phiên bản:</span>
+      <label><input type="radio" name="version" value="Edit" required> Edit</label>
+      <label><input type="radio" name="version" value="Convert"> Convert</label>
+    </div>
+    <textarea id="note" class="p-3 rounded-lg border border-indigo-200 w-full" rows="2" placeholder="Ghi chú (độ dài, thể loại…)"></textarea>
+    <button class="py-3 btn-gradient shadow transition w-full sm:w-auto mx-auto"><i class="fa-solid fa-paper-plane"></i> Gửi đề xuất</button>
+  </form>
+</section>
 
-    <!-- READING -->
-    <section id="reading" class="max-w-4xl mx-auto mt-20 p-6 glass text-center">
-        <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-headphones"></i> Truyện Đang Đọc</h2>
-        <div id="readingList" class="space-y-3 mt-4"></div>
-    </section>
+<!-- LIST -->
+<section id="list" class="max-w-6xl mx-auto mt-20 p-4 sm:p-6 glass text-center mx-4 sm:mx-auto">
+  <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-list"></i> Danh Sách Đề Xuất</h2>
+  <div class="overflow-x-auto mt-4">
+    <table class="min-w-[500px] w-full text-center text-sm sm:text-base table">
+      <thead><tr><th>Tên truyện</th><th>Bản dịch</th><th>Ghi chú</th><th>Vote</th></tr></thead>
+      <tbody id="storyList"></tbody>
+    </table>
+  </div>
+</section>
 
-    <!-- ADMIN (ẩn mặc định) -->
-    <section id="admin" class="hidden max-w-6xl mx-auto mt-20 mb-10 p-6 glass text-center">
-        <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-user-shield"></i> Quản Lý</h2>
-        <div class="text-center mb-4">
-            <button class="px-4 py-2 bg-gray-400 text-white rounded" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
-        </div>
-        <div id="adminPanel" class="overflow-auto">
-            <table class="w-full text-center text-sm lg:text-base table">
-                <thead><tr><th>Tên</th><th>Trạng thái</th><th>YouTube</th><th>Hành động</th></tr></thead>
-                <tbody id="adminTable"></tbody>
-            </table>
-        </div>
-    </section>
+<!-- READING -->
+<section id="reading" class="max-w-4xl mx-auto mt-20 p-4 sm:p-6 glass text-center mx-4 sm:mx-auto">
+  <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-headphones"></i> Truyện Đang Đọc</h2>
+  <div id="readingList" class="space-y-3 mt-4"></div>
+</section>
 
-    <footer>© 2024 Hồi Âm Đam Mỹ • Vũ trụ cảm xúc và âm thanh ✨</footer>
+<!-- ADMIN -->
+<section id="admin" class="hidden max-w-6xl mx-auto mt-20 mb-10 p-4 sm:p-6 glass text-center mx-4 sm:mx-auto">
+  <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-user-shield"></i> Quản Lý</h2>
+  <div class="text-center mb-4">
+    <button class="px-4 py-2 bg-gray-400 text-white rounded" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
+  </div>
+  <div id="adminPanel" class="overflow-x-auto">
+    <table class="min-w-[600px] w-full text-center text-sm sm:text-base table">
+      <thead><tr><th>Tên</th><th>Trạng thái</th><th>YouTube</th><th>Hành động</th></tr></thead>
+      <tbody id="adminTable"></tbody>
+    </table>
+  </div>
+</section>
 
-    <!-- SUPABASE -->
-    <script>
-        const SUPABASE_URL = 'https://xklmcebwxkqbotqexprn.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrbG1jZWJ3eGtxYm90cWV4cHJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzM1NDEsImV4cCI6MjA3OTIwOTU0MX0.vZj-5C_HhVgemG0LOTH3axf4P0bxXngzeQ3PSo93-m4';
-        const TABLE = 'stories';
-        let stories = [];
+<footer>© 2024 Hồi Âm Đam Mỹ • Vũ trụ cảm xúc và âm thanh ✨</footer>
 
-        /* === Supabase helper === */
-        async function fetchStories() {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*`,
-                { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
-            stories = await res.json(); refresh();
-        }
-        async function addStory(s) {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', apikey: SUPABASE_KEY,
-                    Authorization: `Bearer ${SUPABASE_KEY}`,
-                    Prefer: 'return=representation'
-                },
-                body: JSON.stringify(s)
-            });
-            const txt = await res.text();
-            if (!res.ok) { Swal.fire('Lỗi ' + res.status, txt, 'error'); return; }
-            const data = JSON.parse(txt); stories.push(data[0]); refresh();
-            Swal.fire('🌸', 'Đã lưu đề xuất!', 'success');
-        }
-        async function updateStory(id, d) {
-            await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-                body: JSON.stringify(d)
-            }); fetchStories();
-        }
-        async function deleteStory(id) {
-            const st = stories.find(s => s.id === id);
-            const cf = await Swal.fire({
-                title: `Xóa "${st.title}"?`, text: 'Không thể hoàn tác!', icon: 'warning',
-                showCancelButton: true, confirmButtonText: 'Xóa', cancelButtonText: 'Hủy'
-            });
-            if (!cf.isConfirmed) return;
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`, {
-                method: 'DELETE', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-            });
-            if (res.ok) { Swal.fire('🗑 Đã xóa!', '', 'success'); fetchStories(); }
-            else Swal.fire('⚠️ Không xóa được', await res.text(), 'error');
-        }
-        async function toggleVote(id) {
-            const key = `vote_${id}`, st = stories.find(s => s.id === id); let v = st.votes || 0;
-            if (localStorage.getItem(key)) { localStorage.removeItem(key); v = Math.max(0, v - 1); } else { localStorage.setItem(key, true); v++; }
-            await updateStory(id, { votes: v });
-        }
-        function userVoted(id) { return localStorage.getItem(`vote_${id}`); }
+<!-- SUPABASE -->
+<script>
+const SUPABASE_URL='https://xklmcebwxkqbotqexprn.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrbG1jZWJ3eGtxYm90cWV4cHJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzM1NDEsImV4cCI6MjA3OTIwOTU0MX0.vZj-5C_HhVgemG0LOTH3axf4P0bxXngzeQ3PSo93-m4';
+const TABLE='stories';
+let stories=[];
 
-        /* === Form submit === */
-        formSuggest.addEventListener("submit", async e => {
-            e.preventDefault();
-            const s = {
-                title: document.getElementById('title').value.trim(),
-                linkstory: document.getElementById('linkStory').value.trim(),
-                version: document.querySelector('input[name="version"]:checked')?.value || '',
-                note: document.getElementById('note').value.trim(),
-                votes: 0, status: 'đề xuất', youtubelink: '', createdat: new Date().toISOString()
-            };
-            if (!s.title) return; await addStory(s); e.target.reset();
-        });
+async function fetchStories(){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*`,
+    {headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
+  stories=await res.json();refresh();
+}
+async function addStory(s){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY,
+      Authorization:`Bearer ${SUPABASE_KEY}`,Prefer:'return=representation'},
+    body:JSON.stringify(s)
+  });
+  const txt=await res.text();
+  if(!res.ok){Swal.fire('Lỗi',txt,'error');return;}
+  const data=JSON.parse(txt);stories.push(data[0]);refresh();
+  Swal.fire('🌸','Đã lưu đề xuất!','success');
+}
+async function updateStory(id,d){
+  await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`},
+    body:JSON.stringify(d)
+  });fetchStories();
+}
+async function deleteStory(id){
+  const st=stories.find(s=>s.id===id);
+  const cf=await Swal.fire({title:`Xóa "${st.title}"?`,text:'Không thể hoàn tác!',icon:'warning',showCancelButton:true});
+  if(!cf.isConfirmed)return;
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,{method:'DELETE',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
+  if(res.ok){Swal.fire('🗑 Đã xóa','','success');fetchStories();}
+}
+async function toggleVote(id){
+  const key=`vote_${id}`,st=stories.find(s=>s.id===id);let v=st.votes||0;
+  if(localStorage.getItem(key)){localStorage.removeItem(key);v=Math.max(0,v-1);}else{localStorage.setItem(key,true);v++;}
+  await updateStory(id,{votes:v});
+}
+function userVoted(id){return localStorage.getItem(`vote_${id}`);}
 
-        /* === Renderers === */
-        function refresh() { renderTop(); renderList(); renderReading(); renderAdmin(); }
-        function renderTop() {
-            const c = topStories; c.innerHTML = '';
-            const top = [...stories.filter(s => s.status === 'đề xuất')].sort((a, b) => b.votes - a.votes).slice(0, 5);
-            top.forEach(s => c.innerHTML += `
-     <div class="w-60 p-5 bg-white/80 rounded-xl shadow hover:scale-105 transition">
-       <h5 class="font-bold text-indigo-700">${s.title}</h5>
-       <p class="text-sm text-gray-600">${s.note || ''}</p>
-       <span class="text-pink-600 font-semibold">${s.votes} vote</span>
-     </div>`);
-        }
-        function renderList() {
-            storyList.innerHTML = stories.filter(s => s.status === 'đề xuất').map(s => `
-     <tr class="even:bg-white/40 odd:bg-white/70">
-     <td class="p-2"><a href='${s.linkstory}' target='_blank'>${s.title}</a></td>
-     <td>${s.version}</td><td>${s.note || ''}</td>
-     <td><button class='px-3 py-1 rounded-full ${userVoted(s.id) ? 'bg-red-400 text-white' : 'border border-indigo-400 text-indigo-600'}'
-     onclick='toggleVote(${s.id})'>${userVoted(s.id) ? 'Bỏ vote' : 'Vote'}</button>
-     <div>${s.votes}</div></td></tr>`).join('');
-        }
-        function renderReading() {
-            readingList.innerHTML = stories.filter(s => s.status === 'đang đọc')
-                .map(s => `<a href='${s.youtubelink}' target='_blank'
-     class='block p-4 bg-white/80 rounded-xl shadow hover:bg-white transition'>
-     <div class='flex justify-between items-center'>
-     <div><strong>${s.title}</strong><br><small>${s.note || ''}</small></div>
-     <span class='bg-green-400 text-white px-3 py-1 rounded-full'>Nghe</span></div></a>`).join('');
-        }
-        function renderAdmin() {
-            adminTable.innerHTML = stories.map(s => `
-     <tr class='even:bg-white/40 odd:bg-white/70'>
-     <td>${s.title}</td><td>${s.status}</td><td>${s.youtubelink || '-'}</td>
-     <td class='space-x-2'>
-       <button class='px-3 py-1 bg-yellow-400 rounded' onclick='changeStatus(${s.id})'>Đổi</button>
-       <button class='px-3 py-1 bg-red-500 text-white rounded' onclick='deleteStory(${s.id})'><i class='fa-solid fa-trash'></i></button>
-     </td></tr>`).join('');
-        }
-        function changeStatus(id) {
-            const st = stories.find(s => s.id === id);
-            Swal.fire({
-                title: 'Chọn trạng thái', input: 'select',
-                inputOptions: { 'đề xuất': 'Đề xuất', 'đang đọc': 'Đang đọc', 'đã đọc': 'Đã đọc' }, inputValue: st.status, showCancelButton: true
-            })
-                .then(r => {
-                    if (!r.isConfirmed) return;
-                    if (r.value === 'đang đọc') {
-                        Swal.fire({ title: 'Link YouTube', input: 'url', showCancelButton: true })
-                            .then(l => { if (l.isConfirmed) updateStory(id, { status: r.value, youtubelink: l.value }); });
-                    } else updateStory(id, { status: r.value });
-                });
-        }
+formSuggest.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const s={
+    title:document.getElementById('title').value.trim(),
+    linkstory:document.getElementById('linkStory').value.trim(),
+    version:document.querySelector('input[name="version"]:checked')?.value||'',
+    note:document.getElementById('note').value.trim(),
+    votes:0,status:'đề xuất',youtubelink:'',createdat:new Date().toISOString()
+  };
+  if(!s.title)return;await addStory(s);e.target.reset();
+});
 
-        /* === Đăng nhập / Đăng xuất Admin === */
-        document.getElementById('adminLoginBtn').addEventListener('click', async () => {
-            const { value: pass } = await Swal.fire({
-                title: 'Nhập mật khẩu Admin',
-                input: 'password', inputPlaceholder: '••••••••',
-                confirmButtonText: 'Đăng nhập',
-                showCancelButton: true
-            });
-            if (pass === 'hoiam20102003') {
-                document.getElementById('admin').classList.remove('hidden');
-                adminPanel.style.display = 'block';
-                renderAdmin();
-                Swal.fire('✅', 'Đăng nhập admin thành công!', 'success');
-            } else if (pass) { Swal.fire('Sai mật khẩu', '', 'error'); }
-        });
+function refresh(){renderTop();renderList();renderReading();renderAdmin();}
+function renderTop(){
+ let c=topStories;c.innerHTML='';
+ const top=[...stories.filter(s=>s.status==='đề xuất')].sort((a,b)=>b.votes-a.votes).slice(0,5);
+ top.forEach(s=>c.innerHTML+=`
+ <div class="w-48 sm:w-60 p-5 bg-white/80 rounded-xl shadow hover:scale-105 transition">
+   <h5 class="font-bold text-indigo-700">${s.title}</h5>
+   <p class="text-sm text-gray-600">${s.note||''}</p>
+   <span class="text-pink-600 font-semibold">${s.votes} vote</span>
+ </div>`);}
+function renderList(){
+ storyList.innerHTML=stories.filter(s=>s.status==='đề xuất').map(s=>`
+ <tr class="even:bg-white/40 odd:bg-white/70">
+ <td class="p-2"><a href='${s.linkstory}' target='_blank'>${s.title}</a></td>
+ <td>${s.version}</td><td>${s.note||''}</td>
+ <td><button class='px-3 py-1 rounded-full ${userVoted(s.id)?'bg-red-400 text-white':'border border-indigo-400 text-indigo-600'}' onclick='toggleVote(${s.id})'>
+ ${userVoted(s.id)?'Bỏ vote':'Vote'}</button><div>${s.votes}</div></td></tr>`).join('');
+}
+function renderReading(){
+ readingList.innerHTML=stories.filter(s=>s.status==='đang đọc').map(s=>`
+ <a href='${s.youtubelink}' target='_blank' class='block p-4 bg-white/80 rounded-xl shadow hover:bg-white transition'>
+ <div class='flex justify-between items-center'>
+ <div><strong>${s.title}</strong><br><small>${s.note||''}</small></div>
+ <span class='bg-green-400 text-white px-3 py-1 rounded-full'>Nghe</span></div></a>`).join('');
+}
+function renderAdmin(){
+ adminTable.innerHTML=stories.map(s=>`
+ <tr class='even:bg-white/40 odd:bg-white/70'>
+ <td>${s.title}</td><td>${s.status}</td><td>${s.youtubelink||'-'}</td>
+ <td class='space-x-2'>
+   <button class='px-3 py-1 bg-yellow-400 rounded' onclick='changeStatus(${s.id})'>Đổi</button>
+   <button class='px-3 py-1 bg-red-500 text-white rounded' onclick='deleteStory(${s.id})'><i class='fa-solid fa-trash'></i></button>
+ </td></tr>`).join('');
+}
+function changeStatus(id){
+ const st=stories.find(s=>s.id===id);
+ Swal.fire({title:'Chọn trạng thái',input:'select',
+ inputOptions:{'đề xuất':'Đề xuất','đang đọc':'Đang đọc','đã đọc':'Đã đọc'},
+ inputValue:st.status,showCancelButton:true})
+ .then(r=>{
+   if(!r.isConfirmed)return;
+   if(r.value==='đang đọc'){
+     Swal.fire({title:'Link YouTube',input:'url',showCancelButton:true})
+     .then(l=>{if(l.isConfirmed)updateStory(id,{status:r.value,youtubelink:l.value});});
+   }else updateStory(id,{status:r.value});
+ });
+}
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('admin').classList.add('hidden');
-            Swal.fire('🚪', 'Đã đăng xuất', 'info');
-        });
+/* === Đăng nhập/đăng xuất Admin === */
+document.getElementById('adminLoginBtn').addEventListener('click',async()=>{
+  const {value:pass}=await Swal.fire({title:'Nhập mật khẩu Admin',input:'password',inputPlaceholder:'••••••••',confirmButtonText:'Đăng nhập',showCancelButton:true});
+  if(pass==='hoiam20102003'){document.getElementById('admin').classList.remove('hidden');adminPanel.style.display='block';renderAdmin();Swal.fire('✅','Đăng nhập admin thành công!','success');}
+  else if(pass){Swal.fire('Sai mật khẩu','','error');}
+});
+document.getElementById('logoutBtn').addEventListener('click',()=>{
+  document.getElementById('admin').classList.add('hidden');
+  Swal.fire('🚪','Đã đăng xuất','info');
+});
 
-        window.onload = fetchStories;
-    </script>
+window.onload=fetchStories;
+</script>
 </body>
 </html>
