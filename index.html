@@ -27,22 +27,56 @@ footer{background:rgba(255,255,255,0.85);text-align:center;padding:1rem;font-wei
 <!-- 🌠 Nền ngân hà -->
 <canvas id="stars"></canvas>
 <script>
-const c=document.getElementById("stars"),x=c.getContext("2d");
-function resize(){c.width=innerWidth;c.height=innerHeight;}window.onresize=resize;resize();
-const stars=[...Array(220)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+0.2,
-dx:(Math.random()-.5)*0.3,dy:(Math.random()-.5)*0.3}));
-function draw(){
- const g=x.createLinearGradient(0,0,c.width,c.height);
- g.addColorStop(0,"#050014");g.addColorStop(1,"#16052F");
- x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
- const neb=x.createRadialGradient(c.width/2,c.height/2,0,c.width/2,c.height/2,c.width/1.2);
- neb.addColorStop(0,"rgba(128,0,255,0.25)");neb.addColorStop(1,"transparent");
- x.fillStyle=neb;x.fillRect(0,0,c.width,c.height);
- x.fillStyle="#fff";
- for(const s of stars){x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill();
-   s.x+=s.dx;s.y+=s.dy;if(s.x<0)s.x=c.width;if(s.x>c.width)s.x=0;if(s.y<0)s.y=c.height;if(s.y>h)s.y=0;}
- requestAnimationFrame(draw);
-}draw();
+const canvas=document.getElementById('galaxy'),ctx=canvas.getContext('2d');
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+window.addEventListener('resize',resize);resize();
+
+// tạo sao ngẫu nhiên với nhiều lớp + thời gian nhấp nháy
+const stars=[];const numStars=280;
+for(let i=0;i<numStars;i++){
+  stars.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*1.8+0.2,
+    dx:(Math.random()-.5)*0.25,
+    dy:(Math.random()-.5)*0.25,
+    phase:Math.random()*360,
+    speed:Math.random()*0.02+0.005
+  });
+}
+
+// gradient sương ngân hà trung tâm
+function nebula(){
+  const g=ctx.createRadialGradient(canvas.width/2,canvas.height/2,0,canvas.width/2,canvas.height/2,canvas.width/1.1);
+  g.addColorStop(0,"rgba(120,0,255,0.35)");
+  g.addColorStop(0.3,"rgba(0,150,255,0.25)");
+  g.addColorStop(0.6,"rgba(255,255,255,0.08)");
+  g.addColorStop(1,"transparent");
+  return g;
+}
+
+// hiệu ứng chớp sáng
+function twinkle(p){return 0.5+0.5*Math.sin(p);}
+
+function animate(){
+  ctx.fillStyle="rgba(0,0,25,0.4)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle=nebula();
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  for(const s of stars){
+    s.x+=s.dx; s.y+=s.dy; s.phase+=s.speed*360;
+    if(s.x<0)s.x=canvas.width;if(s.x>canvas.width)s.x=0;
+    if(s.y<0)s.y=canvas.height;if(s.y>canvas.height)s.y=0;
+    const flicker=twinkle(s.phase*Math.PI/180);
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r*flicker,0,2*Math.PI);
+    ctx.fillStyle=`rgba(${200+55*flicker},${200+30*flicker},255,${0.8*flicker})`;
+    ctx.fill();
+  }
+  requestAnimationFrame(animate);
+}
+animate();
 </script>
 
 <!-- NAV Responsive -->
