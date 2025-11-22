@@ -106,7 +106,7 @@ document.getElementById('menuBtn').addEventListener('click',()=>document.getElem
   <h2 class="text-2xl font-semibold text-indigo-800"><i class="fa-solid fa-list"></i> Danh Sách Đề Xuất</h2>
   <div class="overflow-x-auto mt-4">
     <table class="min-w-[500px] w-full text-center text-sm sm:text-base table">
-      <thead><tr><th>Tên truyện</th><th>Bản dịch</th><th>Ghi chú</th><th>Vote</th></tr></thead>
+      <thead><tr><th>Tên truyện</th><th>Bản dịch</th><th>Ghi chú</th><th>Vote</th></tr><th>Đọc truyện</th></thead>
       <tbody id="storyList"></tbody>
     </table>
   </div>
@@ -206,8 +206,21 @@ function renderList(){
  <tr class="even:bg-white/40 odd:bg-white/70">
  <td class="p-2"><a href='${s.linkstory}' target='_blank'>${s.title}</a></td>
  <td>${s.version}</td><td>${s.note||''}</td>
- <td><button class='px-3 py-1 rounded-full ${userVoted(s.id)?'bg-red-400 text-white':'border border-indigo-400 text-indigo-600'}' onclick='toggleVote(${s.id})'>
- ${userVoted(s.id)?'Bỏ vote':'Vote'}</button><div>${s.votes}</div></td></tr>`).join('');
+ <td>
+ <button class='px-3 py-1 rounded-full ${userVoted(s.id)?'bg-red-400 text-white':'border border-indigo-400 text-indigo-600'}' onclick='toggleVote(${s.id})'>
+ ${userVoted(s.id)?'Bỏ vote':'Vote'}</button><div>${s.votes}</div>
+ </td>
+ <td>
+          ${
+            s.linkstory
+              ? `<a href="${s.linkstory}" target="_blank"
+                   class="inline-block bg-indigo-500 text-white text-sm px-3 py-1 rounded-full hover:bg-indigo-600 transition">
+                   <i class="fa-solid fa-book-open"></i> Đọc
+                 </a>`
+              : '<span class="text-gray-400 italic">Không có link</span>'
+          }
+        </td></tr>`).join('');
+  
 }
 function renderReading(){
  readingList.innerHTML=stories.filter(s=>s.status==='đang đọc').map(s=>`
