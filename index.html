@@ -156,9 +156,16 @@ function animate(){
         <i class="fa-solid fa-book absolute left-4 top-4 text-gray-400 group-focus-within:text-indigo-500 transition"></i>
         <input id="title" class="w-full p-3 pl-10 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300" placeholder="Tên truyện..." required>
       </div>
+
       <div class="group relative">
         <i class="fa-solid fa-link absolute left-4 top-4 text-gray-400 group-focus-within:text-indigo-500 transition"></i>
-        <input id="linkStory" type="url" class="w-full p-3 pl-10 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300" placeholder="Link đọc (nếu có)...">
+        <input 
+          id="linkStory" 
+          type="url" 
+          pattern="https?://.+" 
+          title="Link phải bắt đầu bằng http:// hoặc https://"
+          class="w-full p-3 pl-10 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300 valid:border-green-400 valid:ring-green-100" 
+          placeholder="https://truyen... (Nếu có)">
       </div>
     </div>
     
