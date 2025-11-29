@@ -14,17 +14,17 @@
   body{font-family:'Poppins',sans-serif;color:#222;overflow-x:hidden;margin:0;}
   /* Nền ngân hà */
   canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-10;display:block;}
-  
+   
   /* Hiệu ứng kính */
   .glass{background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);
     border:1px solid rgba(255,255,255,0.5);border-radius:20px;
     box-shadow:0 8px 32px rgba(31, 38, 135, 0.15);}
-  
+   
   /* Gradient đẹp hơn */
   .btn-gradient{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
     border:none;border-radius:30px;font-weight:600;transition:all 0.3s ease;}
   .btn-gradient:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(118, 75, 162, 0.4);}
-  
+   
   .text-gradient {background: -webkit-linear-gradient(#667eea, #764ba2);-webkit-background-clip: text;-webkit-text-fill-color: transparent;}
 
   .table thead{background:linear-gradient(90deg,#667eea,#764ba2);color:#fff;}
@@ -87,7 +87,7 @@ function draw(){
   <div id="topStories" class="flex flex-wrap justify-center gap-6"></div>
 </section>
 
-<section id="suggest" class="max-w-4xl mx-auto mt-10 p-6 sm:p-10 glass mx-4 shadow-2xl transform transition hover:scale-[1.01]">
+<section id="suggest" class="w-11/12 md:w-full max-w-4xl mx-auto mt-10 p-6 sm:p-10 glass shadow-2xl transform transition hover:scale-[1.01]">
   <h2 class="text-3xl font-bold text-center mb-6 text-gray-800"><i class="fa-solid fa-paper-plane text-indigo-500"></i> Gửi Đề Xuất</h2>
   <form id="formSuggest" class="grid gap-5">
     <div class="grid sm:grid-cols-2 gap-4">
@@ -104,7 +104,7 @@ function draw(){
   </form>
 </section>
 
-<section id="list" class="max-w-7xl mx-auto mt-20 p-4 sm:p-8 glass mx-4">
+<section id="list" class="w-11/12 md:w-full max-w-7xl mx-auto mt-20 p-4 sm:p-8 glass">
   <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
     <h2 class="text-3xl font-bold text-gray-800"><i class="fa-solid fa-layer-group text-indigo-500"></i> Kho Tàng Đề Xuất</h2>
     <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -117,7 +117,7 @@ function draw(){
   </div>
 
   <div id="loadingList" class="loader"></div>
-  
+   
   <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm">
     <table class="w-full text-left border-collapse">
       <thead class="text-white h-12">
@@ -130,12 +130,12 @@ function draw(){
   <div id="storyListMobile" class="md:hidden space-y-4"></div>
 </section>
 
-<section id="reading" class="max-w-5xl mx-auto mt-20 p-6 sm:p-8 glass mx-4 mb-20">
+<section id="reading" class="w-11/12 md:w-full max-w-5xl mx-auto mt-20 p-6 sm:p-8 glass mb-20">
   <h2 class="text-3xl font-bold text-center mb-6 text-gray-800"><i class="fa-solid fa-podcast text-green-500"></i> Đang Lên Sóng</h2>
   <div id="readingList" class="grid sm:grid-cols-2 gap-4"></div>
 </section>
 
-<section id="admin" class="hidden max-w-7xl mx-auto mt-10 mb-10 p-6 glass mx-4 border-2 border-red-100">
+<section id="admin" class="hidden w-11/12 md:w-full max-w-7xl mx-auto mt-10 mb-10 p-6 glass border-2 border-red-100">
   <div class="flex justify-between items-center mb-6 border-b pb-4">
     <h2 class="text-2xl font-bold text-red-600"><i class="fa-solid fa-shield-halved"></i> Admin Panel</h2>
     <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Thoát</button>
@@ -162,7 +162,7 @@ let stories=[];
 async function fetchStories(){
   document.getElementById('loadingTop').style.display='block';
   document.getElementById('loadingList').style.display='block';
-  
+   
   try {
     const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
     if(!res.ok) throw new Error('Kết nối thất bại');
@@ -239,9 +239,9 @@ function refresh(){filterStories();renderReading();renderAdmin();}
 function filterStories(){
   const keyword = document.getElementById('searchInput').value.toLowerCase();
   const sortMode = document.getElementById('sortSelect').value;
-  
+   
   let list = stories.filter(s => s.status === 'đề xuất' && s.title.toLowerCase().includes(keyword));
-  
+   
   if(sortMode === 'vote') list.sort((a,b) => b.votes - a.votes);
   else if(sortMode === 'new') list.sort((a,b) => new Date(b.createdat) - new Date(a.createdat));
 
@@ -255,7 +255,7 @@ function renderTop(list){
   // Lấy top 3 vote cao nhất
   const top = [...list].sort((a,b)=>b.votes-a.votes).slice(0,3);
   if(top.length===0) c.innerHTML='<p class="text-gray-300">Chưa có dữ liệu...</p>';
-  
+   
   top.forEach((s,i)=>{
     let medal='';
     if(i==0) medal='🥇'; else if(i==1) medal='🥈'; else if(i==2) medal='🥉';
