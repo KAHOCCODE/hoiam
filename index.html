@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Hồi Âm Đam Mỹ – Galaxy Edition</title>
+<title>Hồi Âm Đam Mỹ</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -163,9 +163,13 @@ function animate(){
           id="linkStory" 
           type="url" 
           pattern="https?://.+" 
-          title="Link phải bắt đầu bằng http:// hoặc https://"
-          class="w-full p-3 pl-10 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300 valid:border-green-400 valid:ring-green-100" 
+          class="peer w-full p-3 pl-10 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300 
+                 invalid:border-red-500 invalid:text-red-600 focus:invalid:border-red-500 focus:invalid:ring-red-100" 
           placeholder="https://truyen... (Nếu có)">
+        
+        <span class="mt-1 text-xs text-red-500 font-bold hidden peer-invalid:block animate-pulse">
+          <i class="fa-solid fa-circle-exclamation mr-1"></i> Link phải bắt đầu bằng http:// hoặc https://
+        </span>
       </div>
     </div>
     
