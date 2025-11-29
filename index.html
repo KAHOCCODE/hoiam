@@ -19,7 +19,7 @@
   /* --- NỀN VŨ TRỤ --- */
   canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-10;display:block;}
 
-  /* --- HIỆU ỨNG KÍNH (Nâng cao) --- */
+  /* --- HIỆU ỨNG KÍNH --- */
   .glass {
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(16px);
@@ -37,7 +37,7 @@
     background: rgba(255, 255, 255, 0.85);
   }
 
-  /* --- ANIMATION TRÔI NỔI (Floating) --- */
+  /* --- ANIMATION --- */
   @keyframes float {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
@@ -46,7 +46,6 @@
   .floating-element { animation: float 6s ease-in-out infinite; }
   .floating-delayed { animation: float 7s ease-in-out infinite 1s; }
 
-  /* --- TEXT SHIMMER (Chữ lấp lánh) --- */
   .text-shimmer {
     background: linear-gradient(to right, #667eea 0%, #764ba2 40%, #ff7eb3 50%, #764ba2 60%, #667eea 100%);
     background-size: 200% auto;
@@ -59,7 +58,6 @@
   }
   @keyframes shine { to { background-position: 200% center; } }
 
-  /* --- BUTTON GRADIENT ĐỘNG --- */
   .btn-gradient {
     background-size: 200% auto;
     background-image: linear-gradient(to right, #667eea 0%, #764ba2 51%, #667eea 100%);
@@ -69,11 +67,9 @@
   }
   .btn-gradient:hover { background-position: right center; color: #fff; text-decoration: none; box-shadow: 0 10px 20px rgba(118, 75, 162, 0.5); }
 
-  /* --- TABLE STYLING --- */
   .table-row-anim { transition: transform 0.2s, background-color 0.2s; }
   .table-row-anim:hover { transform: scale(1.01); background-color: rgba(255,255,255,0.95) !important; z-index: 10; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
-  /* --- ĐĨA NHẠC --- */
   .vinyl-record {
     width: 40px; height: 40px; border-radius: 50%;
     background: repeating-radial-gradient(#111 0, #111 2px, #333 3px, #333 4px);
@@ -83,7 +79,6 @@
   .vinyl-record::after {content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;background:radial-gradient(circle, #ff5f6d, #ffc371);border-radius:50%;}
   @keyframes vinyl-spin {from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 
-  /* Loader */
   .loader {width: 48px;height: 48px;border: 5px solid #FFF;border-bottom-color: #764ba2;border-radius: 50%;display: inline-block;box-sizing: border-box;animation: rotation 1s linear infinite; margin: 20px auto;}
   @keyframes rotation {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}
 </style>
@@ -93,7 +88,6 @@
 
 <canvas id="stars"></canvas>
 <script>
-// Canvas Sao Băng
 const c=document.getElementById("stars"),x=c.getContext("2d");
 function resize(){c.width=innerWidth;c.height=innerHeight;}window.onresize=resize;resize();
 class Star{
@@ -107,7 +101,7 @@ class Star{
     this.x+=this.dx;this.y+=this.dy;
     if(this.x<0||this.x>c.width)this.x=Math.random()*c.width;
     if(this.y<0||this.y>c.height)this.y=Math.random()*c.height;
-    this.opacity+= (Math.random()-0.5)*0.05; // Twinkle effect
+    this.opacity+= (Math.random()-0.5)*0.05; 
     if(this.opacity<0)this.opacity=0;if(this.opacity>1)this.opacity=1;
     this.draw();
   }
@@ -142,7 +136,6 @@ function animate(){
 <section id="home" class="pt-36 pb-10 text-center text-white px-4 relative overflow-hidden">
   <div class="absolute top-20 left-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
   <div class="absolute top-20 right-10 w-32 h-32 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
-
   <h2 class="text-4xl md:text-5xl font-extrabold mb-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] tracking-wide" data-aos="zoom-in">✨ Top Truyện Hot ✨</h2>
   <div id="loadingTop" class="loader"></div>
   <div id="topStories" class="flex flex-wrap justify-center gap-8 perspective-1000"></div>
@@ -164,12 +157,13 @@ function animate(){
           type="url" 
           pattern="https?://.+" 
           class="peer w-full p-3 pl-10 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300 
-                 invalid:border-red-500 invalid:text-red-600 focus:invalid:border-red-500 focus:invalid:ring-red-100" 
+                 invalid:border-red-500 invalid:text-red-600 invalid:bg-red-50 focus:invalid:border-red-500 focus:invalid:ring-red-100" 
           placeholder="https://truyen... (Nếu có)">
         
-        <span class="mt-1 text-xs text-red-500 font-bold hidden peer-invalid:block animate-pulse">
-          <i class="fa-solid fa-circle-exclamation mr-1"></i> Link phải bắt đầu bằng http:// hoặc https://
-        </span>
+        <div class="hidden peer-invalid:flex items-center mt-2 text-sm text-red-600 bg-red-100 p-2 rounded-lg border border-red-200 animate-pulse">
+          <i class="fa-solid fa-triangle-exclamation mr-2 text-lg"></i>
+          <span>Link không hợp lệ! Vui lòng bắt đầu bằng <b>http://</b> hoặc <b>https://</b></span>
+        </div>
       </div>
     </div>
     
@@ -237,7 +231,6 @@ function animate(){
 </footer>
 
 <script>
-// --- KHỞI TẠO AOS ---
 AOS.init({ once: true, offset: 100, duration: 800, easing: 'ease-out-cubic' });
 
 const SUPABASE_URL='https://xklmcebwxkqbotqexprn.supabase.co';
@@ -285,7 +278,7 @@ async function deleteStory(id){
 async function toggleVote(id){
   const key=`vote_${id}`,st=stories.find(s=>s.id===id);if(!st)return;
   let v=st.votes||0;
-  const btn = document.querySelector(`.vote-btn-${id}`); // Selector for animation
+  const btn = document.querySelector(`.vote-btn-${id}`);
   
   if(localStorage.getItem(key)){
     localStorage.removeItem(key);v=Math.max(0,v-1);
@@ -297,9 +290,8 @@ async function toggleVote(id){
       btn.style.transform = "scale(1.4)";
       setTimeout(()=>btn.style.transform="scale(1)", 300);
     }
-    // Confetti effect could go here
   }
-  st.votes=v; refresh(false); // False to avoid full re-render flickering
+  st.votes=v; refresh(false);
   await updateStory(id,{votes:v});
 }
 function userVoted(id){return localStorage.getItem(`vote_${id}`);}
@@ -319,7 +311,6 @@ document.getElementById('formSuggest').addEventListener("submit",e=>{
 function refresh(fullRender = true){
   if(fullRender) { filterStories(); renderReading(); renderAdmin(); }
   else { 
-    // Quick update for votes only without breaking animations
     document.querySelectorAll('[id^="vote-count-"]').forEach(el => {
       const id = el.id.split('-')[2];
       const s = stories.find(x => x.id == id);
@@ -348,8 +339,6 @@ function renderTop(list){
   top.forEach((s,i)=>{
     let medal = i===0 ? '🥇' : (i===1 ? '🥈' : '🥉');
     let colorClass = i===0 ? 'border-yellow-400 shadow-yellow-200' : (i===1 ? 'border-gray-300 shadow-gray-200' : 'border-orange-300 shadow-orange-200');
-    
-    // Thêm data-aos để bay vào
     c.innerHTML+=`
     <div class="relative w-72 p-6 bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border-2 ${colorClass} transform hover:-translate-y-3 transition duration-500 group" data-aos="flip-left" data-aos-delay="${i*100}">
       <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-5xl drop-shadow-md z-10">${medal}</div>
@@ -378,7 +367,7 @@ function renderListPC(list){
         </div>
       </td>
       <td class="p-4"><span class="px-3 py-1 rounded-full text-xs font-bold border ${s.version==='Edit'?'bg-blue-50 text-blue-600 border-blue-200':'bg-orange-50 text-orange-600 border-orange-200'}">${s.version}</span></td>
-      <td class="p-4 text-sm text-gray-500 max-w-xs truncate italic">${s.note||'-'}</td>
+      <td class="p-4 text-sm text-gray-500 italic whitespace-normal break-words align-top leading-relaxed">${s.note||'-'}</td>
       <td class="p-4 text-center">
         <button onclick="toggleVote(${s.id})" class="vote-btn-${s.id} transition transform active:scale-90 ${userVoted(s.id)?'text-red-500':'text-gray-300 hover:text-red-300'}">
           <i class="fa-solid fa-heart text-2xl drop-shadow-sm"></i>
@@ -403,7 +392,7 @@ function renderListMobile(list){
           <span class="text-[10px] px-2 py-0.5 rounded border ${s.version==='Edit'?'bg-blue-50 text-blue-600 border-blue-100':'bg-orange-50 text-orange-600 border-orange-100'} font-bold">${s.version}</span>
           ${s.createdat && ((new Date()-new Date(s.createdat))/(1000*3600*24)<3) ? '<span class="text-[10px] text-green-600 font-bold border border-green-200 px-1 rounded bg-green-50">NEW</span>':''}
         </div>
-        <p class="text-sm text-gray-500 mb-3 line-clamp-2 italic">"${s.note||'...'}"</p>
+        <p class="text-sm text-gray-500 mb-3 italic leading-relaxed text-justify">"${s.note||'...'}"</p>
         ${s.linkstory ? `<a href="${s.linkstory}" target="_blank" class="text-indigo-600 text-sm font-bold hover:underline flex items-center gap-1"><i class="fa-solid fa-book-reader"></i> Đọc ngay</a>` : ''}
       </div>
       <div class="flex flex-col items-center justify-center pl-4 border-l border-dashed border-gray-300">
@@ -437,7 +426,6 @@ function renderReading(){
     </a>`).join('');
 }
 
-// ADMIN (Giữ nguyên logic)
 function renderAdmin(){
   document.getElementById('adminTable').innerHTML=stories.map(s=>`
   <tr class="border-b hover:bg-gray-50">
