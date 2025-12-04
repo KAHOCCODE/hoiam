@@ -14,37 +14,28 @@
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
-  body{font-family:'Quicksand',sans-serif;color:#222;overflow-x:hidden;margin:0;}
+  body{font-family:'Quicksand',sans-serif;color:#222;overflow-x:hidden;margin:0; background: #0f0c29;}
 
-  /* --- NỀN VŨ TRỤ --- */
+  /* --- CANVAS --- */
   canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-10;display:block;}
 
-  /* --- HIỆU ỨNG KÍNH --- */
+  /* --- TỐI ƯU HIỆU ỨNG KÍNH (Giảm blur từ 16px xuống 8px để mượt hơn) --- */
   .glass {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.85); /* Tăng độ đặc của nền */
+    backdrop-filter: blur(8px); /* Giảm blur để đỡ lag */
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.6);
-    border-top: 1px solid rgba(255, 255, 255, 0.9);
-    border-left: 1px solid rgba(255, 255, 255, 0.9);
-    border-radius: 24px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .glass:hover {
-    transform: translateY(-5px) scale(1.005);
-    box-shadow: 0 15px 40px rgba(31, 38, 135, 0.3);
-    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   }
 
-  /* --- ANIMATION --- */
+  /* --- ANIMATION (Chỉ dùng cho trang trí, KHÔNG dùng cho khung nội dung chính) --- */
   @keyframes float {
     0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-6px); } /* Giảm biên độ dao động */
     100% { transform: translateY(0px); }
   }
-  .floating-element { animation: float 6s ease-in-out infinite; }
-  .floating-delayed { animation: float 7s ease-in-out infinite 1s; }
+  .floating-deco { animation: float 6s ease-in-out infinite; } /* Chỉ áp dụng cho icon trang trí */
 
   .text-shimmer {
     background: linear-gradient(to right, #667eea 0%, #764ba2 40%, #ff7eb3 50%, #764ba2 60%, #667eea 100%);
@@ -53,7 +44,7 @@
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shine 3s linear infinite;
+    animation: shine 5s linear infinite; /* Chậm lại để đỡ rối */
     font-weight: 800;
   }
   @keyframes shine { to { background-position: 200% center; } }
@@ -62,24 +53,24 @@
     background-size: 200% auto;
     background-image: linear-gradient(to right, #667eea 0%, #764ba2 51%, #667eea 100%);
     color: #fff; border: none; border-radius: 30px;
-    transition: 0.5s;
-    box-shadow: 0 0 20px #eee;
+    transition: 0.3s; /* Nhanh hơn chút cho cảm giác mượt */
+    box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);
   }
-  .btn-gradient:hover { background-position: right center; color: #fff; text-decoration: none; box-shadow: 0 10px 20px rgba(118, 75, 162, 0.5); }
+  .btn-gradient:hover { background-position: right center; color: #fff; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(118, 75, 162, 0.5); }
 
-  .table-row-anim { transition: transform 0.2s, background-color 0.2s; }
-  .table-row-anim:hover { transform: scale(1.01); background-color: rgba(255,255,255,0.95) !important; z-index: 10; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+  .table-row-anim { transition: background-color 0.2s; }
+  .table-row-anim:hover { background-color: rgba(255,255,255,0.9); }
 
   .vinyl-record {
-    width: 40px; height: 40px; border-radius: 50%;
+    width: 35px; height: 35px; border-radius: 50%;
     background: repeating-radial-gradient(#111 0, #111 2px, #333 3px, #333 4px);
-    position: relative; border: 2px solid #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5);
-    animation: vinyl-spin 5s linear infinite;
+    position: relative; border: 2px solid #fff;
+    animation: vinyl-spin 10s linear infinite; /* Quay chậm thôi */
   }
-  .vinyl-record::after {content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;background:radial-gradient(circle, #ff5f6d, #ffc371);border-radius:50%;}
+  .vinyl-record::after {content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;background:radial-gradient(circle, #ff5f6d, #ffc371);border-radius:50%;}
   @keyframes vinyl-spin {from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 
-  .loader {width: 48px;height: 48px;border: 5px solid #FFF;border-bottom-color: #764ba2;border-radius: 50%;display: inline-block;box-sizing: border-box;animation: rotation 1s linear infinite; margin: 20px auto;}
+  .loader {width: 40px;height: 40px;border: 4px solid #FFF;border-bottom-color: #764ba2;border-radius: 50%;display: inline-block;box-sizing: border-box;animation: rotation 1s linear infinite; margin: 20px auto;}
   @keyframes rotation {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}
 </style>
 </head>
@@ -88,11 +79,12 @@
 
 <canvas id="stars"></canvas>
 <script>
+// TỐI ƯU CANVAS: Giảm số lượng sao và tính toán
 const c=document.getElementById("stars"),x=c.getContext("2d");
 function resize(){c.width=innerWidth;c.height=innerHeight;}window.onresize=resize;resize();
 class Star{
   constructor(){this.reset();}
-  reset(){this.x=Math.random()*c.width;this.y=Math.random()*c.height;this.r=Math.random()*1.5;this.dx=(Math.random()-.5)*0.2;this.dy=(Math.random()-.5)*0.2;this.opacity=Math.random();}
+  reset(){this.x=Math.random()*c.width;this.y=Math.random()*c.height;this.r=Math.random()*1.2;this.dx=(Math.random()-.5)*0.1;this.dy=(Math.random()-.5)*0.1;this.opacity=Math.random();}
   draw(){
     x.beginPath();x.arc(this.x,this.y,this.r,0,Math.PI*2);
     x.fillStyle=`rgba(255, 255, 255, ${this.opacity})`;x.fill();
@@ -101,94 +93,98 @@ class Star{
     this.x+=this.dx;this.y+=this.dy;
     if(this.x<0||this.x>c.width)this.x=Math.random()*c.width;
     if(this.y<0||this.y>c.height)this.y=Math.random()*c.height;
-    this.opacity+= (Math.random()-0.5)*0.05; 
-    if(this.opacity<0)this.opacity=0;if(this.opacity>1)this.opacity=1;
+    // Bỏ hiệu ứng nhấp nháy liên tục để giảm tải, chỉ vẽ lại
     this.draw();
   }
 }
-const starsArray=[...Array(200)].map(()=>new Star());
+// GIẢM SỐ SAO TỪ 200 -> 80 ĐỂ NHẸ MÁY
+const starsArray=[...Array(80)].map(()=>new Star());
 function animate(){
   x.clearRect(0,0,c.width,c.height);
-  const g=x.createLinearGradient(0,0,0,c.height);g.addColorStop(0,"#0f0c29");g.addColorStop(0.5,"#302b63");g.addColorStop(1,"#24243e");
+  // Dùng màu nền cứng thay vì gradient mỗi frame nếu muốn tối ưu cực đại, nhưng gradient này ok
+  const g=x.createLinearGradient(0,0,0,c.height);g.addColorStop(0,"#0f0c29");g.addColorStop(1,"#24243e");
   x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
   starsArray.forEach(s=>s.update());
   requestAnimationFrame(animate);
 }animate();
 </script>
 
-<nav class="fixed w-full backdrop-blur-lg bg-white/70 shadow-lg z-50 transition-all duration-300 border-b border-white/20">
-  <div class="max-w-7xl mx-auto flex items-center justify-between p-3">
-    <a href="#home" class="text-2xl font-bold flex items-center gap-3 group">
-      <div class="vinyl-record group-hover:scale-110 transition duration-500"></div> 
-      <span class="text-shimmer text-xl sm:text-2xl">Hồi Âm Đam Mỹ</span>
+<nav class="fixed w-full backdrop-blur-md bg-white/80 shadow-sm z-50 transition-all duration-300 border-b border-white/20 h-16">
+  <div class="max-w-7xl mx-auto flex items-center justify-between px-4 h-full">
+    <a href="#home" class="text-xl font-bold flex items-center gap-3 group">
+      <div class="vinyl-record"></div> 
+      <span class="text-shimmer text-lg sm:text-xl">Hồi Âm Đam Mỹ</span>
     </a>
-    <button id="menuBtn" class="sm:hidden text-2xl text-indigo-700 focus:outline-none transform active:scale-90"><i class="fa-solid fa-bars"></i></button>
-    <div id="navLinks" class="hidden sm:flex flex-col sm:flex-row sm:items-center sm:space-x-6 absolute sm:static w-full sm:w-auto bg-white/90 sm:bg-transparent left-0 top-16 sm:top-auto shadow-xl sm:shadow-none text-gray-700 font-bold p-4 sm:p-0 rounded-b-2xl sm:rounded-none">
-      <a href="#suggest" class="block py-2 px-4 rounded-full hover:bg-indigo-100/50 hover:text-indigo-600 transition duration-300"><i class="fa-solid fa-pen-nib mr-1 text-indigo-500"></i> Đề xuất</a>
-      <a href="#list" class="block py-2 px-4 rounded-full hover:bg-indigo-100/50 hover:text-indigo-600 transition duration-300"><i class="fa-solid fa-list-ul mr-1 text-indigo-500"></i> Danh sách</a>
-      <a href="#reading" class="block py-2 px-4 rounded-full hover:bg-indigo-100/50 hover:text-indigo-600 transition duration-300"><i class="fa-solid fa-headphones mr-1 text-indigo-500"></i> Đang nghe</a>
-      <button id="adminLoginBtn" class="text-pink-600 text-lg hover:rotate-180 transition duration-700 ml-2" title="Quản trị"><i class="fa-solid fa-gear"></i></button>
+    <button id="menuBtn" class="sm:hidden text-xl text-indigo-700 focus:outline-none"><i class="fa-solid fa-bars"></i></button>
+    <div id="navLinks" class="hidden sm:flex flex-col sm:flex-row sm:items-center sm:space-x-4 absolute sm:static w-full sm:w-auto bg-white sm:bg-transparent left-0 top-16 sm:top-auto shadow-lg sm:shadow-none text-gray-700 text-sm font-bold p-4 sm:p-0 border-b sm:border-0 border-gray-100">
+      <a href="#suggest" class="block py-2 px-3 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition"><i class="fa-solid fa-pen-nib mr-1 text-indigo-500"></i> Đề xuất</a>
+      <a href="#list" class="block py-2 px-3 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition"><i class="fa-solid fa-list-ul mr-1 text-indigo-500"></i> Danh sách</a>
+      <a href="#reading" class="block py-2 px-3 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition"><i class="fa-solid fa-headphones mr-1 text-indigo-500"></i> Đang nghe</a>
+      <button id="adminLoginBtn" class="text-pink-600 text-base ml-2 hover:bg-pink-50 p-2 rounded-full transition" title="Quản trị"><i class="fa-solid fa-gear"></i></button>
     </div>
   </div>
 </nav>
 <script>document.getElementById('menuBtn').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('hidden'));</script>
 
-<section id="home" class="pt-36 pb-10 text-center text-white px-4 relative overflow-hidden">
-  <div class="absolute top-20 left-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-  <div class="absolute top-20 right-10 w-32 h-32 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style="animation-delay: 1s;"></div>
-  <h2 class="text-4xl md:text-5xl font-extrabold mb-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] tracking-wide" data-aos="zoom-in">✨ Top Truyện Hot ✨</h2>
+<section id="home" class="pt-28 pb-8 text-center text-white px-4 relative overflow-hidden min-h-[50vh]">
+  <div class="absolute top-20 left-10 w-32 h-32 bg-purple-600 rounded-full mix-blend-screen filter blur-3xl opacity-20"></div>
+  <div class="absolute top-20 right-10 w-32 h-32 bg-blue-600 rounded-full mix-blend-screen filter blur-3xl opacity-20"></div>
+  
+  <h2 class="text-3xl md:text-5xl font-extrabold mb-8 drop-shadow-md tracking-wide" data-aos="fade-down">✨ Top Truyện Hot ✨</h2>
   <div id="loadingTop" class="loader"></div>
-  <div id="topStories" class="flex flex-wrap justify-center gap-8 perspective-1000"></div>
+  <div id="topStories" class="flex flex-wrap justify-center gap-6 perspective-1000"></div>
 </section>
   
-<section id="suggest" class="w-[95%] max-w-4xl mx-auto mt-6 p-8 glass floating-element" data-aos="fade-up" data-aos-duration="1000">
-  <h2 class="text-3xl font-bold text-center mb-6 text-gray-800"><i class="fa-solid fa-paper-plane text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500"></i> Gửi Đề Xuất</h2>
-  <form id="formSuggest" class="grid gap-6">
-    <div class="grid sm:grid-cols-2 gap-6">
+<section id="suggest" class="w-[95%] max-w-3xl mx-auto mt-0 p-6 sm:p-8 glass" data-aos="fade-up" data-aos-duration="800">
+  <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-gray-800">
+    <i class="fa-solid fa-paper-plane text-indigo-500 floating-deco inline-block"></i> Gửi Đề Xuất
+  </h2>
+  <form id="formSuggest" class="grid gap-5">
+    <div class="grid sm:grid-cols-2 gap-5">
       <div class="group relative">
-        <i class="fa-solid fa-book absolute left-4 top-4 text-gray-400 group-focus-within:text-indigo-500 transition"></i>
-        <input id="title" class="w-full p-3 pl-10 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300" placeholder="Tên truyện..." required>
+        <i class="fa-solid fa-book absolute left-4 top-3.5 text-gray-400 z-10"></i>
+        <input id="title" class="w-full p-3 pl-10 rounded-xl bg-white/80 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm" placeholder="Tên truyện..." required>
       </div>
 
       <div class="group relative">
-        <i class="fa-solid fa-link absolute left-4 top-4 text-gray-400 group-focus-within:text-indigo-500 transition"></i>
+        <i class="fa-solid fa-link absolute left-4 top-3.5 text-gray-400 z-10"></i>
         <input 
           id="linkStory" 
           type="url" 
           pattern="https?://.+" 
           required
-          class="peer w-full p-3 pl-10 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300 
-                 invalid:border-red-500 invalid:text-red-600 invalid:bg-red-50 focus:invalid:border-red-500 focus:invalid:ring-red-100 placeholder-shown:border-gray-200 placeholder-shown:bg-white/50 placeholder-shown:text-gray-900" 
-          placeholder="https://truyen...nhập link truyện ">
+          class="peer w-full p-3 pl-10 rounded-xl bg-white/80 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm
+                 invalid:border-red-400 invalid:text-red-600 focus:invalid:border-red-500 placeholder-shown:border-gray-200 placeholder-shown:text-gray-900" 
+          placeholder="https://truyen...">
         
-        <div class="hidden peer-invalid:flex peer-placeholder-shown:hidden items-center mt-2 text-sm text-red-600 bg-red-100 p-2 rounded-lg border border-red-200 animate-pulse">
-          <i class="fa-solid fa-triangle-exclamation mr-2 text-lg"></i>
-          <span>Link không hợp lệ! Vui lòng bắt đầu bằng <b>http://</b> hoặc <b>https://</b></span>
+        <div class="hidden peer-invalid:flex peer-placeholder-shown:hidden items-center mt-2 text-xs text-red-600 bg-red-50 p-2 rounded border border-red-100">
+          <i class="fa-solid fa-circle-exclamation mr-1"></i>
+          <span>Link phải bắt đầu bằng <b>http://</b> hoặc <b>https://</b></span>
         </div>
       </div>
     </div>
     
-    <div class="flex flex-wrap items-center gap-6 bg-white/40 p-4 rounded-2xl border border-white/50">
-      <span class="font-bold text-gray-700">Phiên bản:</span>
-      <label class="cursor-pointer flex items-center gap-2 px-3 py-1 rounded-full hover:bg-blue-100 transition"><input type="radio" name="version" value="Edit" class="accent-indigo-600 w-4 h-4" required> <span class="text-blue-700 font-semibold">Edit</span></label>
-      <label class="cursor-pointer flex items-center gap-2 px-3 py-1 rounded-full hover:bg-orange-100 transition"><input type="radio" name="version" value="Convert" class="accent-pink-600 w-4 h-4"> <span class="text-orange-700 font-semibold">Convert</span></label>
+    <div class="flex flex-wrap items-center gap-4 bg-white/60 p-3 rounded-xl border border-white/50 shadow-sm">
+      <span class="font-bold text-gray-700 text-sm">Phiên bản:</span>
+      <label class="cursor-pointer flex items-center gap-2 px-3 py-1 rounded-full hover:bg-blue-50 transition border border-transparent hover:border-blue-100"><input type="radio" name="version" value="Edit" class="accent-indigo-600 w-4 h-4" required> <span class="text-blue-700 font-semibold text-sm">Edit</span></label>
+      <label class="cursor-pointer flex items-center gap-2 px-3 py-1 rounded-full hover:bg-orange-50 transition border border-transparent hover:border-orange-100"><input type="radio" name="version" value="Convert" class="accent-pink-600 w-4 h-4"> <span class="text-orange-700 font-semibold text-sm">Convert</span></label>
     </div>
     
-    <textarea id="note" class="w-full p-4 rounded-xl bg-white/50 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition duration-300" rows="3" placeholder="Review ngắn / Note cho admin..."></textarea>
+    <textarea id="note" class="w-full p-3 rounded-xl bg-white/80 border border-gray-200 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm" rows="3" placeholder="Review ngắn / Note cho admin..."></textarea>
     
-    <button class="py-4 btn-gradient text-lg font-bold uppercase tracking-wider transform hover:-translate-y-1"><i class="fa-solid fa-meteor mr-2"></i> Gửi ngay</button>
+    <button class="py-3 btn-gradient text-base font-bold uppercase tracking-wider"><i class="fa-solid fa-meteor mr-2"></i> Gửi ngay</button>
   </form>
 </section>
   
-<section id="list" class="w-[95%] max-w-7xl mx-auto mt-24 p-6 sm:p-10 glass floating-delayed" data-aos="fade-up">
-  <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-    <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
-      <span class="bg-indigo-100 p-2 rounded-lg text-indigo-600"><i class="fa-solid fa-layer-group"></i></span>
+<section id="list" class="w-[95%] max-w-7xl mx-auto mt-16 p-6 glass" data-aos="fade-up">
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+      <span class="bg-indigo-100 p-2 rounded-lg text-indigo-600 text-lg"><i class="fa-solid fa-layer-group"></i></span>
       Kho Tàng
     </h2>
-    <div class="flex gap-3 w-full md:w-auto bg-white/50 p-1.5 rounded-full shadow-inner border border-white">
-      <input id="searchInput" class="bg-transparent p-2 px-4 w-full md:w-64 focus:outline-none text-gray-700 placeholder-gray-400" placeholder="🔍 Tìm kiếm..." onkeyup="filterStories()">
-      <select id="sortSelect" class="bg-white/80 rounded-full px-4 py-2 text-sm font-semibold text-gray-600 focus:outline-none hover:bg-white cursor-pointer transition shadow-sm" onchange="filterStories()">
+    <div class="flex gap-2 w-full md:w-auto">
+      <input id="searchInput" class="bg-white/80 border border-white p-2 px-4 rounded-full w-full md:w-60 focus:outline-none focus:ring-2 focus:ring-indigo-200 shadow-sm" placeholder="🔍 Tìm kiếm..." onkeyup="filterStories()">
+      <select id="sortSelect" class="bg-white/80 border border-white rounded-full px-4 py-2 text-sm font-semibold text-gray-600 focus:outline-none cursor-pointer shadow-sm" onchange="filterStories()">
         <option value="vote">🔥 Hot Vote</option>
         <option value="new">⏰ Mới nhất</option>
       </select>
@@ -197,21 +193,21 @@ function animate(){
 
   <div id="loadingList" class="loader"></div>
    
-  <div class="hidden md:block overflow-hidden rounded-2xl shadow-lg border border-white/50">
+  <div class="hidden md:block overflow-hidden rounded-xl shadow-sm border border-gray-100 bg-white/50">
     <table class="w-full text-left border-collapse">
-      <thead class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white h-14">
-        <tr><th class="p-4 pl-6">Tên truyện</th><th>Phiên bản</th><th>Ghi chú</th><th class="text-center">Yêu thích</th><th class="p-4 text-center">Đọc</th></tr>
+      <thead class="bg-indigo-50 text-indigo-900 h-12 text-sm uppercase">
+        <tr><th class="p-3 pl-6">Tên truyện</th><th>Phiên bản</th><th class="w-1/3">Ghi chú</th><th class="text-center">Vote</th><th class="p-3 text-center">Đọc</th></tr>
       </thead>
-      <tbody id="storyList" class="bg-white/40 backdrop-blur-sm divide-y divide-gray-100"></tbody>
+      <tbody id="storyList" class="divide-y divide-gray-100 text-sm"></tbody>
     </table>
   </div>
 
-  <div id="storyListMobile" class="md:hidden space-y-5"></div>
+  <div id="storyListMobile" class="md:hidden space-y-4"></div>
 </section>
 
-<section id="reading" class="w-[95%] max-w-5xl mx-auto mt-24 p-8 glass mb-24" data-aos="fade-up">
-  <h2 class="text-3xl font-bold text-center mb-8 text-gray-800"><i class="fa-solid fa-podcast text-green-500 animate-bounce"></i> Đang Lên Sóng</h2>
-  <div id="readingList" class="grid sm:grid-cols-2 gap-6"></div>
+<section id="reading" class="w-[95%] max-w-5xl mx-auto mt-16 p-6 glass mb-24" data-aos="fade-up">
+  <h2 class="text-2xl font-bold text-center mb-6 text-gray-800"><i class="fa-solid fa-podcast text-green-500 mr-2"></i> Đang Lên Sóng</h2>
+  <div id="readingList" class="grid sm:grid-cols-2 gap-4"></div>
 </section>
 
 <section id="admin" class="hidden w-[95%] max-w-7xl mx-auto mt-10 mb-10 p-6 bg-white rounded-xl shadow-2xl border-2 border-red-100">
@@ -227,12 +223,13 @@ function animate(){
   </div>
 </section>
 
-<footer class="glass mt-10 p-6 text-center">
-  <p class="text-gray-700 font-semibold">© 2025 Hồi Âm Đam Mỹ <br> <span class="text-xs text-gray-500 font-normal">Made with <i class="fa-solid fa-heart text-red-500 animate-ping"></i> in the Galaxy</span></p>
+<footer class="glass mt-10 p-6 text-center border-t border-white/40">
+  <p class="text-gray-700 font-semibold text-sm">© 2025 Hồi Âm Đam Mỹ <br> <span class="text-xs text-gray-500 font-normal">Made with <i class="fa-solid fa-heart text-red-500"></i> in the Galaxy</span></p>
 </footer>
 
 <script>
-AOS.init({ once: true, offset: 100, duration: 800, easing: 'ease-out-cubic' });
+// AOS Init: Tắt trên mobile nếu quá lag (có thể thêm disable: 'mobile')
+AOS.init({ once: true, offset: 50, duration: 600, easing: 'ease-out-cubic' });
 
 const SUPABASE_URL='https://xklmcebwxkqbotqexprn.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrbG1jZWJ3eGtxYm90cWV4cHJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzM1NDEsImV4cCI6MjA3OTIwOTU0MX0.vZj-5C_HhVgemG0LOTH3axf4P0bxXngzeQ3PSo93-m4';
@@ -255,11 +252,11 @@ async function fetchStories(){
 }
 
 async function addStory(s){
-  Swal.fire({title:'Đang gửi tín hiệu...',didOpen:()=>{Swal.showLoading()}});
+  Swal.fire({title:'Đang gửi...',allowOutsideClick: false, didOpen:()=>{Swal.showLoading()}});
   const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`,{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,Prefer:'return=representation'},body:JSON.stringify(s)});
   if(res.ok){
     const data=await res.json();stories.push(data[0]);refresh();
-    Swal.fire({icon:'success',title:'Đã gửi!',text:'Cảm ơn bạn đã đóng góp cho vũ trụ đam mỹ.',confirmButtonColor:'#764ba2'});
+    Swal.fire({icon:'success',title:'Đã gửi!',text:'Cảm ơn bạn đã đóng góp.',confirmButtonColor:'#764ba2'});
   } else Swal.fire('Lỗi','Không gửi được','error');
 }
 
@@ -269,7 +266,7 @@ async function updateStory(id,d){
 }
 
 async function deleteStory(id){
-  const cf=await Swal.fire({title:'Xóa khỏi vũ trụ?',text:"Không thể khôi phục đâu nhé!",icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',confirmButtonText:'Xóa luôn'});
+  const cf=await Swal.fire({title:'Xóa?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',confirmButtonText:'Xóa'});
   if(cf.isConfirmed){
     await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,{method:'DELETE',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
     stories=stories.filter(s=>s.id!==id);refresh();Swal.fire('Đã xóa!','','success');
@@ -283,14 +280,10 @@ async function toggleVote(id){
   
   if(localStorage.getItem(key)){
     localStorage.removeItem(key);v=Math.max(0,v-1);
-    if(btn) btn.classList.remove('text-red-500', 'scale-125');
+    if(btn) btn.classList.remove('text-red-500');
   } else {
     localStorage.setItem(key,'true');v++;
-    if(btn) {
-      btn.classList.add('text-red-500');
-      btn.style.transform = "scale(1.4)";
-      setTimeout(()=>btn.style.transform="scale(1)", 300);
-    }
+    if(btn) btn.classList.add('text-red-500');
   }
   st.votes=v; refresh(false);
   await updateStory(id,{votes:v});
@@ -335,21 +328,22 @@ function filterStories(){
 function renderTop(list){
   const c=document.getElementById('topStories');c.innerHTML='';
   const top = [...list].sort((a,b)=>b.votes-a.votes).slice(0,3);
-  if(top.length===0) c.innerHTML='<p class="text-gray-300 italic">Vũ trụ đang im lặng...</p>';
+  if(top.length===0) c.innerHTML='<p class="text-gray-300 italic text-sm">Vũ trụ đang im lặng...</p>';
    
   top.forEach((s,i)=>{
     let medal = i===0 ? '🥇' : (i===1 ? '🥈' : '🥉');
-    let colorClass = i===0 ? 'border-yellow-400 shadow-yellow-200' : (i===1 ? 'border-gray-300 shadow-gray-200' : 'border-orange-300 shadow-orange-200');
+    let colorClass = i===0 ? 'border-yellow-400/50 shadow-yellow-200/50' : (i===1 ? 'border-gray-300/50 shadow-gray-200/50' : 'border-orange-300/50 shadow-orange-200/50');
+    // Bớt animation delay và hiệu ứng hover quá đà
     c.innerHTML+=`
-    <div class="relative w-72 p-6 bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border-2 ${colorClass} transform hover:-translate-y-3 transition duration-500 group" data-aos="flip-left" data-aos-delay="${i*100}">
-      <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-5xl drop-shadow-md z-10">${medal}</div>
-      <div class="mt-6 text-center">
-        <h5 class="font-extrabold text-xl text-gray-800 mb-2 line-clamp-2 leading-tight group-hover:text-indigo-600 transition">${s.title}</h5>
-        <div class="w-10 h-1 bg-gray-200 mx-auto rounded mb-3"></div>
-        <p class="text-xs text-gray-500 mb-4 bg-gray-50 p-2 rounded-lg italic border border-gray-100 min-h-[40px] flex items-center justify-center">"${s.note||'Chưa có review'}"</p>
-        <div class="flex justify-between items-center bg-white p-2 rounded-full shadow-inner">
-          <span class="text-pink-600 font-bold text-sm px-2"><i class="fa-solid fa-heart animate-pulse"></i> ${s.votes}</span>
-          ${s.linkstory ? `<a href="${s.linkstory}" target="_blank" class="bg-indigo-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-indigo-700 transition shadow-lg shadow-indigo-300"><i class="fa-solid fa-arrow-right"></i></a>` : ''}
+    <div class="relative w-64 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border ${colorClass} transform hover:-translate-y-1 transition duration-300 group">
+      <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 text-3xl drop-shadow-sm z-10">${medal}</div>
+      <div class="mt-4 text-center">
+        <h5 class="font-bold text-gray-800 mb-1 line-clamp-2 text-base leading-tight group-hover:text-indigo-600 transition">${s.title}</h5>
+        <div class="w-8 h-1 bg-gray-200 mx-auto rounded mb-2"></div>
+        <p class="text-xs text-gray-500 mb-3 bg-gray-50 p-2 rounded border border-gray-100 min-h-[36px] line-clamp-2">"${s.note||'...'}"</p>
+        <div class="flex justify-between items-center bg-white p-1.5 rounded-full shadow-inner border border-gray-100">
+          <span class="text-pink-600 font-bold text-xs px-2 flex items-center gap-1"><i class="fa-solid fa-heart"></i> ${s.votes}</span>
+          ${s.linkstory ? `<a href="${s.linkstory}" target="_blank" class="bg-indigo-500 text-white w-7 h-7 rounded-full flex items-center justify-center hover:bg-indigo-700 transition"><i class="fa-solid fa-arrow-right text-xs"></i></a>` : ''}
         </div>
       </div>
     </div>`;
@@ -360,23 +354,23 @@ function renderListPC(list){
   const tb=document.getElementById('storyList');tb.innerHTML='';
   list.forEach((s, index)=>{
     tb.innerHTML+=`
-    <tr class="table-row-anim border-b border-gray-50/50" data-aos="fade-up" data-aos-delay="${index * 50}">
-      <td class="p-4 pl-6 font-semibold text-gray-800">
+    <tr class="table-row-anim border-b border-gray-50">
+      <td class="p-3 pl-6 font-semibold text-gray-800">
         <div class="flex flex-col">
-          <a href="${s.linkstory||'#'}" target="_blank" class="hover:text-indigo-600 transition text-lg">${s.title}</a>
-          ${s.createdat && ((new Date()-new Date(s.createdat))/(1000*3600*24)<3) ? '<span class="text-[10px] font-bold text-green-500 uppercase tracking-wider flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span> Mới tinh</span>':''}
+          <a href="${s.linkstory||'#'}" target="_blank" class="hover:text-indigo-600 transition">${s.title}</a>
+          ${s.createdat && ((new Date()-new Date(s.createdat))/(1000*3600*24)<3) ? '<span class="text-[9px] font-bold text-green-600 uppercase tracking-wider flex items-center gap-1 mt-1"><span class="w-1 h-1 bg-green-500 rounded-full"></span> New</span>':''}
         </div>
       </td>
-      <td class="p-4"><span class="px-3 py-1 rounded-full text-xs font-bold border ${s.version==='Edit'?'bg-blue-50 text-blue-600 border-blue-200':'bg-orange-50 text-orange-600 border-orange-200'}">${s.version}</span></td>
-      <td class="p-4 text-sm text-gray-500 italic whitespace-normal break-words align-top leading-relaxed">${s.note||'-'}</td>
-      <td class="p-4 text-center">
-        <button onclick="toggleVote(${s.id})" class="vote-btn-${s.id} transition transform active:scale-90 ${userVoted(s.id)?'text-red-500':'text-gray-300 hover:text-red-300'}">
-          <i class="fa-solid fa-heart text-2xl drop-shadow-sm"></i>
+      <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold border ${s.version==='Edit'?'bg-blue-50 text-blue-600 border-blue-100':'bg-orange-50 text-orange-600 border-orange-100'}">${s.version}</span></td>
+      <td class="p-3 text-xs text-gray-500 italic whitespace-normal break-words align-top leading-relaxed max-w-xs">${s.note||'-'}</td>
+      <td class="p-3 text-center">
+        <button onclick="toggleVote(${s.id})" class="vote-btn-${s.id} transition active:scale-90 ${userVoted(s.id)?'text-red-500':'text-gray-300 hover:text-red-300'}">
+          <i class="fa-solid fa-heart text-lg"></i>
         </button>
-        <div id="vote-count-${s.id}" class="text-xs font-bold mt-1 text-gray-600">${s.votes}</div>
+        <div id="vote-count-${s.id}" class="text-[10px] font-bold mt-0.5 text-gray-500">${s.votes}</div>
       </td>
-      <td class="p-4 text-center">
-        ${s.linkstory ? `<a href="${s.linkstory}" target="_blank" class="text-indigo-500 hover:text-indigo-700 text-xl transition hover:rotate-12 inline-block"><i class="fa-solid fa-book-open-reader"></i></a>` : '<span class="text-gray-200"><i class="fa-solid fa-ban"></i></span>'}
+      <td class="p-3 text-center">
+        ${s.linkstory ? `<a href="${s.linkstory}" target="_blank" class="text-indigo-400 hover:text-indigo-600 text-lg transition"><i class="fa-solid fa-book-open"></i></a>` : '<span class="text-gray-200"><i class="fa-solid fa-ban"></i></span>'}
       </td>
     </tr>`;
   });
@@ -385,20 +379,21 @@ function renderListPC(list){
 function renderListMobile(list){
   const mb=document.getElementById('storyListMobile');mb.innerHTML='';
   list.forEach((s, index)=>{
+    // Bỏ animation scroll quá nhiều (data-aos) trong list dài để tránh giật
     mb.innerHTML+=`
-    <div class="bg-white/80 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-white flex justify-between items-start transform transition hover:scale-[1.02]" data-aos="fade-up" data-aos-delay="${index * 50}">
+    <div class="bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-start">
       <div class="flex-1 pr-3">
-        <h4 class="font-bold text-gray-800 text-lg mb-1 leading-tight">${s.title}</h4>
+        <h4 class="font-bold text-gray-800 text-base mb-1 leading-tight">${s.title}</h4>
         <div class="flex items-center gap-2 mb-2">
-          <span class="text-[10px] px-2 py-0.5 rounded border ${s.version==='Edit'?'bg-blue-50 text-blue-600 border-blue-100':'bg-orange-50 text-orange-600 border-orange-100'} font-bold">${s.version}</span>
-          ${s.createdat && ((new Date()-new Date(s.createdat))/(1000*3600*24)<3) ? '<span class="text-[10px] text-green-600 font-bold border border-green-200 px-1 rounded bg-green-50">NEW</span>':''}
+          <span class="text-[10px] px-1.5 py-0.5 rounded border ${s.version==='Edit'?'bg-blue-50 text-blue-600 border-blue-100':'bg-orange-50 text-orange-600 border-orange-100'} font-bold">${s.version}</span>
+          ${s.createdat && ((new Date()-new Date(s.createdat))/(1000*3600*24)<3) ? '<span class="text-[9px] text-green-600 font-bold border border-green-200 px-1 rounded bg-green-50">NEW</span>':''}
         </div>
-        <p class="text-sm text-gray-500 mb-3 italic leading-relaxed text-justify">"${s.note||'...'}"</p>
-        ${s.linkstory ? `<a href="${s.linkstory}" target="_blank" class="text-indigo-600 text-sm font-bold hover:underline flex items-center gap-1"><i class="fa-solid fa-book-reader"></i> Đọc ngay</a>` : ''}
+        <p class="text-xs text-gray-500 mb-2 italic text-justify line-clamp-3">"${s.note||'...'}"</p>
+        ${s.linkstory ? `<a href="${s.linkstory}" target="_blank" class="text-indigo-600 text-xs font-bold hover:underline flex items-center gap-1"><i class="fa-solid fa-book-reader"></i> Đọc ngay</a>` : ''}
       </div>
-      <div class="flex flex-col items-center justify-center pl-4 border-l border-dashed border-gray-300">
-        <button onclick="toggleVote(${s.id})" class="vote-btn-${s.id} ${userVoted(s.id)?'text-red-500':'text-gray-300'} text-2xl mb-1 transition active:scale-75"><i class="fa-solid fa-heart"></i></button>
-        <span id="vote-count-${s.id}" class="font-bold text-gray-600 text-sm">${s.votes}</span>
+      <div class="flex flex-col items-center justify-center pl-3 border-l border-dashed border-gray-200">
+        <button onclick="toggleVote(${s.id})" class="vote-btn-${s.id} ${userVoted(s.id)?'text-red-500':'text-gray-300'} text-xl mb-1 transition active:scale-90"><i class="fa-solid fa-heart"></i></button>
+        <span id="vote-count-${s.id}" class="font-bold text-gray-500 text-xs">${s.votes}</span>
       </div>
     </div>`;
   });
@@ -408,20 +403,19 @@ function renderReading(){
   const list=stories.filter(s=>s.status==='đang đọc');
   const c = document.getElementById('readingList');
   if(list.length === 0) {
-    c.innerHTML = '<div class="col-span-2 text-center text-gray-400 italic">Hiện chưa có radio nào...</div>';
+    c.innerHTML = '<div class="col-span-2 text-center text-gray-400 italic text-sm">Hiện chưa có radio nào...</div>';
     return;
   }
   c.innerHTML=list.map((s,i)=>`
-    <a href="${s.youtubelink}" target="_blank" class="flex items-center p-4 bg-white/90 rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 group border border-white" data-aos="zoom-in" data-aos-delay="${i*100}">
-      <div class="relative w-14 h-14 mr-4">
-         <div class="absolute inset-0 bg-green-400 rounded-full opacity-20 animate-ping"></div>
-         <div class="relative bg-gradient-to-br from-green-400 to-teal-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg group-hover:rotate-12 transition duration-500"><i class="fa-solid fa-play ml-1"></i></div>
+    <a href="${s.youtubelink}" target="_blank" class="flex items-center p-3 bg-white/90 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100 group">
+      <div class="relative w-10 h-10 mr-3">
+          <div class="relative bg-gradient-to-br from-green-400 to-teal-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition"><i class="fa-solid fa-play ml-0.5 text-xs"></i></div>
       </div>
       <div class="flex-1 overflow-hidden">
-        <h4 class="font-bold text-gray-800 truncate group-hover:text-green-600 transition">${s.title}</h4>
-        <div class="flex items-center gap-2 mt-1">
-           <span class="w-10 h-0.5 bg-gray-200 overflow-hidden"><div class="h-full bg-green-500 animate-[loading_2s_ease-in-out_infinite] w-1/2"></div></span>
-           <p class="text-xs text-gray-500">Đang phát</p>
+        <h4 class="font-bold text-gray-800 text-sm truncate group-hover:text-green-600 transition">${s.title}</h4>
+        <div class="flex items-center gap-2 mt-0.5">
+           <span class="w-8 h-0.5 bg-gray-200 overflow-hidden"><div class="h-full bg-green-500 animate-[loading_2s_ease-in-out_infinite] w-1/2"></div></span>
+           <p class="text-[10px] text-gray-500">Đang phát</p>
         </div>
       </div>
     </a>`).join('');
@@ -430,18 +424,18 @@ function renderReading(){
 function renderAdmin(){
   document.getElementById('adminTable').innerHTML=stories.map(s=>`
   <tr class="border-b hover:bg-gray-50">
-    <td class="p-2 text-left font-medium">${s.title}</td>
-    <td><span class="px-2 py-1 text-xs rounded font-bold ${s.status==='đề xuất'?'bg-yellow-100 text-yellow-700':'bg-green-100 text-green-700'}">${s.status}</span></td>
-    <td class="text-xs max-w-[100px] truncate opacity-50">${s.youtubelink||'-'}</td>
+    <td class="p-2 text-left font-medium text-xs truncate max-w-[150px]">${s.title}</td>
+    <td><span class="px-2 py-1 text-[10px] rounded font-bold ${s.status==='đề xuất'?'bg-yellow-100 text-yellow-700':'bg-green-100 text-green-700'}">${s.status}</span></td>
+    <td class="text-[10px] max-w-[80px] truncate opacity-50">${s.youtubelink||'-'}</td>
     <td class="p-2 space-x-1">
-      <button class="text-blue-600 hover:scale-110 transition" onclick="changeStatus(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-      <button class="text-red-600 hover:scale-110 transition" onclick="deleteStory(${s.id})"><i class="fa-solid fa-trash-can"></i></button>
+      <button class="text-blue-600 hover:text-blue-800 transition" onclick="changeStatus(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button>
+      <button class="text-red-600 hover:text-red-800 transition" onclick="deleteStory(${s.id})"><i class="fa-solid fa-trash-can"></i></button>
     </td>
   </tr>`).join('');
 }
 function changeStatus(id){
   const st=stories.find(s=>s.id===id);
-  Swal.fire({title:'Update Status',input:'select',inputOptions:{'đề xuất':'Đề xuất','đang đọc':'Đang đọc','đã đọc':'Đã đọc'},inputValue:st.status,showCancelButton:true}).then(r=>{
+  Swal.fire({title:'Status',input:'select',inputOptions:{'đề xuất':'Đề xuất','đang đọc':'Đang đọc','đã đọc':'Đã đọc'},inputValue:st.status,showCancelButton:true}).then(r=>{
     if(r.isConfirmed){
       if(r.value==='đang đọc') Swal.fire({title:'Link Youtube',input:'url',inputValue:st.youtubelink}).then(l=>{if(l.isConfirmed)updateStory(id,{status:r.value,youtubelink:l.value})});
       else updateStory(id,{status:r.value});
@@ -449,8 +443,8 @@ function changeStatus(id){
   });
 }
 document.getElementById('adminLoginBtn').addEventListener('click',async()=>{
-  const {value:p}=await Swal.fire({title:'Vùng Cấm',input:'password',confirmButtonText:'Mở khóa'});
-  if(p==='hoiam20102003'){document.getElementById('admin').classList.remove('hidden');refresh();Swal.fire({icon:'success',title:'Welcome Back',timer:1500,showConfirmButton:false});}
+  const {value:p}=await Swal.fire({title:'Vùng Cấm',input:'password',confirmButtonText:'Go'});
+  if(p==='hoiam20102003'){document.getElementById('admin').classList.remove('hidden');refresh();Swal.fire({icon:'success',title:'Welcome Back',timer:1000,showConfirmButton:false});}
 });
 document.getElementById('logoutBtn').addEventListener('click',()=>{document.getElementById('admin').classList.add('hidden');});
 
