@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Hồi Âm Đam Mỹ</title>
+<title>Hồi Âm Đam Mỹ - Vũ Trụ Truyện</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -16,27 +16,20 @@
   @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
   body{font-family:'Quicksand',sans-serif;color:#222;overflow-x:hidden;margin:0; background: #0f0c29;}
 
-  /* --- CANVAS --- */
+  /* --- CANVAS NỀN --- */
   canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-10;display:block;}
 
-  /* --- TỐI ƯU HIỆU ỨNG KÍNH (Giảm blur từ 16px xuống 8px để mượt hơn) --- */
+  /* --- HIỆU ỨNG KÍNH (Đã tối ưu blur nhẹ) --- */
   .glass {
-    background: rgba(255, 255, 255, 0.85); /* Tăng độ đặc của nền */
-    backdrop-filter: blur(8px); /* Giảm blur để đỡ lag */
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   }
 
-  /* --- ANIMATION (Chỉ dùng cho trang trí, KHÔNG dùng cho khung nội dung chính) --- */
-  @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); } /* Giảm biên độ dao động */
-    100% { transform: translateY(0px); }
-  }
-  .floating-deco { animation: float 6s ease-in-out infinite; } /* Chỉ áp dụng cho icon trang trí */
-
+  /* --- TEXT MÀU --- */
   .text-shimmer {
     background: linear-gradient(to right, #667eea 0%, #764ba2 40%, #ff7eb3 50%, #764ba2 60%, #667eea 100%);
     background-size: 200% auto;
@@ -44,28 +37,30 @@
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shine 5s linear infinite; /* Chậm lại để đỡ rối */
+    animation: shine 5s linear infinite;
     font-weight: 800;
   }
   @keyframes shine { to { background-position: 200% center; } }
 
+  /* --- BUTTON --- */
   .btn-gradient {
     background-size: 200% auto;
     background-image: linear-gradient(to right, #667eea 0%, #764ba2 51%, #667eea 100%);
     color: #fff; border: none; border-radius: 30px;
-    transition: 0.3s; /* Nhanh hơn chút cho cảm giác mượt */
+    transition: 0.3s;
     box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);
   }
   .btn-gradient:hover { background-position: right center; color: #fff; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(118, 75, 162, 0.5); }
 
-  .table-row-anim { transition: background-color 0.2s; }
-  .table-row-anim:hover { background-color: rgba(255,255,255,0.9); }
+  /* --- ANIMATION NHỎ --- */
+  .floating-deco { animation: float 6s ease-in-out infinite; }
+  @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
 
   .vinyl-record {
     width: 35px; height: 35px; border-radius: 50%;
     background: repeating-radial-gradient(#111 0, #111 2px, #333 3px, #333 4px);
     position: relative; border: 2px solid #fff;
-    animation: vinyl-spin 10s linear infinite; /* Quay chậm thôi */
+    animation: vinyl-spin 10s linear infinite;
   }
   .vinyl-record::after {content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;background:radial-gradient(circle, #ff5f6d, #ffc371);border-radius:50%;}
   @keyframes vinyl-spin {from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
@@ -79,7 +74,6 @@
 
 <canvas id="stars"></canvas>
 <script>
-// TỐI ƯU CANVAS: Giảm số lượng sao và tính toán
 const c=document.getElementById("stars"),x=c.getContext("2d");
 function resize(){c.width=innerWidth;c.height=innerHeight;}window.onresize=resize;resize();
 class Star{
@@ -93,15 +87,12 @@ class Star{
     this.x+=this.dx;this.y+=this.dy;
     if(this.x<0||this.x>c.width)this.x=Math.random()*c.width;
     if(this.y<0||this.y>c.height)this.y=Math.random()*c.height;
-    // Bỏ hiệu ứng nhấp nháy liên tục để giảm tải, chỉ vẽ lại
     this.draw();
   }
 }
-// GIẢM SỐ SAO TỪ 200 -> 80 ĐỂ NHẸ MÁY
 const starsArray=[...Array(80)].map(()=>new Star());
 function animate(){
   x.clearRect(0,0,c.width,c.height);
-  // Dùng màu nền cứng thay vì gradient mỗi frame nếu muốn tối ưu cực đại, nhưng gradient này ok
   const g=x.createLinearGradient(0,0,0,c.height);g.addColorStop(0,"#0f0c29");g.addColorStop(1,"#24243e");
   x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
   starsArray.forEach(s=>s.update());
@@ -127,8 +118,8 @@ function animate(){
 <script>document.getElementById('menuBtn').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('hidden'));</script>
 
 <section id="home" class="pt-28 pb-8 text-center text-white px-4 relative overflow-hidden min-h-[50vh]">
-  <div class="absolute top-20 left-10 w-32 h-32 bg-purple-600 rounded-full mix-blend-screen filter blur-3xl opacity-20"></div>
-  <div class="absolute top-20 right-10 w-32 h-32 bg-blue-600 rounded-full mix-blend-screen filter blur-3xl opacity-20"></div>
+  <div class="absolute top-20 left-10 w-32 h-32 bg-purple-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 pointer-events-none"></div>
+  <div class="absolute top-20 right-10 w-32 h-32 bg-blue-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 pointer-events-none"></div>
   
   <h2 class="text-3xl md:text-5xl font-extrabold mb-8 drop-shadow-md tracking-wide" data-aos="fade-down">✨ Top Truyện Hot ✨</h2>
   <div id="loadingTop" class="loader"></div>
@@ -210,16 +201,67 @@ function animate(){
   <div id="readingList" class="grid sm:grid-cols-2 gap-4"></div>
 </section>
 
-<section id="admin" class="hidden w-[95%] max-w-7xl mx-auto mt-10 mb-10 p-6 bg-white rounded-xl shadow-2xl border-2 border-red-100">
-  <div class="flex justify-between items-center mb-6 border-b pb-4">
-    <h2 class="text-2xl font-bold text-red-600">🛡️ Admin Control</h2>
-    <button class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-black transition" id="logoutBtn">Thoát</button>
-  </div>
-  <div class="overflow-x-auto">
-    <table class="w-full text-center table-auto">
-      <thead class="bg-gray-100 text-gray-600"><tr><th class="p-3">Tên</th><th>TT</th><th>Link</th><th>Hành động</th></tr></thead>
-      <tbody id="adminTable" class="text-sm"></tbody>
-    </table>
+<section id="admin" class="hidden w-[95%] max-w-7xl mx-auto mt-10 mb-10 p-6 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none"></div>
+
+  <div class="relative z-10">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-gray-100 pb-4 gap-4">
+      <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <span class="bg-red-100 text-red-600 p-2 rounded-lg"><i class="fa-solid fa-user-shield"></i></span>
+        Trung Tâm Điều Hành
+      </h2>
+      <button class="px-5 py-2 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition shadow-lg flex items-center gap-2" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Thoát
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+        <p class="text-xs text-blue-500 font-bold uppercase">Tổng số</p>
+        <p class="text-2xl font-bold text-gray-800" id="statTotal">0</p>
+      </div>
+      <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100">
+        <p class="text-xs text-yellow-600 font-bold uppercase">Đề xuất mới</p>
+        <p class="text-2xl font-bold text-gray-800" id="statSuggest">0</p>
+      </div>
+      <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+        <p class="text-xs text-green-600 font-bold uppercase">Đang đọc</p>
+        <p class="text-2xl font-bold text-gray-800" id="statReading">0</p>
+      </div>
+      <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+        <p class="text-xs text-purple-600 font-bold uppercase">Đã hoàn thành</p>
+        <p class="text-2xl font-bold text-gray-800" id="statDone">0</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+      <div class="relative flex-1">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+        <input id="adminSearch" onkeyup="renderAdmin()" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Tìm tên truyện trong kho...">
+      </div>
+      <select id="adminFilter" onchange="renderAdmin()" class="px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:outline-none cursor-pointer font-medium text-gray-600">
+        <option value="all">Tất cả trạng thái</option>
+        <option value="đề xuất">Đề xuất</option>
+        <option value="đang đọc">Đang đọc</option>
+        <option value="đã đọc">Đã đọc</option>
+      </select>
+    </div>
+
+    <div class="hidden md:block overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-bold tracking-wider">
+          <tr>
+            <th class="p-4">Truyện / Link Gốc</th>
+            <th class="p-4">Trạng thái</th>
+            <th class="p-4">Link Youtube</th>
+            <th class="p-4 text-center">Tác vụ</th>
+          </tr>
+        </thead>
+        <tbody id="adminTable" class="bg-white divide-y divide-gray-50 text-sm text-gray-700"></tbody>
+      </table>
+    </div>
+
+    <div id="adminGrid" class="md:hidden grid gap-4"></div>
   </div>
 </section>
 
@@ -228,14 +270,15 @@ function animate(){
 </footer>
 
 <script>
-// AOS Init: Tắt trên mobile nếu quá lag (có thể thêm disable: 'mobile')
 AOS.init({ once: true, offset: 50, duration: 600, easing: 'ease-out-cubic' });
 
+// Supabase Config
 const SUPABASE_URL='https://xklmcebwxkqbotqexprn.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrbG1jZWJ3eGtxYm90cWV4cHJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzM1NDEsImV4cCI6MjA3OTIwOTU0MX0.vZj-5C_HhVgemG0LOTH3axf4P0bxXngzeQ3PSo93-m4';
 const TABLE='stories';
 let stories=[];
 
+// --- DATA FETCHING ---
 async function fetchStories(){
   document.getElementById('loadingTop').style.display='block';
   document.getElementById('loadingList').style.display='block';
@@ -262,17 +305,20 @@ async function addStory(s){
 
 async function updateStory(id,d){
   await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,{method:'PATCH',headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`},body:JSON.stringify(d)});
-  fetchStories();
+  const index = stories.findIndex(s => s.id === id);
+  if (index !== -1) stories[index] = { ...stories[index], ...d };
+  refresh();
 }
 
 async function deleteStory(id){
-  const cf=await Swal.fire({title:'Xóa?',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',confirmButtonText:'Xóa'});
+  const cf=await Swal.fire({title:'Xóa?',text:'Hành động không thể hoàn tác!',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',confirmButtonText:'Xóa luôn'});
   if(cf.isConfirmed){
     await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`,{method:'DELETE',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
     stories=stories.filter(s=>s.id!==id);refresh();Swal.fire('Đã xóa!','','success');
   }
 }
 
+// --- USER ACTIONS ---
 async function toggleVote(id){
   const key=`vote_${id}`,st=stories.find(s=>s.id===id);if(!st)return;
   let v=st.votes||0;
@@ -285,7 +331,10 @@ async function toggleVote(id){
     localStorage.setItem(key,'true');v++;
     if(btn) btn.classList.add('text-red-500');
   }
-  st.votes=v; refresh(false);
+  st.votes=v; 
+  // Update UI immediately
+  const countEl = document.getElementById(`vote-count-${id}`);
+  if(countEl) countEl.innerText = v;
   await updateStory(id,{votes:v});
 }
 function userVoted(id){return localStorage.getItem(`vote_${id}`);}
@@ -302,15 +351,11 @@ document.getElementById('formSuggest').addEventListener("submit",e=>{
   addStory(s);e.target.reset();
 });
 
-function refresh(fullRender = true){
-  if(fullRender) { filterStories(); renderReading(); renderAdmin(); }
-  else { 
-    document.querySelectorAll('[id^="vote-count-"]').forEach(el => {
-      const id = el.id.split('-')[2];
-      const s = stories.find(x => x.id == id);
-      if(s) el.innerText = s.votes;
-    });
-  }
+// --- RENDER LOGIC ---
+function refresh(){
+  filterStories(); 
+  renderReading(); 
+  if(!document.getElementById('admin').classList.contains('hidden')) renderAdmin();
 }
 
 function filterStories(){
@@ -333,7 +378,6 @@ function renderTop(list){
   top.forEach((s,i)=>{
     let medal = i===0 ? '🥇' : (i===1 ? '🥈' : '🥉');
     let colorClass = i===0 ? 'border-yellow-400/50 shadow-yellow-200/50' : (i===1 ? 'border-gray-300/50 shadow-gray-200/50' : 'border-orange-300/50 shadow-orange-200/50');
-    // Bớt animation delay và hiệu ứng hover quá đà
     c.innerHTML+=`
     <div class="relative w-64 p-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border ${colorClass} transform hover:-translate-y-1 transition duration-300 group">
       <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 text-3xl drop-shadow-sm z-10">${medal}</div>
@@ -352,9 +396,9 @@ function renderTop(list){
 
 function renderListPC(list){
   const tb=document.getElementById('storyList');tb.innerHTML='';
-  list.forEach((s, index)=>{
+  list.forEach((s)=>{
     tb.innerHTML+=`
-    <tr class="table-row-anim border-b border-gray-50">
+    <tr class="hover:bg-gray-50 border-b border-gray-50 transition">
       <td class="p-3 pl-6 font-semibold text-gray-800">
         <div class="flex flex-col">
           <a href="${s.linkstory||'#'}" target="_blank" class="hover:text-indigo-600 transition">${s.title}</a>
@@ -378,8 +422,7 @@ function renderListPC(list){
 
 function renderListMobile(list){
   const mb=document.getElementById('storyListMobile');mb.innerHTML='';
-  list.forEach((s, index)=>{
-    // Bỏ animation scroll quá nhiều (data-aos) trong list dài để tránh giật
+  list.forEach((s)=>{
     mb.innerHTML+=`
     <div class="bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-start">
       <div class="flex-1 pr-3">
@@ -406,7 +449,7 @@ function renderReading(){
     c.innerHTML = '<div class="col-span-2 text-center text-gray-400 italic text-sm">Hiện chưa có radio nào...</div>';
     return;
   }
-  c.innerHTML=list.map((s,i)=>`
+  c.innerHTML=list.map((s)=>`
     <a href="${s.youtubelink}" target="_blank" class="flex items-center p-3 bg-white/90 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100 group">
       <div class="relative w-10 h-10 mr-3">
           <div class="relative bg-gradient-to-br from-green-400 to-teal-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition"><i class="fa-solid fa-play ml-0.5 text-xs"></i></div>
@@ -421,32 +464,144 @@ function renderReading(){
     </a>`).join('');
 }
 
-function renderAdmin(){
-  document.getElementById('adminTable').innerHTML=stories.map(s=>`
-  <tr class="border-b hover:bg-gray-50">
-    <td class="p-2 text-left font-medium text-xs truncate max-w-[150px]">${s.title}</td>
-    <td><span class="px-2 py-1 text-[10px] rounded font-bold ${s.status==='đề xuất'?'bg-yellow-100 text-yellow-700':'bg-green-100 text-green-700'}">${s.status}</span></td>
-    <td class="text-[10px] max-w-[80px] truncate opacity-50">${s.youtubelink||'-'}</td>
-    <td class="p-2 space-x-1">
-      <button class="text-blue-600 hover:text-blue-800 transition" onclick="changeStatus(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-      <button class="text-red-600 hover:text-red-800 transition" onclick="deleteStory(${s.id})"><i class="fa-solid fa-trash-can"></i></button>
-    </td>
-  </tr>`).join('');
+// --- ADMIN CONTROL ---
+document.getElementById('adminLoginBtn').addEventListener('click', async () => {
+  const { value: p } = await Swal.fire({
+    title: 'Vùng Quản Trị',
+    input: 'password',
+    inputPlaceholder: 'Nhập mật khẩu...',
+    inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+    confirmButtonText: 'Mở khóa',
+    confirmButtonColor: '#4f46e5'
+  });
+
+  if (p === 'hoiam20102003') {
+    document.getElementById('admin').classList.remove('hidden');
+    document.getElementById('admin').scrollIntoView({ behavior: 'smooth' });
+    renderAdmin();
+    Swal.fire({ icon: 'success', title: 'Xin chào Admin', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+  } else if (p) {
+    Swal.fire('Sai mật khẩu!', 'Vui lòng thử lại', 'error');
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  document.getElementById('admin').classList.add('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+function renderAdmin() {
+  const keyword = document.getElementById('adminSearch').value.toLowerCase();
+  const filter = document.getElementById('adminFilter').value;
+
+  let list = stories.filter(s => s.title.toLowerCase().includes(keyword));
+  if (filter !== 'all') list = list.filter(s => s.status === filter);
+
+  // Update Stats
+  document.getElementById('statTotal').innerText = stories.length;
+  document.getElementById('statSuggest').innerText = stories.filter(s => s.status === 'đề xuất').length;
+  document.getElementById('statReading').innerText = stories.filter(s => s.status === 'đang đọc').length;
+  document.getElementById('statDone').innerText = stories.filter(s => s.status === 'đã đọc').length;
+
+  const tableBody = document.getElementById('adminTable');
+  const gridBody = document.getElementById('adminGrid');
+  
+  tableBody.innerHTML = '';
+  gridBody.innerHTML = '';
+
+  if (list.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-400">Không tìm thấy dữ liệu</td></tr>';
+    gridBody.innerHTML = '<div class="p-8 text-center text-gray-400">Không tìm thấy dữ liệu</div>';
+    return;
+  }
+
+  list.forEach(s => {
+    let statusClass = s.status === 'đề xuất' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' 
+                    : (s.status === 'đang đọc' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600 border-gray-200');
+
+    // PC Table
+    tableBody.innerHTML += `
+      <tr class="hover:bg-indigo-50/30 transition group">
+        <td class="p-4">
+          <div class="font-bold text-gray-800 text-base mb-1">${s.title}</div>
+          <div class="flex items-center gap-2">
+             <span class="text-[10px] px-1.5 py-0.5 rounded border bg-white text-gray-500 font-mono">${s.version}</span>
+             ${s.linkstory ? `<a href="${s.linkstory}" target="_blank" class="text-indigo-500 hover:underline text-xs truncate max-w-[200px] block"><i class="fa-solid fa-link mr-1"></i>Link gốc</a>` : '<span class="text-xs text-gray-400">No link</span>'}
+          </div>
+        </td>
+        <td class="p-4"><span class="px-3 py-1 text-xs rounded-full font-bold border ${statusClass}">${s.status}</span></td>
+        <td class="p-4">${s.youtubelink ? `<a href="${s.youtubelink}" target="_blank" class="text-red-600 hover:text-red-800 text-xs font-medium truncate max-w-[150px] block"><i class="fa-brands fa-youtube mr-1"></i> Youtube Link</a>` : '<span class="text-gray-400 text-xs italic">Chưa có link</span>'}</td>
+        <td class="p-4 text-center">
+          <div class="flex justify-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
+            <button class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition shadow-sm" onclick="editStoryPopup(${s.id})" title="Sửa"><i class="fa-solid fa-pen"></i></button>
+            <button class="w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition shadow-sm" onclick="deleteStory(${s.id})" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>`;
+
+    // Mobile Grid
+    gridBody.innerHTML += `
+      <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col gap-3">
+        <div class="flex justify-between items-start">
+           <div>
+              <h4 class="font-bold text-gray-800 text-lg leading-tight">${s.title}</h4>
+              <a href="${s.linkstory||'#'}" target="_blank" class="text-indigo-500 text-xs mt-1 block truncate max-w-[200px]"><i class="fa-solid fa-link"></i> Link gốc</a>
+           </div>
+           <span class="px-2 py-1 text-[10px] rounded font-bold border ${statusClass} whitespace-nowrap">${s.status}</span>
+        </div>
+        <div class="bg-gray-50 p-2 rounded-lg text-xs text-gray-600 break-words"><i class="fa-solid fa-note-sticky text-gray-400 mr-1"></i> ${s.note || 'Không có ghi chú'}</div>
+        ${s.youtubelink ? `<a href="${s.youtubelink}" class="text-red-600 text-xs font-bold"><i class="fa-brands fa-youtube"></i> Xem trên Youtube</a>` : ''}
+        <div class="flex gap-2 mt-2 pt-3 border-t border-gray-100">
+          <button onclick="editStoryPopup(${s.id})" class="flex-1 py-2 bg-blue-50 text-blue-700 rounded-lg font-bold text-sm hover:bg-blue-100 transition">Sửa</button>
+          <button onclick="deleteStory(${s.id})" class="flex-1 py-2 bg-red-50 text-red-700 rounded-lg font-bold text-sm hover:bg-red-100 transition">Xóa</button>
+        </div>
+      </div>`;
+  });
 }
-function changeStatus(id){
-  const st=stories.find(s=>s.id===id);
-  Swal.fire({title:'Status',input:'select',inputOptions:{'đề xuất':'Đề xuất','đang đọc':'Đang đọc','đã đọc':'Đã đọc'},inputValue:st.status,showCancelButton:true}).then(r=>{
-    if(r.isConfirmed){
-      if(r.value==='đang đọc') Swal.fire({title:'Link Youtube',input:'url',inputValue:st.youtubelink}).then(l=>{if(l.isConfirmed)updateStory(id,{status:r.value,youtubelink:l.value})});
-      else updateStory(id,{status:r.value});
+
+function editStoryPopup(id) {
+  const s = stories.find(x => x.id === id);
+  if (!s) return;
+
+  Swal.fire({
+    title: '📝 Cập nhật truyện',
+    html: `
+      <div class="text-left space-y-3">
+        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tên truyện</label><input id="edit-title" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none" value="${s.title}"></div>
+        <div class="grid grid-cols-2 gap-3">
+           <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Trạng thái</label>
+              <select id="edit-status" class="w-full p-2 border rounded-lg bg-white">
+                <option value="đề xuất" ${s.status === 'đề xuất' ? 'selected' : ''}>Đề xuất</option>
+                <option value="đang đọc" ${s.status === 'đang đọc' ? 'selected' : ''}>Đang đọc</option>
+                <option value="đã đọc" ${s.status === 'đã đọc' ? 'selected' : ''}>Đã đọc</option>
+              </select>
+           </div>
+           <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Votes</label><input type="number" id="edit-votes" class="w-full p-2 border rounded-lg" value="${s.votes}"></div>
+        </div>
+        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Link Youtube (Radio)</label><input id="edit-youtube" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-red-200 outline-none" placeholder="https://youtube..." value="${s.youtubelink || ''}"></div>
+         <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Link Truyện Gốc</label><input id="edit-link" class="w-full p-2 border rounded-lg text-sm text-gray-600" value="${s.linkstory || ''}"></div>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: 'Lưu',
+    confirmButtonColor: '#4f46e5',
+    preConfirm: () => {
+      return {
+        title: document.getElementById('edit-title').value.trim(),
+        status: document.getElementById('edit-status').value,
+        votes: parseInt(document.getElementById('edit-votes').value) || 0,
+        youtubelink: document.getElementById('edit-youtube').value.trim(),
+        linkstory: document.getElementById('edit-link').value.trim()
+      }
+    }
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      await updateStory(id, result.value);
+      Swal.fire('Đã lưu!', '', 'success');
     }
   });
 }
-document.getElementById('adminLoginBtn').addEventListener('click',async()=>{
-  const {value:p}=await Swal.fire({title:'Vùng Cấm',input:'password',confirmButtonText:'Go'});
-  if(p==='hoiam20102003'){document.getElementById('admin').classList.remove('hidden');refresh();Swal.fire({icon:'success',title:'Welcome Back',timer:1000,showConfirmButton:false});}
-});
-document.getElementById('logoutBtn').addEventListener('click',()=>{document.getElementById('admin').classList.add('hidden');});
 
 window.onload=fetchStories;
 </script>
