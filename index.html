@@ -285,7 +285,7 @@ function animate(){
           <tr>
             <th class="p-4">Truyện / Link Gốc</th>
             <th class="p-4">Trạng thái</th>
-            <th class="p-4">Link Youtube</th>
+            <th class="p-4 text-center">Vote</th> <th class="p-4">Link Youtube</th>
             <th class="p-4 text-center">Tác vụ</th>
           </tr>
         </thead>
@@ -615,7 +615,7 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// --- ADMIN RENDER (NÂNG CẤP GIAO DIỆN PHÂN LOẠI) ---
+// --- ADMIN RENDER (NÂNG CẤP GIAO DIỆN PHÂN LOẠI & HIỂN THỊ VOTE) ---
 function renderAdmin() {
   const keyword = document.getElementById('adminSearch').value.toLowerCase();
   const statusFilter = document.getElementById('adminFilter').value;
@@ -642,7 +642,7 @@ function renderAdmin() {
 
   if (list.length === 0) {
     const emptyMsg = '<div class="p-8 text-center text-gray-400 italic">Không tìm thấy dữ liệu phù hợp</div>';
-    tableBody.innerHTML = `<tr><td colspan="4">${emptyMsg}</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5">${emptyMsg}</td></tr>`;
     gridBody.innerHTML = emptyMsg;
     return;
   }
@@ -673,7 +673,7 @@ function renderAdmin() {
           </div>
         </td>
         <td class="p-4"><span class="px-3 py-1 text-xs rounded-full font-bold border ${statusClass}">${s.status}</span></td>
-        <td class="p-4">${s.youtubelink ? `<a href="${s.youtubelink}" target="_blank" class="text-red-600 hover:text-red-800 text-xs font-bold flex items-center gap-1"><i class="fa-brands fa-youtube"></i> Mở Radio</a>` : '<span class="text-gray-300 text-xs">-</span>'}</td>
+        <td class="p-4 text-center font-bold text-pink-600">${s.votes} <i class="fa-solid fa-heart text-xs"></i></td> <td class="p-4">${s.youtubelink ? `<a href="${s.youtubelink}" target="_blank" class="text-red-600 hover:text-red-800 text-xs font-bold flex items-center gap-1"><i class="fa-brands fa-youtube"></i> Mở Radio</a>` : '<span class="text-gray-300 text-xs">-</span>'}</td>
         <td class="p-4 text-center">
           <div class="flex justify-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
             <button class="w-9 h-9 rounded-xl bg-gray-100 text-gray-600 hover:bg-indigo-600 hover:text-white transition shadow-sm" onclick="editStoryPopup(${s.id})" title="Sửa"><i class="fa-solid fa-pen"></i></button>
@@ -696,9 +696,9 @@ function renderAdmin() {
            <a href="${s.linkstory||'#'}" target="_blank" class="text-gray-500 text-xs block truncate"><i class="fa-solid fa-link mr-1"></i> ${s.linkstory}</a>
         </div>
         
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
             <span class="px-2 py-1 text-[10px] rounded font-bold border ${statusClass}">${s.status}</span>
-            ${s.youtubelink ? '<span class="text-red-500 text-[10px] border border-red-100 bg-red-50 px-2 py-1 rounded font-bold"><i class="fa-brands fa-youtube"></i> Radio</span>' : ''}
+            <span class="text-pink-600 text-[10px] border border-pink-100 bg-pink-50 px-2 py-1 rounded font-bold"><i class="fa-solid fa-heart"></i> ${s.votes}</span> ${s.youtubelink ? '<span class="text-red-500 text-[10px] border border-red-100 bg-red-50 px-2 py-1 rounded font-bold"><i class="fa-brands fa-youtube"></i> Radio</span>' : ''}
         </div>
 
         <div class="bg-gray-50 p-3 rounded-lg text-xs text-gray-600 break-words border border-gray-100 italic">
