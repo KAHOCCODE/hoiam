@@ -183,8 +183,30 @@
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
                 
                 <h2 class="text-2xl font-bold text-center mb-6 text-white"><i class="fa-solid fa-meteor text-purple-400 mr-2"></i> Đóng Góp Truyện Mới</h2>
-                <p class="text-center text-gray-400 text-sm mb-6">Hãy đề xuất những bộ truyện bạn muốn nghe. Admin sẽ xem xét và chuyển thể.</p>
                 
+                <div class="mb-8 p-5 bg-black/40 rounded-2xl border border-white/10 text-sm text-gray-300 shadow-inner">
+                    <h3 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fa-regular fa-lightbulb text-yellow-400"></i> Quy Chế Lên Sóng
+                    </h3>
+                    <ul class="space-y-3">
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs border border-blue-500/30">1</span>
+                            <span><b>Đề xuất:</b> Điền thông tin truyện bạn muốn nghe vào form bên dưới.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold text-xs border border-pink-500/30">2</span>
+                            <span><b>Tích Vote:</b> Truyện sẽ xuất hiện tại "Kho Tàng". Hãy kêu gọi mọi người thả tim (<i class="fa-solid fa-heart text-red-500 text-xs"></i>) để tăng hạng.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs border border-purple-500/30">3</span>
+                            <span><b>On Air:</b> Admin sẽ chọn truyện có <b>Vote cao nhất</b> để chuyển thể Audio.</span>
+                        </li>
+                        <li class="flex gap-3 p-2 bg-gradient-to-r from-green-900/20 to-transparent rounded-lg border border-green-500/10">
+                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-bolt"></i></span>
+                            <span class="text-gray-200"><b>Mẹo:</b> Bạn có thể <strong>Donate</strong> để quy đổi Vote và đẩy truyện lên Top nhanh hơn (10k = 1 Vote).</span>
+                        </li>
+                    </ul>
+                </div>
                 <form id="formSuggest" class="space-y-5">
                     <div class="grid md:grid-cols-2 gap-5">
                         <div class="space-y-1">
@@ -684,115 +706,115 @@
     }
 
     // --- HÀM ADMIN SỬA + TÍNH VOTE DONATE ---
-function editAdmin(id) {
-    const s = stories.find(x => x.id === id);
-    if (!s) return;
+    function editAdmin(id) {
+        const s = stories.find(x => x.id === id);
+        if (!s) return;
 
-    Swal.fire({
-        title: 'Sửa Truyện / Nạp Vote',
-        background: '#1f2937', color: '#fff',
-        html: `
-            <div class="space-y-3 text-left">
-                <div>
-                    <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Tên truyện</label>
-                    <input id="e-title" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-purple-500" value="${s.title}">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-2">
+        Swal.fire({
+            title: 'Sửa Truyện / Nạp Vote',
+            background: '#1f2937', color: '#fff',
+            html: `
+                <div class="space-y-3 text-left">
                     <div>
-                         <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Link Gốc</label>
-                         <input id="e-link" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white text-xs" value="${s.linkstory || ''}">
+                        <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Tên truyện</label>
+                        <input id="e-title" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-purple-500" value="${s.title}">
                     </div>
-                    <div>
-                         <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Youtube ID/Link</label>
-                         <input id="e-yt" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white text-xs" value="${s.youtubelink || ''}">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 p-3 bg-gray-800/50 rounded-lg border border-gray-600/50">
-                    <div>
-                        <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Trạng thái</label>
-                        <select id="e-status" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white mt-1">
-                            <option value="đề xuất" ${s.status === 'đề xuất' ? 'selected' : ''}>🟡 Đề xuất</option>
-                            <option value="đang đọc" ${s.status === 'đang đọc' ? 'selected' : ''}>🟢 Đang phát</option>
-                            <option value="đã đọc" ${s.status === 'đã đọc' ? 'selected' : ''}>🟣 Đã hoàn thành</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">TỔNG VOTE</label>
-                        <input id="e-votes" type="number" class="w-full bg-gray-900 border border-purple-500/50 rounded p-2 text-center text-xl font-bold text-pink-500 mt-1" value="${s.votes}">
-                    </div>
-                </div>
-
-                <div class="relative p-3 bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-lg border border-purple-500/30">
-                    <div class="absolute -top-2 left-3 bg-purple-600 text-white text-[9px] font-bold px-2 rounded">MÁY TÍNH DONATE</div>
-                    <div class="flex items-center gap-3 mt-1">
-                        <div class="flex-1">
-                            <input id="donate-input" type="number" step="10000" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white placeholder-gray-500" placeholder="Nhập số tiền (VNĐ)...">
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                             <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Link Gốc</label>
+                             <input id="e-link" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white text-xs" value="${s.linkstory || ''}">
                         </div>
-                        <div class="text-xs text-gray-300 italic w-24 text-right" id="donate-msg">
-                            10k = 1 Vote
+                        <div>
+                             <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Youtube ID/Link</label>
+                             <input id="e-yt" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white text-xs" value="${s.youtubelink || ''}">
                         </div>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-3 p-3 bg-gray-800/50 rounded-lg border border-gray-600/50">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Trạng thái</label>
+                            <select id="e-status" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white mt-1">
+                                <option value="đề xuất" ${s.status === 'đề xuất' ? 'selected' : ''}>🟡 Đề xuất</option>
+                                <option value="đang đọc" ${s.status === 'đang đọc' ? 'selected' : ''}>🟢 Đang phát</option>
+                                <option value="đã đọc" ${s.status === 'đã đọc' ? 'selected' : ''}>🟣 Đã hoàn thành</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">TỔNG VOTE</label>
+                            <input id="e-votes" type="number" class="w-full bg-gray-900 border border-purple-500/50 rounded p-2 text-center text-xl font-bold text-pink-500 mt-1" value="${s.votes}">
+                        </div>
+                    </div>
+
+                    <div class="relative p-3 bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-lg border border-purple-500/30">
+                        <div class="absolute -top-2 left-3 bg-purple-600 text-white text-[9px] font-bold px-2 rounded">MÁY TÍNH DONATE</div>
+                        <div class="flex items-center gap-3 mt-1">
+                            <div class="flex-1">
+                                <input id="donate-input" type="number" step="10000" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white placeholder-gray-500" placeholder="Nhập số tiền (VNĐ)...">
+                            </div>
+                            <div class="text-xs text-gray-300 italic w-24 text-right" id="donate-msg">
+                                10k = 1 Vote
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        `,
-        didOpen: () => {
-            // Logic tính toán tự động
-            const donateInput = document.getElementById('donate-input');
-            const voteInput = document.getElementById('e-votes');
-            const msg = document.getElementById('donate-msg');
-            const baseVotes = parseInt(voteInput.value) || 0;
+            `,
+            didOpen: () => {
+                // Logic tính toán tự động
+                const donateInput = document.getElementById('donate-input');
+                const voteInput = document.getElementById('e-votes');
+                const msg = document.getElementById('donate-msg');
+                const baseVotes = parseInt(voteInput.value) || 0;
 
-            donateInput.addEventListener('input', () => {
-                const money = parseInt(donateInput.value) || 0;
-                let addedVotes = 0;
-                let rateText = "10k = 1 Vote";
+                donateInput.addEventListener('input', () => {
+                    const money = parseInt(donateInput.value) || 0;
+                    let addedVotes = 0;
+                    let rateText = "10k = 1 Vote";
 
-                if (money >= 500000) {
-                    addedVotes = Math.floor(money / 5000); // Super VIP
-                    rateText = "🔥 VIP: 5k/vote";
-                    msg.className = "text-xs font-bold text-yellow-400 w-24 text-right";
-                } else if (money >= 200000) {
-                    addedVotes = Math.floor(money / 8000); // VIP
-                    rateText = "✨ Tỷ lệ: 8k/vote";
-                    msg.className = "text-xs font-bold text-green-400 w-24 text-right";
-                } else {
-                    addedVotes = Math.floor(money / 10000); // Standard
-                    rateText = "Tỷ lệ: 10k/vote";
-                    msg.className = "text-xs text-gray-300 italic w-24 text-right";
-                }
+                    if (money >= 500000) {
+                        addedVotes = Math.floor(money / 5000); // Super VIP
+                        rateText = "🔥 VIP: 5k/vote";
+                        msg.className = "text-xs font-bold text-yellow-400 w-24 text-right";
+                    } else if (money >= 200000) {
+                        addedVotes = Math.floor(money / 8000); // VIP
+                        rateText = "✨ Tỷ lệ: 8k/vote";
+                        msg.className = "text-xs font-bold text-green-400 w-24 text-right";
+                    } else {
+                        addedVotes = Math.floor(money / 10000); // Standard
+                        rateText = "Tỷ lệ: 10k/vote";
+                        msg.className = "text-xs text-gray-300 italic w-24 text-right";
+                    }
 
-                msg.innerText = rateText;
-                
-                // Cập nhật ô Vote tổng = Vote gốc + Vote quy đổi
-                voteInput.value = baseVotes + addedVotes;
-            });
-        },
-        showCancelButton: true,
-        confirmButtonText: '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi',
-        confirmButtonColor: '#8B5CF6',
-        preConfirm: () => ({
-            title: document.getElementById('e-title').value.trim(),
-            linkstory: document.getElementById('e-link').value.trim(),
-            youtubelink: document.getElementById('e-yt').value.trim(),
-            status: document.getElementById('e-status').value,
-            votes: parseInt(document.getElementById('e-votes').value) || 0
-        })
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            await updateStory(id, result.value);
-            Swal.fire({
-                icon: 'success', 
-                title: 'Đã cập nhật!', 
-                background: '#1f2937', 
-                color: '#fff', 
-                timer: 1500, 
-                showConfirmButton: false
-            });
-        }
-    });
-}
+                    msg.innerText = rateText;
+                    
+                    // Cập nhật ô Vote tổng = Vote gốc + Vote quy đổi
+                    voteInput.value = baseVotes + addedVotes;
+                });
+            },
+            showCancelButton: true,
+            confirmButtonText: '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi',
+            confirmButtonColor: '#8B5CF6',
+            preConfirm: () => ({
+                title: document.getElementById('e-title').value.trim(),
+                linkstory: document.getElementById('e-link').value.trim(),
+                youtubelink: document.getElementById('e-yt').value.trim(),
+                status: document.getElementById('e-status').value,
+                votes: parseInt(document.getElementById('e-votes').value) || 0
+            })
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await updateStory(id, result.value);
+                Swal.fire({
+                    icon: 'success', 
+                    title: 'Đã cập nhật!', 
+                    background: '#1f2937', 
+                    color: '#fff', 
+                    timer: 1500, 
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
 
     // --- MISC ---
     const btnTop = document.getElementById('backToTop');
