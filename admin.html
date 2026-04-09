@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin · Hồi Âm Đam Mỹ</title>
+  <meta name="description" content="Trang quản trị tách riêng cho Hồi Âm Đam Mỹ.">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body class="admin-body">
+  <div class="aurora aurora-a" aria-hidden="true"></div>
+  <div class="aurora aurora-b" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a href="/" class="brand">
+        <span class="brand-mark">HA</span>
+        <span>
+          <strong>Hồi Âm Admin</strong>
+          <small>Trang quản trị tách riêng khỏi client công khai</small>
+        </span>
+      </a>
+
+      <div class="header-actions">
+        <a href="/" class="btn btn-secondary">Về trang chủ</a>
+        <button id="logoutBtn" class="btn btn-secondary hidden" type="button">Đăng xuất</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container admin-layout">
+      <section id="loginCard" class="card admin-login">
+        <span class="eyebrow">Admin riêng, an toàn hơn</span>
+        <h1>Đăng nhập quản trị</h1>
+        <p>Mật khẩu admin không còn nằm trong mã frontend công khai. Phiên đăng nhập được ký bằng cookie HttpOnly ở phía server.</p>
+
+        <form id="loginForm" class="stack" novalidate>
+          <label class="field">
+            <span>Mật khẩu admin</span>
+            <input id="password" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu admin">
+          </label>
+          <button class="btn btn-primary" type="submit">Đăng nhập</button>
+        </form>
+      </section>
+
+      <section id="dashboard" class="hidden admin-dashboard">
+        <div class="stats-grid admin-stats">
+          <article class="stat-card card"><span class="stat-label">Tổng</span><strong id="aStatTotal">0</strong></article>
+          <article class="stat-card card"><span class="stat-label">Đang hiển thị</span><strong id="aStatVisible">0</strong></article>
+          <article class="stat-card card"><span class="stat-label">Đang ẩn</span><strong id="aStatHidden">0</strong></article>
+          <article class="stat-card card"><span class="stat-label">Đang phát</span><strong id="aStatOnAir">0</strong></article>
+        </div>
+
+        <div class="card admin-tools">
+          <div class="search-wrap">
+            <span>⌕</span>
+            <input id="adminSearch" type="search" placeholder="Tìm theo tên truyện...">
+          </div>
+
+          <div class="toolbar-actions">
+            <select id="adminFilter">
+              <option value="all">Tất cả trạng thái</option>
+              <option value="đề xuất">Đề xuất</option>
+              <option value="đang đọc">Đang phát</option>
+              <option value="đã đọc">Hoàn thành</option>
+            </select>
+            <select id="adminVisibility">
+              <option value="all">Hiển thị + Ẩn</option>
+              <option value="visible">Chỉ đang hiển thị</option>
+              <option value="hidden">Chỉ đang ẩn</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Truyện</th>
+                <th>Trạng thái</th>
+                <th>Vote</th>
+                <th>Hiển thị</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="adminTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="editDialog" class="story-dialog admin-dialog">
+    <article class="dialog-shell">
+      <button id="closeEditDialogBtn" class="dialog-close" type="button" aria-label="Đóng">×</button>
+      <form id="editForm" class="stack">
+        <input id="editId" type="hidden">
+        <div class="section-heading compact">
+          <div>
+            <span class="eyebrow">Chỉnh sửa</span>
+            <h2>Cập nhật truyện</h2>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>Tên truyện</span>
+          <input id="editTitle" type="text" maxlength="120" required>
+        </label>
+
+        <div class="grid-2">
+          <label class="field">
+            <span>Link gốc</span>
+            <input id="editLinkStory" type="url" placeholder="https://...">
+          </label>
+          <label class="field">
+            <span>Link audio / YouTube</span>
+            <input id="editYoutubeLink" type="url" placeholder="https://...">
+          </label>
+        </div>
+
+        <div class="grid-2">
+          <label class="field">
+            <span>Trạng thái</span>
+            <select id="editStatus">
+              <option value="đề xuất">Đề xuất</option>
+              <option value="đang đọc">Đang phát</option>
+              <option value="đã đọc">Hoàn thành</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Vote</span>
+            <input id="editVotes" type="number" min="0" step="1">
+          </label>
+        </div>
+
+        <fieldset class="field">
+          <span>Loại bản</span>
+          <div class="pill-row">
+            <label class="choice-pill">
+              <input type="radio" name="editVersion" value="Edit">
+              <span>Edit</span>
+            </label>
+            <label class="choice-pill">
+              <input type="radio" name="editVersion" value="Convert">
+              <span>Convert</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <label class="field">
+          <span>Ghi chú</span>
+          <textarea id="editNote" rows="5" maxlength="300"></textarea>
+        </label>
+
+        <label class="choice-pill" style="width: fit-content;">
+          <input id="editVisible" type="checkbox">
+          <span>Đang hiển thị ngoài trang công khai</span>
+        </label>
+
+        <div class="dialog-actions">
+          <button id="hideBtn" class="btn btn-secondary" type="button">Ẩn truyện</button>
+          <button id="deleteBtn" class="btn btn-danger" type="button">Xóa hẳn</button>
+          <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+        </div>
+      </form>
+    </article>
+  </dialog>
+
+  <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script src="/assets/admin.js" defer></script>
+</body>
+</html>
