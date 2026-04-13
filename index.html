@@ -29,6 +29,8 @@
                     animation: {
                         'blob': 'blob 7s infinite',
                         'spin-slow': 'spin 12s linear infinite',
+                        'float-card': 'floatCard 6s ease-in-out infinite',
+                        'pulse-soft': 'pulseSoft 2.4s ease-in-out infinite'
                     },
                     keyframes: {
                         blob: {
@@ -36,6 +38,14 @@
                             '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
                             '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
                             '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        floatCard: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-6px)' }
+                        },
+                        pulseSoft: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '0.65' },
+                            '50%': { transform: 'scale(1.08)', opacity: '1' }
                         }
                     }
                 }
@@ -53,7 +63,6 @@
             overflow-x: hidden;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -67,11 +76,10 @@
             border-radius: 10px;
         }
 
-            ::-webkit-scrollbar-thumb:hover {
-                background: #6d28d9;
-            }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6d28d9;
+        }
 
-        /* Glass Effect Class */
         .glass-panel {
             background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(12px);
@@ -80,14 +88,12 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
-        /* Gradient Text */
         .text-gradient {
             background: linear-gradient(to right, #c084fc, #f472b6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* Loader */
         .loader {
             width: 48px;
             height: 48px;
@@ -101,16 +107,10 @@
         }
 
         @keyframes rotation {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        /* Heart Animation */
         .heart-pop:active {
             transform: scale(0.8);
         }
@@ -121,29 +121,293 @@
         }
 
         @keyframes heartBeat {
-            0% {
-                transform: scale(1);
+            0% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .top-stage {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+            gap: 1.5rem;
+        }
+
+        .top-stage-side {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .top-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.75rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            background:
+                linear-gradient(180deg, rgba(17,24,39,0.84), rgba(17,24,39,0.92)),
+                rgba(17,24,39,0.78);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            isolation: isolate;
+        }
+
+        .top-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(196,132,252,0.4);
+            box-shadow: 0 30px 70px rgba(91,33,182,0.35);
+        }
+
+        .top-card::before {
+            content: "";
+            position: absolute;
+            inset: -30% auto auto -20%;
+            width: 240px;
+            height: 240px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(139,92,246,0.34), transparent 68%);
+            z-index: -1;
+            filter: blur(10px);
+        }
+
+        .top-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -10% -25% auto;
+            width: 220px;
+            height: 220px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(236,72,153,0.22), transparent 68%);
+            z-index: -1;
+            filter: blur(14px);
+        }
+
+        .top-card-featured {
+            min-height: 440px;
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background:
+                linear-gradient(180deg, rgba(17,24,39,0.05) 0%, rgba(17,24,39,0.78) 52%, rgba(17,24,39,0.96) 100%),
+                radial-gradient(circle at top right, rgba(245,158,11,0.22), transparent 24%),
+                radial-gradient(circle at left center, rgba(139,92,246,0.18), transparent 30%),
+                rgba(17,24,39,0.82);
+        }
+
+        .top-card-side-item {
+            min-height: 208px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background:
+                linear-gradient(180deg, rgba(17,24,39,0.1) 0%, rgba(17,24,39,0.74) 54%, rgba(17,24,39,0.94) 100%),
+                radial-gradient(circle at top right, rgba(139,92,246,0.22), transparent 24%),
+                rgba(17,24,39,0.82);
+        }
+
+        .top-rank {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .top-rank.rank-1 {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+        }
+
+        .top-rank.rank-2 {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+        }
+
+        .top-rank.rank-3 {
+            background: linear-gradient(135deg, #fb7185, #f97316);
+        }
+
+        .top-orbit {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            width: 90px;
+            height: 90px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            opacity: 0.7;
+            animation: pulseSoft 2.8s ease-in-out infinite;
+        }
+
+        .top-orbit::before,
+        .top-orbit::after {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            border-radius: inherit;
+            border: 1px dashed rgba(255,255,255,0.09);
+        }
+
+        .top-orbit::after {
+            inset: 22px;
+            border-style: solid;
+            border-color: rgba(139,92,246,0.16);
+        }
+
+        .top-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #f8fafc;
+            padding: 0.5rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.08);
+            width: fit-content;
+            margin-bottom: 0.95rem;
+        }
+
+        .top-shine {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.08) 50%, transparent 80%);
+            transform: translateX(-120%);
+            transition: transform 0.9s ease;
+            pointer-events: none;
+        }
+
+        .top-card:hover .top-shine {
+            transform: translateX(120%);
+        }
+
+        .top-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #f472b6;
+            padding: 0.6rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(17,24,39,0.6);
+            border: 1px solid rgba(255,255,255,0.06);
+            width: fit-content;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-top: 1rem;
+        }
+
+        .top-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.82rem 1rem;
+            border-radius: 0.95rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.25s ease;
+        }
+
+        .top-action-primary {
+            background: linear-gradient(to right, #8B5CF6, #EC4899);
+            color: white;
+            box-shadow: 0 12px 30px rgba(139,92,246,0.28);
+        }
+
+        .top-action-secondary {
+            background: rgba(255,255,255,0.08);
+            color: #E2E8F0;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .top-meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            padding: 0.42rem 0.68rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        @media (max-width: 1024px) {
+            .top-stage {
+                grid-template-columns: 1fr;
             }
 
-            25% {
-                transform: scale(1.3);
+            .top-stage-side {
+                grid-template-columns: 1fr;
             }
 
-            50% {
-                transform: scale(1);
-            }
-
-            75% {
-                transform: scale(1.1);
-            }
-
-            100% {
-                transform: scale(1);
+            .top-card-featured {
+                min-height: 360px;
             }
         }
+
+        @media (max-width: 640px) {
+            .top-card-featured {
+                min-height: 320px;
+                padding: 1.25rem;
+            }
+
+            .top-card-side-item {
+                min-height: 190px;
+                padding: 1rem;
+            }
+
+            .top-rank {
+                width: 3rem;
+                height: 3rem;
+                font-size: 1rem;
+            }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.18);
+            border-radius: 999px;
+        }
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6051983418402912"
-            crossorigin="anonymous"></script>
 </head>
 
 <body class="antialiased selection:bg-purple-500 selection:text-white">
@@ -151,8 +415,8 @@
     <canvas id="stars" class="fixed top-0 left-0 w-full h-full -z-20 opacity-60"></canvas>
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div class="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div class="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob [animation-delay:2000ms]"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob [animation-delay:4000ms]"></div>
     </div>
 
     <nav class="fixed w-full z-50 transition-all duration-300 top-0 glass-panel border-t-0 border-x-0">
@@ -173,7 +437,7 @@
                     <a href="#reading" class="text-sm font-medium text-gray-300 hover:text-white transition hover:scale-105">Đang phát</a>
                     <a href="#suggest" class="text-sm font-medium text-gray-300 hover:text-white transition hover:scale-105">Đề xuất</a>
                     <a href="#list" class="text-sm font-medium text-gray-300 hover:text-white transition hover:scale-105">Kho truyện</a>
-                    <button id="adminLoginBtn" class="text-gray-400 hover:text-white transition"><i class="fa-solid fa-gear"></i></button>
+                    <a href="/admin.html" class="text-gray-400 hover:text-white transition"><i class="fa-solid fa-gear"></i></a>
                 </div>
 
                 <button id="mobileMenuBtn" class="md:hidden text-gray-300 hover:text-white focus:outline-none text-xl">
@@ -189,28 +453,26 @@
                 <a href="#suggest" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10">Gửi đề xuất</a>
                 <a href="#list" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10">Danh sách truyện</a>
                 <div class="pt-4 border-t border-white/10 mt-2">
-                    <button id="adminLoginBtnMobile" class="w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-300 flex items-center gap-2">
-                        <i class="fa-solid fa-user-shield"></i> Đăng nhập Admin
-                    </button>
+                    <a href="/admin.html" class="w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-300 flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield"></i> Trang admin
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
     <main class="pt-20">
-
-        <section id="home" class="min-h-[60vh] flex flex-col justify-center items-center px-4 py-12 relative">
+        <section id="home" class="min-h-[70vh] flex flex-col justify-center items-center px-4 py-12 relative">
             <div class="text-center mb-12" data-aos="fade-down">
                 <span class="inline-block py-1 px-3 rounded-full bg-purple-500/20 border border-purple-500/50 text-purple-300 text-xs font-bold tracking-widest uppercase mb-4">Vũ Trụ Audio Đam Mỹ</span>
                 <h1 class="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-xl">
                     Top <span class="text-gradient">Thịnh Hành</span>
                 </h1>
-                <p class="text-gray-400 max-w-lg mx-auto text-sm md:text-base">Những bộ truyện được cộng đồng yêu thích nhất tuần qua.</p>
+                <p class="text-gray-400 max-w-lg mx-auto text-sm md:text-base">Những bộ truyện đang được cộng đồng yêu thích nhất, xếp hạng theo số vote hiện tại.</p>
             </div>
 
             <div id="loadingTop" class="loader"></div>
-            <div id="topStories" class="flex flex-wrap justify-center gap-6 w-full max-w-6xl z-10">
-            </div>
+            <div id="topStories" class="w-full max-w-6xl z-10"></div>
         </section>
 
         <section id="reading" class="max-w-7xl mx-auto px-4 py-16" data-aos="fade-up">
@@ -220,12 +482,11 @@
                 </div>
                 <div>
                     <h2 class="text-2xl font-bold text-white">Đang Lên Sóng</h2>
-                    <p class="text-xs text-gray-400">Các bộ truyện đang được chuyển thể Audio</p>
+                    <p class="text-xs text-gray-400">Các bộ truyện đang được chuyển thể audio</p>
                 </div>
             </div>
 
-            <div id="readingList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            </div>
+            <div id="readingList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
 
         <section id="suggest" class="max-w-3xl mx-auto px-4 py-16 mb-12" data-aos="fade-up">
@@ -245,14 +506,15 @@
                         </li>
                         <li class="flex gap-3">
                             <span class="flex-shrink-0 w-6 h-6 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold text-xs border border-pink-500/30">2</span>
-                            <span><b>Tích Vote:</b> Truyện sẽ xuất hiện tại "Kho Tàng". Hãy kêu gọi mọi người thả tim (<i class="fa-solid fa-heart text-red-500 text-xs"></i>) để tăng hạng.</span>
+                            <span><b>Tích vote:</b> Truyện sẽ xuất hiện tại Kho Tàng. Hãy kêu gọi mọi người thả tim để tăng hạng.</span>
                         </li>
                         <li class="flex gap-3">
                             <span class="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs border border-purple-500/30">3</span>
-                            <span><b>On Air:</b> Admin sẽ chọn truyện có <b>Vote cao nhất</b> để chuyển thể Audio.</span>
+                            <span><b>On Air:</b> Admin sẽ chọn truyện nổi bật để chuyển sang mục đang đọc.</span>
                         </li>
                     </ul>
                 </div>
+
                 <form id="formSuggest" class="space-y-5">
                     <div class="grid md:grid-cols-2 gap-5">
                         <div class="space-y-1">
@@ -268,7 +530,7 @@
                     <div class="flex gap-4 px-2">
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <div class="relative w-5 h-5 rounded-full border-2 border-gray-500 flex items-center justify-center transition group-hover:border-blue-400">
-                                <input type="radio" name="version" value="Edit" class="appearance-none absolute inset-0 rounded-full checked:bg-blue-500 checked:border-blue-500" required>
+                                <input type="radio" name="version" value="Edit" class="appearance-none absolute inset-0 rounded-full checked:bg-blue-500 checked:border-blue-500" checked required>
                             </div>
                             <span class="text-sm font-semibold text-gray-300 group-hover:text-blue-400 transition">Bản Edit</span>
                         </label>
@@ -336,65 +598,8 @@
                 </div>
             </div>
         </section>
-
-        <section id="admin" class="hidden fixed inset-0 z-[60] bg-black/90 backdrop-blur-md overflow-y-auto">
-            <div class="min-h-screen p-4 md:p-8">
-                <div class="max-w-7xl mx-auto bg-[#13131f] border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative">
-                    <button id="closeAdminBtn" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
-
-                    <div class="p-6 md:p-8 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-gray-900 to-gray-800">
-                        <div>
-                            <h2 class="text-2xl font-bold text-white flex items-center gap-2"><span class="text-purple-500"><i class="fa-solid fa-user-astronaut"></i></span> Admin Control</h2>
-                            <p class="text-gray-400 text-xs mt-1">Quản lý kho dữ liệu vũ trụ</p>
-                        </div>
-                        <div class="flex gap-3">
-                            <input id="adminSearch" onkeyup="renderAdmin()" class="bg-black/40 border border-white/10 text-white text-sm rounded-lg px-4 py-2 focus:border-purple-500 outline-none" placeholder="Tìm kiếm...">
-                            <select id="adminFilter" onchange="renderAdmin()" class="bg-black/40 border border-white/10 text-white text-sm rounded-lg px-3 outline-none">
-                                <option value="all">Tất cả</option>
-                                <option value="đề xuất">Đề xuất</option>
-                                <option value="đang đọc">Đang phát</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-y divide-white/5 bg-white/[0.02]">
-                        <div class="p-6 text-center">
-                            <p class="text-gray-500 text-xs font-bold uppercase mb-1">Tổng số</p>
-                            <p class="text-3xl font-bold text-white" id="statTotal">0</p>
-                        </div>
-                        <div class="p-6 text-center">
-                            <p class="text-yellow-500 text-xs font-bold uppercase mb-1">Cần duyệt</p>
-                            <p class="text-3xl font-bold text-yellow-400" id="statSuggest">0</p>
-                        </div>
-                        <div class="p-6 text-center">
-                            <p class="text-green-500 text-xs font-bold uppercase mb-1">On Air</p>
-                            <p class="text-3xl font-bold text-green-400" id="statReading">0</p>
-                        </div>
-                        <div class="p-6 text-center">
-                            <p class="text-purple-500 text-xs font-bold uppercase mb-1">Hoàn thành</p>
-                            <p class="text-3xl font-bold text-purple-400" id="statDone">0</p>
-                        </div>
-                    </div>
-
-                    <div class="p-0 overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-white/5 text-gray-400 text-xs uppercase font-bold">
-                                <tr>
-                                    <th class="p-4">Truyện</th>
-                                    <th class="p-4">Trạng thái</th>
-                                    <th class="p-4 text-center">Votes</th>
-                                    <th class="p-4">Youtube</th>
-                                    <th class="p-4 text-right">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminTable" class="text-sm divide-y divide-white/5 text-gray-300"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
     </main>
+
     <div id="detailModal" class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-[#13131f] border border-white/10 rounded-2xl w-full max-w-lg relative shadow-2xl transform scale-95 transition-transform duration-300" id="detailModalContent">
             <button onclick="closeStoryDetail()" class="absolute top-4 right-4 text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition">
@@ -403,12 +608,12 @@
 
             <div class="p-6 md:p-8">
                 <div class="mb-6">
-                    <div class="flex items-center gap-3 mb-2">
+                    <div class="flex items-center gap-3 mb-2 flex-wrap">
                         <span id="m-version" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border"></span>
                         <span id="m-new" class="hidden px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">NEW</span>
                     </div>
                     <h2 id="m-title" class="text-2xl md:text-3xl font-bold text-white leading-tight mb-2"></h2>
-                    <div class="flex items-center gap-4 text-sm text-gray-400">
+                    <div class="flex items-center gap-4 text-sm text-gray-400 flex-wrap">
                         <span id="m-status" class="flex items-center gap-1"></span>
                         <span class="flex items-center gap-1 text-pink-500 font-bold"><i class="fa-solid fa-heart"></i> <span id="m-votes">0</span></span>
                     </div>
@@ -420,16 +625,17 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <a id="m-link" href="#" target="_blank" class="col-span-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/30 transition">
+                    <a id="m-link" href="#" target="_blank" rel="noopener noreferrer" class="col-span-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/30 transition">
                         <i class="fa-solid fa-book-open"></i> Đọc Ngay
                     </a>
-                    <a id="m-youtube" href="#" target="_blank" class="hidden col-span-1 py-3 rounded-xl bg-red-600 text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-red-500/30 transition">
+                    <a id="m-youtube" href="#" target="_blank" rel="noopener noreferrer" class="hidden col-span-1 py-3 rounded-xl bg-red-600 text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-red-500/30 transition">
                         <i class="fa-brands fa-youtube"></i> Nghe Audio
                     </a>
                 </div>
             </div>
         </div>
     </div>
+
     <footer class="mt-12 py-8 text-center text-gray-600 text-xs border-t border-white/5 glass-panel">
         <p>&copy; 2026 Hồi Âm Đam Mỹ. Design by Galaxy.</p>
     </footer>
@@ -441,7 +647,6 @@
     <script>
         AOS.init({ once: true, offset: 50, duration: 800 });
 
-        // --- SUPABASE CONFIG ---
         const SUPABASE_URL = 'https://xklmcebwxkqbotqexprn.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrbG1jZWJ3eGtxYm90cWV4cHJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzM1NDEsImV4cCI6MjA3OTIwOTU0MX0.vZj-5C_HhVgemG0LOTH3axf4P0bxXngzeQ3PSo93-m4';
         const TABLE = 'stories';
@@ -465,15 +670,51 @@
             }
         };
 
+        function normalizeStatus(value = '') {
+            const cleaned = String(value)
+                .normalize('NFC')
+                .replace(/\u202F/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase();
+
+            if (cleaned === 'đang đọc') return 'đang đọc';
+            return 'đề xuất';
+        }
+
+        function normalizeStory(item) {
+            return {
+                id: Number(item.id),
+                title: String(item.title || ''),
+                linkstory: String(item.linkstory || ''),
+                version: item.version === 'Convert' ? 'Convert' : 'Edit',
+                note: String(item.note || ''),
+                votes: Number.isFinite(Number(item.votes)) ? Math.max(0, Number(item.votes)) : 0,
+                status: normalizeStatus(item.status),
+                youtubelink: String(item.youtubelink || ''),
+                createdat: item.createdat || new Date().toISOString()
+            };
+        }
+
+        const getYoutubeID = (url) => {
+            const match = url?.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
+            return (match && match[2].length === 11) ? match[2] : null;
+        };
+
         let stories = [];
         let debounceTimer;
-        let visibleLimit = 10; // Hiển thị mặc định 10 truyện
+        let visibleLimit = 10;
 
-        // --- STARS BACKGROUND ---
         const canvas = document.getElementById("stars");
         const ctx = canvas.getContext("2d");
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.onresize = resize; resize();
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.onresize = resize;
+        resize();
 
         const starsArray = Array(100).fill().map(() => ({
             x: Math.random() * canvas.width,
@@ -487,25 +728,51 @@
         function animateStars() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "white";
+
             starsArray.forEach(s => {
                 ctx.globalAlpha = s.o;
-                ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
-                s.x += s.dx; s.y += s.dy;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fill();
+                s.x += s.dx;
+                s.y += s.dy;
                 if (s.x < 0 || s.x > canvas.width) s.x = Math.random() * canvas.width;
                 if (s.y < 0 || s.y > canvas.height) s.y = Math.random() * canvas.height;
             });
+
             requestAnimationFrame(animateStars);
         }
+
         animateStars();
 
-        // --- UTILS ---
-        const getYoutubeID = (url) => {
-            const match = url?.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
-            return (match && match[2].length === 11) ? match[2] : null;
-        };
+        async function restFetch(path, options = {}) {
+            const response = await fetch(`${API_BASE}/${path}`, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    apikey: SUPABASE_KEY,
+                    Authorization: `Bearer ${SUPABASE_KEY}`,
+                    Prefer: 'return=representation',
+                    ...(options.headers || {})
+                }
+            });
+
+            let payload = null;
+            try {
+                payload = await response.json();
+            } catch {
+                payload = null;
+            }
+
+            if (!response.ok) {
+                throw new Error(payload?.message || payload?.error || 'Supabase request failed');
+            }
+
+            return payload;
+        }
 
         function handleSearch() {
-            visibleLimit = 10; // Reset limit khi tìm kiếm
+            visibleLimit = 10;
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(filterStories, 300);
         }
@@ -515,52 +782,72 @@
             filterStories();
         }
 
-        // --- DATA FETCHING ---
+        function getFilteredPool() {
+            const kw = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!kw) return [...stories];
+
+            return stories.filter(s =>
+                s.title.toLowerCase().includes(kw) ||
+                s.note.toLowerCase().includes(kw)
+            );
+        }
+
         async function fetchStories() {
             document.getElementById('loadingTop').style.display = 'block';
             document.getElementById('loadingList').style.display = 'block';
+
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*`, {
-                    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-                });
-                if (!res.ok) throw new Error('Err');
-                stories = await res.json();
+                const rows = await restFetch(`${TABLE}?select=*&order=createdat.desc`);
+                stories = Array.isArray(rows) ? rows.map(normalizeStory) : [];
                 refresh();
-            } catch (e) { console.error(e); }
-            finally {
+            } catch (e) {
+                console.error(e);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Không tải được dữ liệu',
+                    text: 'Vui lòng thử lại sau.',
+                    background: '#1f2937',
+                    color: '#fff',
+                    confirmButtonColor: '#8B5CF6'
+                });
+            } finally {
                 document.getElementById('loadingTop').style.display = 'none';
                 document.getElementById('loadingList').style.display = 'none';
             }
         }
 
-        async function updateStory() {
-            await Swal.fire({
-                icon: 'info',
-                title: 'Tạm khóa chỉnh sửa tại client',
-                text: 'Phần sửa/xóa đã được khóa để bảo mật. Ở bước sau mình sẽ tách admin sang API riêng.',
-                background: '#1f2937',
-                color: '#fff',
-                confirmButtonColor: '#8B5CF6'
+        async function incrementVoteWithFallback(story) {
+            try {
+                const rpcRes = await fetch(`${RPC_BASE}/increment_votes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        apikey: SUPABASE_KEY,
+                        Authorization: `Bearer ${SUPABASE_KEY}`
+                    },
+                    body: JSON.stringify({ story_id: story.id })
+                });
+
+                if (rpcRes.ok) {
+                    const newVotes = await rpcRes.json();
+                    return Number(newVotes ?? (story.votes + 1));
+                }
+            } catch {}
+
+            const patched = await restFetch(`${TABLE}?id=eq.${story.id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ votes: story.votes + 1 })
             });
+
+            const first = Array.isArray(patched) ? patched[0] : null;
+            return Number(first?.votes ?? (story.votes + 1));
         }
 
-        async function deleteStory() {
-            await Swal.fire({
-                icon: 'info',
-                title: 'Tạm khóa xóa tại client',
-                text: 'Phần sửa/xóa đã được khóa để bảo mật. Ở bước sau mình sẽ tách admin sang API riêng.',
-                background: '#1f2937',
-                color: '#fff',
-                confirmButtonColor: '#8B5CF6'
-            });
-        }
-
-        // --- INTERACTION ---
         async function toggleVote(id) {
             const btn = document.querySelector(`.vote-btn-${id}`);
             const count = document.getElementById(`vote-count-${id}`);
-            const s = stories.find(x => x.id === id);
-            if (!s || !btn) return;
+            const story = stories.find(x => x.id === id);
+            if (!story || !btn) return;
 
             const key = `vote_${id}`;
             if (localStorage.getItem(key)) {
@@ -578,26 +865,14 @@
             btn.disabled = true;
 
             try {
-                const res = await fetch(`${RPC_BASE}/increment_votes`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        apikey: SUPABASE_KEY,
-                        Authorization: `Bearer ${SUPABASE_KEY}`
-                    },
-                    body: JSON.stringify({ story_id: id })
-                });
-
-                if (!res.ok) throw new Error('Vote failed');
-
-                const newVotes = await res.json();
-                s.votes = Number(newVotes ?? (s.votes || 0) + 1);
+                const newVotes = await incrementVoteWithFallback(story);
+                story.votes = newVotes;
                 localStorage.setItem(key, 'true');
 
                 btn.classList.add('active', 'text-red-500');
                 btn.classList.remove('text-gray-400');
 
-                if (count) count.innerText = s.votes;
+                if (count) count.innerText = newVotes;
 
                 const heart = document.createElement('div');
                 heart.textContent = '❤️';
@@ -606,158 +881,344 @@
                 heart.style.top = `${btn.getBoundingClientRect().top}px`;
                 heart.style.transition = '1s';
                 heart.style.pointerEvents = 'none';
+                heart.style.zIndex = '9999';
                 document.body.appendChild(heart);
-                setTimeout(() => { heart.style.transform = 'translateY(-50px) scale(1.5)'; heart.style.opacity = '0'; }, 50);
+
+                setTimeout(() => {
+                    heart.style.transform = 'translateY(-50px) scale(1.5)';
+                    heart.style.opacity = '0';
+                }, 50);
+
                 setTimeout(() => heart.remove(), 1000);
+                refresh();
             } catch (error) {
                 console.error(error);
-                Swal.fire('Không vote được', 'Vui lòng thử lại sau.', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Không vote được',
+                    text: 'Vui lòng thử lại sau.',
+                    background: '#1f2937',
+                    color: '#fff',
+                    confirmButtonColor: '#8B5CF6'
+                });
             } finally {
                 btn.disabled = false;
             }
         }
 
-        document.getElementById('formSuggest').addEventListener("submit", async e => {
+        document.getElementById('formSuggest').addEventListener('submit', async (e) => {
             e.preventDefault();
+
             const btn = e.target.querySelector('button');
             const oldTxt = btn.innerHTML;
-
-            // Cooldown Check
             const last = localStorage.getItem('last_submit');
-            if (last && Date.now() - last < 300000) return Swal.fire('Chậm lại!', 'Vui lòng đợi 5 phút.', 'warning');
 
-            btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+            if (last && Date.now() - Number(last) < 300000) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Chậm lại',
+                    text: 'Vui lòng đợi 5 phút rồi gửi tiếp.',
+                    background: '#1f2937',
+                    color: '#fff',
+                    confirmButtonColor: '#8B5CF6'
+                });
+                return;
+            }
+
+            const title = document.getElementById('title').value.trim();
+            const link = document.getElementById('linkStory').value.trim();
+            const version = document.querySelector('input[name="version"]:checked')?.value || 'Edit';
+            const note = document.getElementById('note').value.trim();
+
+            if (!title) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thiếu tên truyện',
+                    background: '#1f2937',
+                    color: '#fff',
+                    confirmButtonColor: '#8B5CF6'
+                });
+                return;
+            }
+
+            if (!link) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Thiếu link gốc',
+                    background: '#1f2937',
+                    color: '#fff',
+                    confirmButtonColor: '#8B5CF6'
+                });
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
 
             try {
-                const link = document.getElementById('linkStory').value.trim();
-                // Duplicate Check
-                const check = await fetch(`${API_BASE}/${TABLE}?select=id&linkstory=eq.${encodeURIComponent(link)}`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
-                if ((await check.json()).length > 0) throw new Error('Dup');
+                const check = await fetch(
+                    `${API_BASE}/${TABLE}?select=id&linkstory=eq.${encodeURIComponent(link)}`,
+                    {
+                        headers: {
+                            apikey: SUPABASE_KEY,
+                            Authorization: `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
 
-                await fetch(`${API_BASE}/${TABLE}`, {
+                const existed = await check.json();
+                if (Array.isArray(existed) && existed.length > 0) {
+                    throw new Error('Dup');
+                }
+
+                await restFetch(TABLE, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
                     body: JSON.stringify({
-                        title: document.getElementById('title').value.trim(),
+                        title,
                         linkstory: link,
-                        version: document.querySelector('input[name="version"]:checked').value,
-                        note: document.getElementById('note').value.trim(),
-                        votes: 0, status: 'đề xuất', youtubelink: '', createdat: new Date().toISOString()
+                        version,
+                        note,
+                        votes: 0,
+                        status: 'đề xuất',
+                        youtubelink: '',
+                        createdat: new Date().toISOString()
                     })
                 });
-                localStorage.setItem('last_submit', Date.now());
+
+                localStorage.setItem('last_submit', String(Date.now()));
                 e.target.reset();
-                Swal.fire({ icon: 'success', title: 'Đã gửi!', background: '#1f2937', color: '#fff', confirmButtonColor: '#8B5CF6' });
+                document.querySelector('input[name="version"][value="Edit"]').checked = true;
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã gửi đề xuất',
+                    background: '#1f2937',
+                    color: '#fff',
+                    confirmButtonColor: '#8B5CF6'
+                });
+
+                await fetchStories();
             } catch (err) {
-                if (err.message === 'Dup') Swal.fire('Trùng lặp!', 'Truyện này đã có người gửi.', 'info');
-                else Swal.fire('Lỗi', 'Thử lại sau.', 'error');
+                if (err.message === 'Dup') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Truyện này đã có',
+                        text: 'Không cần gửi trùng nữa.',
+                        background: '#1f2937',
+                        color: '#fff',
+                        confirmButtonColor: '#8B5CF6'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Có lỗi',
+                        text: 'Thử lại sau.',
+                        background: '#1f2937',
+                        color: '#fff',
+                        confirmButtonColor: '#8B5CF6'
+                    });
+                }
             } finally {
-                btn.disabled = false; btn.innerHTML = oldTxt;
+                btn.disabled = false;
+                btn.innerHTML = oldTxt;
             }
         });
 
-        // --- RENDER ---
         function refresh() {
             filterStories();
-            if (!document.getElementById('admin').classList.contains('hidden')) renderAdmin();
         }
 
         function filterStories() {
-            const kw = document.getElementById('searchInput').value.toLowerCase();
             const sort = document.getElementById('sortSelect').value;
-            let list = stories.filter(s => s.status === 'đề xuất' && s.title.toLowerCase().includes(kw));
+            const pool = getFilteredPool();
 
-            if (sort === 'vote') list.sort((a, b) => b.votes - a.votes);
-            else list.sort((a, b) => new Date(b.createdat) - new Date(a.createdat));
+            let suggestList = pool.filter(s => s.status === 'đề xuất');
 
-            // Logic Load More
-            const total = list.length;
-            const visibleList = list.slice(0, visibleLimit);
+            if (sort === 'vote') {
+                suggestList.sort((a, b) => b.votes - a.votes);
+            } else {
+                suggestList.sort((a, b) => new Date(b.createdat) - new Date(a.createdat));
+            }
 
+            const visibleList = suggestList.slice(0, visibleLimit);
             const btnMore = document.getElementById('loadMoreBtn');
-            if (total > visibleLimit) btnMore.classList.remove('hidden');
+
+            if (suggestList.length > visibleLimit) btnMore.classList.remove('hidden');
             else btnMore.classList.add('hidden');
 
-            renderTop(list);
-            renderReading();
+            renderTop(pool);
+            renderReading(pool);
             renderListPC(visibleList);
             renderListMobile(visibleList);
         }
 
-        function renderTop(list) {
-            const c = document.getElementById('topStories'); c.innerHTML = '';
-            const top = [...list].sort((a, b) => b.votes - a.votes).slice(0, 3);
-
-            top.forEach((s, i) => {
-                const colors = ['from-yellow-400 to-orange-500', 'from-gray-300 to-gray-400', 'from-orange-400 to-red-500'];
-                const rank = i + 1;
-                c.innerHTML += `
-                <div class="relative group w-80">
-                    <div class="absolute inset-0 bg-gradient-to-r ${colors[i]} rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
-                    <div class="relative bg-gray-900/90 backdrop-blur border border-white/10 p-5 rounded-2xl h-full flex flex-col transform transition hover:-translate-y-2">
-                        <div class="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-gradient-to-br ${colors[i]} flex items-center justify-center text-white font-bold shadow-lg">#${rank}</div>
-                        <h3 class="text-lg font-bold text-white mb-2 line-clamp-2 mt-2">${esc(s.title)}</h3>
-                        <p class="text-xs text-gray-400 mb-4 line-clamp-2 italic">"${esc(s.note || 'Không có ghi chú')}"</p>
-                        <div class="mt-auto flex justify-between items-center border-t border-white/5 pt-3">
-                            <span class="text-pink-500 font-bold text-sm"><i class="fa-solid fa-heart mr-1"></i> ${s.votes}</span>
-                            ${safeUrl(s.linkstory) ? `<a href="${safeUrl(s.linkstory)}" target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:text-white text-sm font-semibold">Đọc ngay <i class="fa-solid fa-arrow-right ml-1"></i></a>` : ''}
-                        </div>
-                    </div>
-                </div>`;
-            });
+        function statusChipHtml(story) {
+            const isReading = story.status === 'đang đọc';
+            return `
+                <span class="top-meta-chip ${isReading ? 'text-green-300' : 'text-yellow-300'}">
+                    <i class="fa-solid ${isReading ? 'fa-podcast' : 'fa-star'}"></i>
+                    ${isReading ? 'Đang đọc' : 'Đề xuất'}
+                </span>
+            `;
         }
 
-        function renderReading() {
-            const list = stories.filter(s => s.status === 'đang đọc');
+        function renderTopCard(story, rank, featured = false) {
+            const safeStoryLink = safeUrl(story.linkstory);
+            const safeYoutubeLink = safeUrl(story.youtubelink);
+            const createdDays = Math.floor((Date.now() - new Date(story.createdat).getTime()) / 86400000);
+            const isNew = createdDays < 3;
+            const badgeClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : 'rank-3';
+
+            return `
+                <article class="top-card ${featured ? 'top-card-featured animate-float-card' : 'top-card-side-item'}" onclick="openStoryDetail(${story.id})">
+                    <div class="top-shine"></div>
+                    <div class="top-rank ${badgeClass}">#${rank}</div>
+                    ${featured ? '<div class="top-orbit"></div>' : ''}
+
+                    <div class="relative z-10 mt-14">
+                        <div class="top-badge">
+                            <i class="fa-solid fa-crown"></i>
+                            ${featured ? 'Spotlight nổi bật' : 'Hạng cao'}
+                        </div>
+
+                        <h3 class="${featured ? 'text-3xl md:text-4xl' : 'text-2xl'} font-black text-white leading-tight mb-3 line-clamp-2">
+                            ${esc(story.title)}
+                        </h3>
+
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            ${statusChipHtml(story)}
+                            <span class="top-meta-chip">
+                                <i class="fa-solid fa-layer-group"></i>
+                                ${esc(story.version)}
+                            </span>
+                            ${isNew ? `
+                                <span class="top-meta-chip text-cyan-300">
+                                    <i class="fa-solid fa-sparkles"></i>
+                                    New
+                                </span>
+                            ` : ''}
+                        </div>
+
+                        <p class="${featured ? 'text-sm md:text-base' : 'text-sm'} text-gray-300/90 leading-relaxed ${featured ? 'line-clamp-3' : 'line-clamp-2'}">
+                            ${esc(story.note || 'Chưa có ghi chú.')}
+                        </p>
+
+                        <div class="mt-5 flex flex-wrap items-center gap-3">
+                            <div class="top-score">
+                                <i class="fa-solid fa-heart"></i>
+                                ${story.votes} vote
+                            </div>
+                            <span class="top-meta-chip">
+                                <i class="fa-regular fa-calendar"></i>
+                                ${new Date(story.createdat).toLocaleDateString('vi-VN')}
+                            </span>
+                        </div>
+
+                        <div class="top-actions">
+                            ${safeStoryLink ? `
+                                <a href="${safeStoryLink}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="top-action-btn top-action-primary">
+                                    <i class="fa-solid fa-book-open"></i>
+                                    Đọc ngay
+                                </a>
+                            ` : ''}
+                            ${safeYoutubeLink ? `
+                                <a href="${safeYoutubeLink}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="top-action-btn top-action-secondary">
+                                    <i class="fa-brands fa-youtube"></i>
+                                    Audio
+                                </a>
+                            ` : `
+                                <button class="top-action-btn top-action-secondary" onclick="event.stopPropagation(); toggleVote(${story.id})">
+                                    <i class="fa-solid fa-heart"></i>
+                                    Bình chọn
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderTop(pool) {
+            const container = document.getElementById('topStories');
+            const top = [...pool]
+                .sort((a, b) => {
+                    if (b.votes !== a.votes) return b.votes - a.votes;
+                    return new Date(b.createdat) - new Date(a.createdat);
+                })
+                .slice(0, 3);
+
+            if (!top.length) {
+                container.innerHTML = `<div class="text-center text-gray-500 py-10 italic">Chưa có dữ liệu...</div>`;
+                return;
+            }
+
+            const [first, second, third] = top;
+
+            container.innerHTML = `
+                <div class="top-stage">
+                    ${first ? renderTopCard(first, 1, true) : ''}
+                    <div class="top-stage-side">
+                        ${second ? renderTopCard(second, 2, false) : `<div class="top-card top-card-side-item flex items-center justify-center text-gray-400">Chưa đủ dữ liệu</div>`}
+                        ${third ? renderTopCard(third, 3, false) : `<div class="top-card top-card-side-item flex items-center justify-center text-gray-400">Chưa đủ dữ liệu</div>`}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderReading(pool) {
+            const list = pool.filter(s => s.status === 'đang đọc');
             const c = document.getElementById('readingList');
+
             c.innerHTML = list.length ? list.map(s => {
                 const vid = getYoutubeID(s.youtubelink);
                 const thumb = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
+
                 return `
-                <div class="group relative rounded-2xl overflow-hidden aspect-video bg-gray-800 border border-white/10 shadow-lg cursor-pointer" onclick="window.open('${safeUrl(s.youtubelink)}', '_blank', 'noopener')">
-                    ${thumb ? `<img src="${thumb}" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-105 transition duration-700">` : ''}
-                    <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black via-black/50 to-transparent">
-                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover:scale-110 transition">
-                            <i class="fa-solid fa-play text-white ml-1"></i>
-                        </div>
-                        <h3 class="text-white font-bold text-lg leading-tight text-shadow">${esc(s.title)}</h3>
-                        <div class="flex items-center gap-2 mt-2">
-                             <span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                             <span class="text-xs text-red-400 font-bold uppercase tracking-wider">On Air</span>
+                    <div class="group relative rounded-2xl overflow-hidden aspect-video bg-gray-800 border border-white/10 shadow-lg cursor-pointer"
+                         onclick="window.open('${safeUrl(s.youtubelink || s.linkstory)}', '_blank', 'noopener')">
+                        ${thumb ? `<img src="${thumb}" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-105 transition duration-700">` : ''}
+                        <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black via-black/50 to-transparent">
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-play text-white ml-1"></i>
+                            </div>
+                            <h3 class="text-white font-bold text-lg leading-tight">${esc(s.title)}</h3>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                <span class="text-xs text-red-400 font-bold uppercase tracking-wider">On Air</span>
+                            </div>
                         </div>
                     </div>
-                </div>`;
+                `;
             }).join('') : '<div class="col-span-full text-center text-gray-500 py-10 italic">Chưa có truyện nào đang phát...</div>';
         }
 
-        // --- MODAL LOGIC (THÊM MỚI) ---
         function openStoryDetail(id) {
             const s = stories.find(x => x.id === id);
             if (!s) return;
 
-            // Populate Data
             document.getElementById('m-title').innerText = s.title;
             document.getElementById('m-note').innerText = s.note || 'Không có ghi chú chi tiết.';
             document.getElementById('m-votes').innerText = s.votes;
 
-            // Version Badge
             const vEl = document.getElementById('m-version');
             vEl.innerText = s.version;
-            vEl.className = `px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${s.version === 'Edit' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}`;
+            vEl.className = `px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${s.version === 'Edit'
+                ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}`;
 
-            // New Badge
             const isNew = ((new Date() - new Date(s.createdat)) / 86400000 < 3);
             document.getElementById('m-new').classList.toggle('hidden', !isNew);
 
-            // Status
             const stEl = document.getElementById('m-status');
-            if (s.status === 'đề xuất') stEl.innerHTML = '<i class="fa-solid fa-circle text-[8px] text-yellow-500"></i> Đề xuất';
-            else if (s.status === 'đang đọc') stEl.innerHTML = '<i class="fa-solid fa-circle text-[8px] text-green-500"></i> Đang phát';
-            else stEl.innerHTML = '<i class="fa-solid fa-circle text-[8px] text-purple-500"></i> Hoàn thành';
+            if (s.status === 'đề xuất') {
+                stEl.innerHTML = '<i class="fa-solid fa-circle text-[8px] text-yellow-500"></i> Đề xuất';
+            } else {
+                stEl.innerHTML = '<i class="fa-solid fa-circle text-[8px] text-green-500"></i> Đang phát';
+            }
 
-            // Links
             const btnLink = document.getElementById('m-link');
             const safeStoryLink = safeUrl(s.linkstory);
+
             if (safeStoryLink) {
                 btnLink.href = safeStoryLink;
                 btnLink.classList.remove('hidden', 'col-span-2');
@@ -768,6 +1229,7 @@
 
             const btnYt = document.getElementById('m-youtube');
             const safeYoutubeLink = safeUrl(s.youtubelink);
+
             if (safeYoutubeLink) {
                 btnYt.href = safeYoutubeLink;
                 btnYt.classList.remove('hidden');
@@ -777,11 +1239,10 @@
                 if (s.linkstory) btnLink.classList.replace('col-span-1', 'col-span-2');
             }
 
-            // Show Modal Animation
             const modal = document.getElementById('detailModal');
             const content = document.getElementById('detailModalContent');
+
             modal.classList.remove('hidden');
-            // Small delay to allow display:block to apply before opacity transition
             requestAnimationFrame(() => {
                 modal.classList.remove('opacity-0');
                 content.classList.remove('scale-95');
@@ -802,227 +1263,76 @@
             }, 300);
         }
 
-        // Đóng modal khi click ra ngoài
         document.getElementById('detailModal').addEventListener('click', function (e) {
             if (e.target === this) closeStoryDetail();
         });
 
-        // --- CẬP NHẬT RENDER PC ---
         function renderListPC(list) {
-            const tb = document.getElementById('storyList'); tb.innerHTML = '';
+            const tb = document.getElementById('storyList');
+            tb.innerHTML = '';
+
             list.forEach(s => {
                 const isLiked = localStorage.getItem(`vote_${s.id}`);
-                // Thêm onclick="openStoryDetail(${s.id})" vào thẻ tr
-                // Thêm onclick="event.stopPropagation()" vào thẻ a và button vote để tránh mở modal nhầm
+
                 tb.innerHTML += `
-                <tr onclick="openStoryDetail(${s.id})" class="hover:bg-white/5 transition group cursor-pointer border-b border-white/5 last:border-0">
-                    <td class="p-4 pl-4 font-semibold text-gray-200">
-                        <a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="hover:text-purple-400 transition relative z-10">${esc(s.title)}</a>
-                        ${((new Date() - new Date(s.createdat)) / 86400000 < 3) ? '<span class="ml-2 px-1.5 py-0.5 bg-green-500/20 text-green-400 text-[10px] rounded font-bold border border-green-500/30">NEW</span>' : ''}
-                    </td>
-                    <td class="p-4 text-center">
-                        <span class="px-2 py-1 rounded text-[10px] font-bold border ${s.version === 'Edit' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}">${s.version}</span>
-                    </td>
-                    <td class="p-4 text-xs italic text-gray-500 max-w-xs truncate group-hover:text-gray-300 transition">${esc(s.note || '-')}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="event.stopPropagation(); toggleVote(${s.id})" class="heart-pop vote-btn-${s.id} ${isLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-400 transition text-lg relative z-10">
-                            <i class="fa-solid fa-heart"></i>
-                        </button>
-                        <span id="vote-count-${s.id}" class="text-xs ml-1 font-bold text-gray-500">${s.votes}</span>
-                    </td>
-                    <td class="p-4 text-right pr-4">
-                        ${safeUrl(s.linkstory) ? `<a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-white/5 hover:bg-purple-600 hover:text-white transition relative z-10"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>` : ''}
-                    </td>
-                </tr>`;
+                    <tr onclick="openStoryDetail(${s.id})" class="hover:bg-white/5 transition group cursor-pointer border-b border-white/5 last:border-0">
+                        <td class="p-4 pl-4 font-semibold text-gray-200">
+                            ${safeUrl(s.linkstory)
+                                ? `<a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="hover:text-purple-400 transition relative z-10">${esc(s.title)}</a>`
+                                : `<span>${esc(s.title)}</span>`}
+                            ${((new Date() - new Date(s.createdat)) / 86400000 < 3) ? '<span class="ml-2 px-1.5 py-0.5 bg-green-500/20 text-green-400 text-[10px] rounded font-bold border border-green-500/30">NEW</span>' : ''}
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="px-2 py-1 rounded text-[10px] font-bold border ${s.version === 'Edit'
+                                ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                                : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}">${s.version}</span>
+                        </td>
+                        <td class="p-4 text-xs italic text-gray-500 max-w-xs truncate group-hover:text-gray-300 transition">${esc(s.note || '-')}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="event.stopPropagation(); toggleVote(${s.id})" class="heart-pop vote-btn-${s.id} ${isLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-400 transition text-lg relative z-10">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                            <span id="vote-count-${s.id}" class="text-xs ml-1 font-bold text-gray-500">${s.votes}</span>
+                        </td>
+                        <td class="p-4 text-right pr-4">
+                            ${safeUrl(s.linkstory) ? `<a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-white/5 hover:bg-purple-600 hover:text-white transition relative z-10"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>` : ''}
+                        </td>
+                    </tr>
+                `;
             });
         }
 
-        // --- CẬP NHẬT RENDER MOBILE ---
         function renderListMobile(list) {
-            const mb = document.getElementById('storyListMobile'); mb.innerHTML = '';
+            const mb = document.getElementById('storyListMobile');
+            mb.innerHTML = '';
+
             list.forEach(s => {
                 const isLiked = localStorage.getItem(`vote_${s.id}`);
-                // Thêm onclick vào div bao ngoài
+
                 mb.innerHTML += `
-                <div onclick="openStoryDetail(${s.id})" class="glass-panel p-4 rounded-2xl flex items-start gap-3 active:scale-[0.98] transition duration-200 cursor-pointer">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold border ${s.version === 'Edit' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}">${s.version}</span>
-                            ${((new Date() - new Date(s.createdat)) / 86400000 < 3) ? '<span class="text-[9px] text-green-400 font-bold">NEW</span>' : ''}
+                    <div onclick="openStoryDetail(${s.id})" class="glass-panel p-4 rounded-2xl flex items-start gap-3 active:scale-[0.98] transition duration-200 cursor-pointer">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold border ${s.version === 'Edit'
+                                    ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                                    : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}">${s.version}</span>
+                                ${((new Date() - new Date(s.createdat)) / 86400000 < 3) ? '<span class="text-[9px] text-green-400 font-bold">NEW</span>' : ''}
+                            </div>
+                            <h4 class="font-bold text-white text-base leading-tight mb-2">${esc(s.title)}</h4>
+                            <p class="text-xs text-gray-400 italic line-clamp-2 mb-2">"${esc(s.note || '...')}"</p>
+                            ${safeUrl(s.linkstory) ? `<a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="text-purple-400 text-xs font-bold hover:underline relative z-10">Đọc ngay</a>` : ''}
                         </div>
-                        <h4 class="font-bold text-white text-base leading-tight mb-2">${esc(s.title)}</h4>
-                        <p class="text-xs text-gray-400 italic line-clamp-2 mb-2">"${esc(s.note || '...')}"</p>
-                        ${safeUrl(s.linkstory) ? `<a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="text-purple-400 text-xs font-bold hover:underline relative z-10">Đọc ngay</a>` : ''}
-                    </div>
-                    <div class="flex flex-col items-center justify-center pl-3 border-l border-white/10">
-                        <button onclick="event.stopPropagation(); toggleVote(${s.id})" class="heart-pop vote-btn-${s.id} ${isLiked ? 'text-red-500' : 'text-gray-400'} text-xl mb-1 relative z-10">
-                            <i class="fa-solid fa-heart"></i>
-                        </button>
-                        <span id="vote-count-${s.id}" class="text-[10px] font-bold text-gray-500">${s.votes}</span>
-                    </div>
-                </div>`;
-            });
-        }
-
-        // --- ADMIN LOGIC ---
-        const checkAdmin = async () => {
-            await Swal.fire({
-                icon: 'info',
-                title: 'Admin client đã tạm khóa',
-                text: 'Mật khẩu admin trong trình duyệt đã được bỏ. Ở bước sau mình sẽ chuyển admin sang API/trang riêng.',
-                background: '#1f2937',
-                color: '#fff',
-                confirmButtonColor: '#8B5CF6'
-            });
-        }
-
-        document.getElementById('adminLoginBtn').onclick = checkAdmin;
-        document.getElementById('adminLoginBtnMobile').onclick = checkAdmin;
-        document.getElementById('closeAdminBtn').onclick = () => document.getElementById('admin').classList.add('hidden');
-
-        function renderAdmin() {
-            const kw = document.getElementById('adminSearch').value.toLowerCase();
-            const f = document.getElementById('adminFilter').value;
-            const list = stories.filter(s => (f === 'all' || s.status === f) && s.title.toLowerCase().includes(kw));
-
-            // Stats
-            document.getElementById('statTotal').innerText = stories.length;
-            document.getElementById('statSuggest').innerText = stories.filter(s => s.status === 'đề xuất').length;
-            document.getElementById('statReading').innerText = stories.filter(s => s.status === 'đang đọc').length;
-            document.getElementById('statDone').innerText = stories.filter(s => s.status === 'đã đọc').length;
-
-            const tb = document.getElementById('adminTable'); tb.innerHTML = '';
-            list.forEach(s => {
-                const statusColor = s.status === 'đề xuất' ? 'text-yellow-400' : (s.status === 'đang đọc' ? 'text-green-400' : 'text-purple-400');
-                tb.innerHTML += `
-                <tr class="hover:bg-white/5 transition border-b border-white/5 last:border-0">
-                    <td class="p-4">
-                        <div class="font-bold text-white mb-1">${esc(s.title)}</div>
-                        <a href="${safeUrl(s.linkstory)}" target="_blank" rel="noopener noreferrer" class="text-xs text-gray-500 hover:text-purple-400 truncate block max-w-[150px]"><i class="fa-solid fa-link"></i> Link gốc</a>
-                    </td>
-                    <td class="p-4"><span class="text-xs font-bold uppercase ${statusColor} border border-current px-2 py-1 rounded-md">${s.status}</span></td>
-                    <td class="p-4 text-center font-bold text-pink-400">${s.votes}</td>
-                    <td class="p-4 text-xs text-gray-400 truncate max-w-[100px]">${s.youtubelink ? '<i class="fa-brands fa-youtube text-red-500"></i> Có' : '-'}</td>
-                    <td class="p-4 text-right">
-                        <button onclick="editAdmin(${s.id})" class="text-blue-400 hover:text-blue-300 mr-3"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteStory(${s.id})" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        // --- HÀM ADMIN SỬA + TÍNH VOTE DONATE ---
-        function editAdmin(id) {
-            const s = stories.find(x => x.id === id);
-            if (!s) return;
-
-            Swal.fire({
-                title: 'Sửa Truyện / Nạp Vote',
-                background: '#1f2937', color: '#fff',
-                html: `
-                    <div class="space-y-3 text-left">
-                        <div>
-                            <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Tên truyện</label>
-                            <input id="e-title" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-purple-500" value="${s.title}">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                 <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Link Gốc</label>
-                                 <input id="e-link" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white text-xs" value="${s.linkstory || ''}">
-                            </div>
-                            <div>
-                                 <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Youtube ID/Link</label>
-                                 <input id="e-yt" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white text-xs" value="${s.youtubelink || ''}">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3 p-3 bg-gray-800/50 rounded-lg border border-gray-600/50">
-                            <div>
-                                <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Trạng thái</label>
-                                <select id="e-status" class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-white mt-1">
-                                    <option value="đề xuất" ${s.status === 'đề xuất' ? 'selected' : ''}>🟡 Đề xuất</option>
-                                    <option value="đang đọc" ${s.status === 'đang đọc' ? 'selected' : ''}>🟢 Đang phát</option>
-                                    <option value="đã đọc" ${s.status === 'đã đọc' ? 'selected' : ''}>🟣 Đã hoàn thành</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">TỔNG VOTE</label>
-                                <input id="e-votes" type="number" class="w-full bg-gray-900 border border-purple-500/50 rounded p-2 text-center text-xl font-bold text-pink-500 mt-1" value="${s.votes}">
-                            </div>
-                        </div>
-
-                        <div class="relative p-3 bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-lg border border-purple-500/30">
-                            <div class="absolute -top-2 left-3 bg-purple-600 text-white text-[9px] font-bold px-2 rounded">MÁY TÍNH DONATE</div>
-                            <div class="flex items-center gap-3 mt-1">
-                                <div class="flex-1">
-                                    <input id="donate-input" type="number" step="10000" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white placeholder-gray-500" placeholder="Nhập số tiền (VNĐ)...">
-                                </div>
-                                <div class="text-xs text-gray-300 italic w-24 text-right" id="donate-msg">
-                                    10k = 1 Vote
-                                </div>
-                            </div>
+                        <div class="flex flex-col items-center justify-center pl-3 border-l border-white/10">
+                            <button onclick="event.stopPropagation(); toggleVote(${s.id})" class="heart-pop vote-btn-${s.id} ${isLiked ? 'text-red-500' : 'text-gray-400'} text-xl mb-1 relative z-10">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                            <span id="vote-count-${s.id}" class="text-[10px] font-bold text-gray-500">${s.votes}</span>
                         </div>
                     </div>
-                `,
-                didOpen: () => {
-                    // Logic tính toán tự động
-                    const donateInput = document.getElementById('donate-input');
-                    const voteInput = document.getElementById('e-votes');
-                    const msg = document.getElementById('donate-msg');
-                    const baseVotes = parseInt(voteInput.value) || 0;
-
-                    donateInput.addEventListener('input', () => {
-                        const money = parseInt(donateInput.value) || 0;
-                        let addedVotes = 0;
-                        let rateText = "10k = 1 Vote";
-
-                        if (money >= 500000) {
-                            addedVotes = Math.floor(money / 5000); // Super VIP
-                            rateText = "🔥 VIP: 5k/vote";
-                            msg.className = "text-xs font-bold text-yellow-400 w-24 text-right";
-                        } else if (money >= 200000) {
-                            addedVotes = Math.floor(money / 8000); // VIP
-                            rateText = "✨ Tỷ lệ: 8k/vote";
-                            msg.className = "text-xs font-bold text-green-400 w-24 text-right";
-                        } else {
-                            addedVotes = Math.floor(money / 10000); // Standard
-                            rateText = "Tỷ lệ: 10k/vote";
-                            msg.className = "text-xs text-gray-300 italic w-24 text-right";
-                        }
-
-                        msg.innerText = rateText;
-
-                        // Cập nhật ô Vote tổng = Vote gốc + Vote quy đổi
-                        voteInput.value = baseVotes + addedVotes;
-                    });
-                },
-                showCancelButton: true,
-                confirmButtonText: '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi',
-                confirmButtonColor: '#8B5CF6',
-                preConfirm: () => ({
-                    title: document.getElementById('e-title').value.trim(),
-                    linkstory: document.getElementById('e-link').value.trim(),
-                    youtubelink: document.getElementById('e-yt').value.trim(),
-                    status: document.getElementById('e-status').value,
-                    votes: parseInt(document.getElementById('e-votes').value) || 0
-                })
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    await updateStory(id, result.value);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Đã cập nhật!',
-                        background: '#1f2937',
-                        color: '#fff',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }
+                `;
             });
         }
 
-        // --- MISC ---
         const btnTop = document.getElementById('backToTop');
         window.onscroll = () => {
             if (document.documentElement.scrollTop > 300) {
@@ -1030,21 +1340,18 @@
             } else {
                 btnTop.classList.add('translate-y-20', 'opacity-0');
             }
-        }
+        };
 
-        // Mobile Menu Toggle
         const menuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
+
         menuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
 
-        // Init
-        window.onload = () => {
+        window.addEventListener('load', () => {
             fetchStories();
-            document.getElementById('adminLoginBtn')?.classList.add('hidden');
-            document.getElementById('adminLoginBtnMobile')?.classList.add('hidden');
-        };
+        });
     </script>
 </body>
 </html>
