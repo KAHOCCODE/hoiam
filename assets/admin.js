@@ -1,6 +1,9 @@
 const API_BASE = '/api';
 
-const state = { stories: [], filtered: [] };
+const state = {
+  stories: [],
+  filtered: [],
+};
 
 const els = {
   loginCard: document.getElementById('loginCard'),
@@ -8,32 +11,41 @@ const els = {
   loginForm: document.getElementById('loginForm'),
   password: document.getElementById('password'),
   logoutBtn: document.getElementById('logoutBtn'),
+
   adminSearch: document.getElementById('adminSearch'),
   adminFilter: document.getElementById('adminFilter'),
-  adminVisibility: document.getElementById('adminVisibility'),
   adminTable: document.getElementById('adminTable'),
+
   editDialog: document.getElementById('editDialog'),
   closeEditDialogBtn: document.getElementById('closeEditDialogBtn'),
   editForm: document.getElementById('editForm'),
-  hideBtn: document.getElementById('hideBtn'),
   deleteBtn: document.getElementById('deleteBtn'),
   toastRegion: document.getElementById('toastRegion'),
 };
 
 const statEls = {
   total: document.getElementById('aStatTotal'),
-  visible: document.getElementById('aStatVisible'),
-  hidden: document.getElementById('aStatHidden'),
-  onAir: document.getElementById('aStatOnAir'),
+  suggest: document.getElementById('aStatSuggest'),
+  reading: document.getElementById('aStatReading'),
+  top: document.getElementById('aStatTop'),
 };
 
+function bind(el, event, handler) {
+  if (el) el.addEventListener(event, handler);
+}
+
 function showToast(message, tone = 'info') {
+  if (!els.toastRegion) return;
+
   const node = document.createElement('div');
   node.className = 'toast';
   node.dataset.tone = tone;
   node.textContent = message;
   els.toastRegion.appendChild(node);
-  setTimeout(() => node.remove(), 3400);
+
+  setTimeout(() => {
+    node.remove();
+  }, 3400);
 }
 
 async function request(path, options = {}) {
@@ -47,14 +59,31 @@ async function request(path, options = {}) {
   });
 
   let payload = null;
-  try { payload = await response.json(); } catch { payload = null; }
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
 
   if (!response.ok) {
     const error = new Error(payload?.error || 'Có lỗi xảy ra.');
     error.status = response.status;
     throw error;
   }
+
   return payload;
+}
+
+function normalizeStatus(value = '') {
+  const cleaned = String(value)
+    .normalize('NFC')
+    .replace(/\u202F/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  if (cleaned === 'đang đọc') return 'đang đọc';
+  return 'đề xuất';
 }
 
 function normalize(item) {
@@ -65,58 +94,67 @@ function normalize(item) {
     youtubelink: String(item.youtubelink || ''),
     version: item.version === 'Convert' ? 'Convert' : 'Edit',
     note: String(item.note || ''),
-    status: item.status === 'đang đọc' || item.status === 'đã đọc' ? item.status : 'đề xuất',
-    votes: Number.isFinite(Number(item.votes)) ? Math.max(0, Number(item.votes)) : 0,
-    visible: item.visible !== false,
+    status: normalizeStatus(item.status),
+    votes: Number.isFinite(Number(item.votes))
+      ? Math.max(0, Number(item.votes))
+      : 0,
     createdat: item.createdat || new Date().toISOString(),
   };
 }
 
 function statusLabel(status) {
-  return status === 'đang đọc' ? 'Đang phát' : status === 'đã đọc' ? 'Hoàn thành' : 'Đề xuất';
+  return status === 'đang đọc' ? 'Đang đọc' : 'Đề xuất';
 }
 
 function updateStats() {
-  statEls.total.textContent = String(state.stories.length);
-  statEls.visible.textContent = String(state.stories.filter((item) => item.visible).length);
-  statEls.hidden.textContent = String(state.stories.filter((item) => !item.visible).length);
-  statEls.onAir.textContent = String(state.stories.filter((item) => item.status === 'đang đọc').length);
+  if (statEls.total) {
+    statEls.total.textContent = String(state.stories.length);
+  }
+
+  if (statEls.suggest) {
+    statEls.suggest.textContent = String(
+      state.stories.filter((item) => item.status === 'đề xuất').length
+    );
+  }
+
+  if (statEls.reading) {
+    statEls.reading.textContent = String(
+      state.stories.filter((item) => item.status === 'đang đọc').length
+    );
+  }
+
+  if (statEls.top) {
+    statEls.top.textContent = '3';
+  }
 }
 
 function applyFilters() {
-  const query = (els.adminSearch.value || '').trim().toLowerCase();
-  const statusFilter = els.adminFilter.value || 'all';
-  const visibilityFilter = els.adminVisibility.value || 'all';
+  const query = (els.adminSearch?.value || '').trim().toLowerCase();
+  const statusFilter = els.adminFilter?.value || 'all';
 
   state.filtered = state.stories.filter((item) => {
     const matchTitle = item.title.toLowerCase().includes(query);
     const matchStatus = statusFilter === 'all' || item.status === statusFilter;
-    const matchVisibility =
-      visibilityFilter === 'all' ||
-      (visibilityFilter === 'visible' && item.visible) ||
-      (visibilityFilter === 'hidden' && !item.visible);
-    return matchTitle && matchStatus && matchVisibility;
+    return matchTitle && matchStatus;
   });
-}
-
-function visibilityLabel(story) {
-  return story.visible ? 'Đang hiển thị' : 'Đang ẩn';
 }
 
 function createRow(story) {
   const tr = document.createElement('tr');
 
   const tdTitle = document.createElement('td');
-  const title = document.createElement('strong');
+  const title = document.createElement('span');
+  title.className = 'story-title';
   title.textContent = story.title;
   tdTitle.appendChild(title);
+
   if (story.linkstory) {
     const link = document.createElement('a');
     link.href = story.linkstory;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
     link.className = 'inline-link';
-    link.textContent = ' Mở link gốc';
+    link.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i> Mở link gốc';
     tdTitle.appendChild(document.createElement('br'));
     tdTitle.appendChild(link);
   }
@@ -129,14 +167,10 @@ function createRow(story) {
   tdStatus.appendChild(status);
 
   const tdVotes = document.createElement('td');
-  tdVotes.textContent = String(story.votes);
-
-  const tdVisible = document.createElement('td');
-  const visible = document.createElement('span');
-  visible.className = 'status-pill';
-  visible.dataset.status = story.visible ? 'đã đọc' : 'đề xuất';
-  visible.textContent = visibilityLabel(story);
-  tdVisible.appendChild(visible);
+  const vote = document.createElement('span');
+  vote.className = 'vote-badge';
+  vote.innerHTML = `<i class="fa-solid fa-heart"></i> ${story.votes}`;
+  tdVotes.appendChild(vote);
 
   const tdAction = document.createElement('td');
   const actions = document.createElement('div');
@@ -145,46 +179,57 @@ function createRow(story) {
   const edit = document.createElement('button');
   edit.type = 'button';
   edit.className = 'small-btn';
-  edit.textContent = 'Sửa';
+  edit.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Sửa';
   edit.addEventListener('click', () => openEdit(story.id));
 
-  const toggle = document.createElement('button');
-  toggle.type = 'button';
-  toggle.className = 'small-btn';
-  toggle.textContent = story.visible ? 'Ẩn' : 'Hiện';
-  toggle.addEventListener('click', () => toggleVisibility(story.id, !story.visible));
-
-  actions.append(edit, toggle);
+  actions.appendChild(edit);
   tdAction.appendChild(actions);
 
-  tr.append(tdTitle, tdStatus, tdVotes, tdVisible, tdAction);
+  tr.append(tdTitle, tdStatus, tdVotes, tdAction);
   return tr;
 }
 
 function renderTable() {
+  if (!els.adminTable) return;
+
   applyFilters();
   els.adminTable.textContent = '';
+
   if (!state.filtered.length) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
-    td.colSpan = 5;
+    td.colSpan = 4;
     td.textContent = 'Không có dữ liệu phù hợp.';
     tr.appendChild(td);
     els.adminTable.appendChild(tr);
     return;
   }
-  state.filtered.forEach((story) => els.adminTable.appendChild(createRow(story)));
+
+  state.filtered.forEach((story) => {
+    els.adminTable.appendChild(createRow(story));
+  });
 }
 
 function setAuthenticated(on) {
-  els.loginCard.classList.toggle('hidden', on);
-  els.dashboard.classList.toggle('hidden', !on);
-  els.logoutBtn.classList.toggle('hidden', !on);
+  if (els.loginCard) {
+    els.loginCard.classList.toggle('hidden', on);
+  }
+
+  if (els.dashboard) {
+    els.dashboard.classList.toggle('hidden', !on);
+  }
+
+  if (els.logoutBtn) {
+    els.logoutBtn.classList.toggle('hidden', !on);
+  }
 }
 
 async function fetchStories() {
   const payload = await request('/admin/stories');
-  state.stories = Array.isArray(payload.stories) ? payload.stories.map(normalize) : [];
+  state.stories = Array.isArray(payload?.stories)
+    ? payload.stories.map(normalize)
+    : [];
+
   updateStats();
   renderTable();
 }
@@ -195,18 +240,31 @@ async function trySession() {
     setAuthenticated(true);
   } catch (error) {
     setAuthenticated(false);
-    if (error.status && error.status !== 401) showToast(error.message, 'error');
+    if (error.status && error.status !== 401) {
+      showToast(error.message || 'Không tải được dữ liệu.', 'error');
+    }
   }
 }
 
 async function login(event) {
   event.preventDefault();
-  const password = els.password.value || '';
-  if (!password.trim()) return showToast('Hãy nhập mật khẩu.', 'error');
+
+  const password = els.password?.value || '';
+  if (!password.trim()) {
+    showToast('Hãy nhập mật khẩu.', 'error');
+    return;
+  }
 
   try {
-    await request('/admin/login', { method: 'POST', body: JSON.stringify({ password }) });
-    els.password.value = '';
+    await request('/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ password }),
+    });
+
+    if (els.password) {
+      els.password.value = '';
+    }
+
     setAuthenticated(true);
     await fetchStories();
     showToast('Đăng nhập thành công.', 'success');
@@ -216,9 +274,18 @@ async function login(event) {
 }
 
 async function logout() {
-  try { await request('/admin/logout', { method: 'POST', body: '{}' }); } catch {}
+  try {
+    await request('/admin/logout', {
+      method: 'POST',
+      body: '{}',
+    });
+  } catch {
+    // bỏ qua
+  }
+
   setAuthenticated(false);
   state.stories = [];
+  state.filtered = [];
   renderTable();
 }
 
@@ -226,43 +293,78 @@ function openEdit(id) {
   const story = state.stories.find((item) => item.id === id);
   if (!story) return;
 
-  document.getElementById('editId').value = String(story.id);
-  document.getElementById('editTitle').value = story.title;
-  document.getElementById('editLinkStory').value = story.linkstory;
-  document.getElementById('editYoutubeLink').value = story.youtubelink;
-  document.getElementById('editStatus').value = story.status;
-  document.getElementById('editVotes').value = String(story.votes);
-  document.getElementById('editNote').value = story.note;
-  document.getElementById('editVisible').checked = story.visible;
-  const versionRadio = document.querySelector(`input[name="editVersion"][value="${story.version}"]`);
-  if (versionRadio) versionRadio.checked = true;
+  const editId = document.getElementById('editId');
+  const editTitle = document.getElementById('editTitle');
+  const editLinkStory = document.getElementById('editLinkStory');
+  const editYoutubeLink = document.getElementById('editYoutubeLink');
+  const editStatus = document.getElementById('editStatus');
+  const editVotes = document.getElementById('editVotes');
+  const editNote = document.getElementById('editNote');
 
-  els.deleteBtn.dataset.id = String(story.id);
-  els.hideBtn.dataset.id = String(story.id);
-  els.hideBtn.textContent = story.visible ? 'Ẩn truyện' : 'Hiện truyện';
-  els.editDialog.showModal();
+  if (editId) editId.value = String(story.id);
+  if (editTitle) editTitle.value = story.title;
+  if (editLinkStory) editLinkStory.value = story.linkstory;
+  if (editYoutubeLink) editYoutubeLink.value = story.youtubelink;
+  if (editStatus) editStatus.value = story.status;
+  if (editVotes) editVotes.value = String(story.votes);
+  if (editNote) editNote.value = story.note;
+
+  const versionRadio = document.querySelector(
+    `input[name="editVersion"][value="${story.version}"]`
+  );
+  if (versionRadio) {
+    versionRadio.checked = true;
+  }
+
+  if (els.deleteBtn) {
+    els.deleteBtn.dataset.id = String(story.id);
+  }
+
+  if (els.editDialog?.showModal) {
+    els.editDialog.showModal();
+  }
 }
 
 function closeEdit() {
-  if (els.editDialog.open) els.editDialog.close();
+  if (els.editDialog?.open) {
+    els.editDialog.close();
+  }
 }
 
 async function saveEdit(event) {
   event.preventDefault();
-  const id = document.getElementById('editId').value;
+
+  const editId = document.getElementById('editId');
+  const editTitle = document.getElementById('editTitle');
+  const editLinkStory = document.getElementById('editLinkStory');
+  const editYoutubeLink = document.getElementById('editYoutubeLink');
+  const editStatus = document.getElementById('editStatus');
+  const editVotes = document.getElementById('editVotes');
+  const editNote = document.getElementById('editNote');
+
+  const id = editId?.value;
+  if (!id) {
+    showToast('Không tìm thấy ID truyện.', 'error');
+    return;
+  }
+
   const payload = {
-    title: document.getElementById('editTitle').value.trim(),
-    linkstory: document.getElementById('editLinkStory').value.trim(),
-    youtubelink: document.getElementById('editYoutubeLink').value.trim(),
-    status: document.getElementById('editStatus').value,
-    votes: Number(document.getElementById('editVotes').value || 0),
-    note: document.getElementById('editNote').value.trim(),
-    version: document.querySelector('input[name="editVersion"]:checked')?.value || 'Edit',
-    visible: document.getElementById('editVisible').checked,
+    title: (editTitle?.value || '').trim(),
+    linkstory: (editLinkStory?.value || '').trim(),
+    youtubelink: (editYoutubeLink?.value || '').trim(),
+    status: editStatus?.value || 'đề xuất',
+    votes: Number(editVotes?.value || 0),
+    note: (editNote?.value || '').trim(),
+    version:
+      document.querySelector('input[name="editVersion"]:checked')?.value || 'Edit',
   };
 
   try {
-    await request(`/admin/stories/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(payload) });
+    await request(`/admin/stories/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+
     showToast('Đã lưu thay đổi.', 'success');
     closeEdit();
     await fetchStories();
@@ -271,22 +373,20 @@ async function saveEdit(event) {
   }
 }
 
-async function toggleVisibility(id, visible) {
-  try {
-    await request(`/admin/stories/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify({ visible }) });
-    showToast(visible ? 'Đã hiện truyện.' : 'Đã ẩn truyện.', 'success');
-    closeEdit();
-    await fetchStories();
-  } catch (error) {
-    showToast(error.message || 'Không đổi được trạng thái hiển thị.', 'error');
-  }
-}
-
 async function removeStory(id) {
-  const ok = window.confirm('Bạn chắc chắn muốn xóa hẳn truyện này khỏi database?');
+  if (!id) return;
+
+  const ok = window.confirm(
+    'Bạn chắc chắn muốn xóa hẳn truyện này khỏi database?'
+  );
   if (!ok) return;
+
   try {
-    await request(`/admin/stories/${encodeURIComponent(id)}`, { method: 'DELETE', body: '{}' });
+    await request(`/admin/stories/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      body: '{}',
+    });
+
     showToast('Đã xóa hẳn truyện.', 'success');
     closeEdit();
     await fetchStories();
@@ -295,23 +395,31 @@ async function removeStory(id) {
   }
 }
 
-els.loginForm.addEventListener('submit', login);
-els.logoutBtn.addEventListener('click', logout);
-els.adminSearch.addEventListener('input', renderTable);
-els.adminFilter.addEventListener('change', renderTable);
-els.adminVisibility.addEventListener('change', renderTable);
-els.closeEditDialogBtn.addEventListener('click', closeEdit);
-els.editForm.addEventListener('submit', saveEdit);
-els.hideBtn.addEventListener('click', () => {
-  const id = els.hideBtn.dataset.id;
-  const visible = !document.getElementById('editVisible').checked;
-  toggleVisibility(id, visible);
+bind(els.loginForm, 'submit', login);
+bind(els.logoutBtn, 'click', logout);
+bind(els.adminSearch, 'input', renderTable);
+bind(els.adminFilter, 'change', renderTable);
+bind(els.closeEditDialogBtn, 'click', closeEdit);
+bind(els.editForm, 'submit', saveEdit);
+
+bind(els.deleteBtn, 'click', () => {
+  removeStory(els.deleteBtn?.dataset?.id);
 });
-els.deleteBtn.addEventListener('click', () => removeStory(els.deleteBtn.dataset.id));
-els.editDialog.addEventListener('click', (event) => {
-  const rect = els.editDialog.getBoundingClientRect();
-  const inDialog = rect.top <= event.clientY && event.clientY <= rect.top + rect.height && rect.left <= event.clientX && event.clientX <= rect.left + rect.width;
-  if (!inDialog) closeEdit();
+
+bind(els.editDialog, 'click', (event) => {
+  const dialog = els.editDialog;
+  if (!dialog) return;
+
+  const rect = dialog.getBoundingClientRect();
+  const inDialog =
+    rect.top <= event.clientY &&
+    event.clientY <= rect.top + rect.height &&
+    rect.left <= event.clientX &&
+    event.clientX <= rect.left + rect.width;
+
+  if (!inDialog) {
+    closeEdit();
+  }
 });
 
 trySession();
