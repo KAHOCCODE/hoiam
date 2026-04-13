@@ -51,8 +51,14 @@ function safeUrl(value) {
 }
 
 function normalizeStatus(value) {
-  if (value === 'đang đọc') return 'đang đọc';
-  if (value === 'đã đọc') return 'đã đọc';
+  const cleaned = String(value || '')
+    .normalize('NFC')
+    .replace(/\u202F/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  if (cleaned === 'đang đọc') return 'đang đọc';
   return 'đề xuất';
 }
 
