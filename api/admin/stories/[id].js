@@ -4,7 +4,7 @@ const {
   parseJson,
   normalizeStatus,
   safeText,
-  safeUrl
+  safeUrl,
 } = require('../../_lib/utils');
 const { requireAdmin } = require('../../_lib/auth');
 const { supabase, table } = require('../../_lib/supabase');
@@ -22,22 +22,42 @@ module.exports = async (req, res) => {
     if (req.method === 'DELETE') {
       await supabase(`${table}?id=eq.${id}`, {
         method: 'DELETE',
-        headers: { Prefer: 'return=minimal' }
+        headers: { Prefer: 'return=minimal' },
       });
+
       return json(res, 200, { ok: true });
     }
 
     const body = await parseJson(req);
     const payload = {};
 
-    if ('title' in body) payload.title = safeText(body.title, { max: 120 });
-    if ('linkstory' in body) payload.linkstory = safeUrl(body.linkstory);
-    if ('youtubelink' in body) payload.youtubelink = safeUrl(body.youtubelink);
-    if ('status' in body) payload.status = normalizeStatus(body.status);
-    if ('note' in body) payload.note = safeText(body.note, { max: 300 });
-    if ('version' in body) payload.version = body.version === 'Convert' ? 'Convert' : 'Edit';
+    if ('title' in body) {
+      payload.title = safeText(body.title, { max: 220 });
+    }
+
+    if ('linkstory' in body) {
+      payload.linkstory = safeUrl(body.linkstory);
+    }
+
+    if ('youtubelink' in body) {
+      payload.youtubelink = safeUrl(body.youtubelink);
+    }
+
+    if ('status' in body) {
+      payload.status = normalizeStatus(body.status);
+    }
+
+    if ('note' in body) {
+      payload.note = safeText(body.note, { max: 5000 });
+    }
+
+    if ('version' in body) {
+      payload.version = body.version === 'Convert' ? 'Convert' : 'Edit';
+    }
+
     if ('votes' in body) {
-      payload.votes = Math.max(0, Number.isFinite(Number(body.votes)) ? Number(body.votes) : 0);
+      const votes = Number(body.votes);
+      payload.votes = Number.isFinite(votes) ? Math.max(0, Math.floor(votes)) : 0;
     }
 
     if ('title' in payload && payload.title.length < 2) {
