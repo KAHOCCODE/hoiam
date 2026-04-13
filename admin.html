@@ -1,174 +1,1435 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin · Hồi Âm Đam Mỹ</title>
-  <meta name="description" content="Trang quản trị tách riêng cho Hồi Âm Đam Mỹ.">
-  <link rel="stylesheet" href="/assets/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HA Hồi Âm Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    referrerpolicy="no-referrer"
+  />
+
+  <style>
+    :root {
+      --bg: #08111f;
+      --bg-soft: #0d1728;
+      --panel: rgba(18, 28, 47, 0.88);
+      --panel-2: rgba(24, 37, 61, 0.92);
+      --panel-3: rgba(30, 46, 76, 0.92);
+      --line: rgba(255, 255, 255, 0.08);
+      --line-2: rgba(255, 255, 255, 0.14);
+      --text: #eef4ff;
+      --muted: #97a8c7;
+      --blue: #35b4ff;
+      --blue-2: #53d2ff;
+      --purple: #7a7fff;
+      --orange: #ff9d57;
+      --green: #2dd4bf;
+      --danger: #ff6b81;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(83, 210, 255, 0.12), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(122, 127, 255, 0.14), transparent 20%),
+        linear-gradient(180deg, #060d18 0%, #09121f 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .admin-app {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: relative;
+      padding: 28px 20px;
+      border-right: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(18, 28, 47, 0.97), rgba(13, 23, 40, 0.96));
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark {
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      box-shadow: 0 16px 30px rgba(53, 180, 255, 0.25);
+      font-size: 20px;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-copy span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sidebar-search {
+      position: relative;
+      margin-bottom: 22px;
+    }
+
+    .sidebar-search i {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .sidebar-search input {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px 0 40px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      outline: none;
+    }
+
+    .sidebar-search input::placeholder {
+      color: #8293b2;
+    }
+
+    .sidebar-nav {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 14px;
+      border-radius: 16px;
+      color: #d7e3f7;
+      background: transparent;
+      border: 1px solid transparent;
+      transition: 0.2s ease;
+    }
+
+    .nav-item:hover,
+    .nav-item.is-active {
+      background: rgba(83, 210, 255, 0.08);
+      border-color: rgba(83, 210, 255, 0.12);
+      color: #fff;
+    }
+
+    .nav-item i {
+      width: 18px;
+      text-align: center;
+      color: var(--blue-2);
+    }
+
+    .sidebar-card {
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(122, 127, 255, 0.25), rgba(53, 180, 255, 0.12));
+      overflow: hidden;
+    }
+
+    .sidebar-card h4 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .sidebar-card p {
+      margin: 0 0 14px;
+      color: #d4def0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .sidebar-card .ghost-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .main {
+      padding: 26px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+
+    .topbar-search,
+    .profile-card,
+    .panel,
+    .hero-card,
+    .metric-card,
+    .table-card,
+    .info-card,
+    .login-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar-search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px;
+      min-height: 68px;
+    }
+
+    .topbar-search i {
+      color: var(--blue-2);
+      font-size: 18px;
+    }
+
+    .topbar-search input {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      outline: none;
+      font-size: 15px;
+    }
+
+    .topbar-search input::placeholder {
+      color: #8ba0c4;
+    }
+
+    .profile-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      gap: 14px;
+    }
+
+    .profile-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .profile-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .profile-text strong {
+      display: block;
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .profile-text span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .logout-btn {
+      border: 0;
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.07));
+    }
+
+    .login-card {
+      max-width: 760px;
+      padding: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(53, 180, 255, 0.12);
+      color: var(--blue-2);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .login-card h1 {
+      margin: 16px 0 10px;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.1;
+    }
+
+    .login-card p {
+      margin: 0 0 22px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 620px;
+    }
+
+    .login-form {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      margin-top: 18px;
+    }
+
+    .input-shell {
+      position: relative;
+    }
+
+    .input-shell i {
+      position: absolute;
+      top: 50%;
+      left: 16px;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+
+    .input-shell input,
+    .control,
+    .textarea {
+      width: 100%;
+      min-height: 52px;
+      border: 1px solid var(--line-2);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      outline: none;
+      padding: 0 16px;
+    }
+
+    .input-shell input {
+      padding-left: 46px;
+    }
+
+    .textarea {
+      min-height: 120px;
+      resize: vertical;
+      padding: 14px 16px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      min-height: 52px;
+      padding: 0 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, opacity 0.16s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      color: #03111d;
+      background: linear-gradient(135deg, var(--blue-2), #7ce3ff);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+    }
+
+    .btn-secondary {
+      color: #fff;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+    }
+
+    .btn-danger {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(255,107,129,0.95), rgba(255,135,99,0.95));
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 22px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) 320px;
+      gap: 22px;
+    }
+
+    .hero-card {
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(83,210,255,0.18), transparent 30%),
+        linear-gradient(135deg, rgba(25, 39, 63, 0.96), rgba(11, 20, 34, 0.96));
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -40px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(122,127,255,0.22), transparent 62%);
+      pointer-events: none;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 620px;
+    }
+
+    .hero-copy h2 {
+      margin: 14px 0 10px;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.05;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      color: #e9f3ff;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .info-card {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background:
+        linear-gradient(180deg, rgba(17, 27, 46, 0.98), rgba(12, 20, 35, 0.95));
+    }
+
+    .info-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .info-top h3 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .pulse {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 10px rgba(45, 212, 191, 0.14);
+    }
+
+    .info-list {
+      display: grid;
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .info-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
+
+    .info-list span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .info-list strong {
+      font-size: 15px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .metric-card {
+      padding: 18px 18px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card[data-tone="blue"] {
+      background: linear-gradient(135deg, rgba(53,180,255,0.24), rgba(25,41,68,0.98));
+    }
+
+    .metric-card[data-tone="purple"] {
+      background: linear-gradient(135deg, rgba(122,127,255,0.26), rgba(25,41,68,0.98));
+    }
+
+    .metric-card[data-tone="green"] {
+      background: linear-gradient(135deg, rgba(45,212,191,0.22), rgba(25,41,68,0.98));
+    }
+
+    .metric-card[data-tone="orange"] {
+      background: linear-gradient(135deg, rgba(255,157,87,0.24), rgba(25,41,68,0.98));
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .metric-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .metric-label {
+      display: block;
+      color: #dce8fb;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .metric-card strong {
+      display: block;
+      margin-top: 14px;
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1;
+    }
+
+    .metric-note {
+      margin-top: 10px;
+      color: #d0def3;
+      font-size: 13px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) 320px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .table-card {
+      padding: 22px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card-head h3 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+
+    .card-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .head-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .toolbar-search {
+      position: relative;
+    }
+
+    .toolbar-search i {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toolbar-search input {
+      width: 100%;
+      min-height: 50px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 0 16px 0 42px;
+      outline: none;
+    }
+
+    .toolbar-search input::placeholder {
+      color: #8ba0c4;
+    }
+
+    .toolbar select {
+      width: 100%;
+      min-height: 50px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 16px 18px;
+      font-size: 13px;
+      color: #aebddb;
+      font-weight: 700;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--line);
+      letter-spacing: 0.02em;
+    }
+
+    tbody td {
+      padding: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,0.025);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .story-title {
+      display: inline-block;
+      margin-bottom: 6px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #f5f9ff;
+    }
+
+    .inline-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      color: var(--blue-2);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.95;
+    }
+
+    .status-pill[data-status="đề xuất"] {
+      color: #ffd666;
+      background: rgba(255, 214, 102, 0.12);
+      border-color: rgba(255, 214, 102, 0.14);
+    }
+
+    .status-pill[data-status="đang đọc"] {
+      color: #51e0be;
+      background: rgba(81, 224, 190, 0.12);
+      border-color: rgba(81, 224, 190, 0.14);
+    }
+
+    .vote-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      font-weight: 700;
+      color: #e8f3ff;
+    }
+
+    .vote-badge i {
+      color: #ff8faa;
+    }
+
+    .admin-row-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .small-btn {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .small-btn:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .aside-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .mini-card {
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+    }
+
+    .mini-card h4 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .mini-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .mini-card + .mini-card {
+      background: var(--panel-3);
+    }
+
+    .dialog {
+      width: min(760px, calc(100vw - 24px));
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: #0e1829;
+      color: var(--text);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.48);
+    }
+
+    .dialog::backdrop {
+      background: rgba(2, 8, 15, 0.72);
+      backdrop-filter: blur(4px);
+    }
+
+    .dialog-shell {
+      padding: 24px;
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .dialog-head h3 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .close-btn {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      font-size: 14px;
+      color: #dfe8f7;
+      font-weight: 600;
+    }
+
+    .radio-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .choice-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      cursor: pointer;
+      color: #e7f0ff;
+    }
+
+    .choice-pill input {
+      accent-color: var(--blue-2);
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .dialog-actions-right {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .toast-region {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 60;
+      display: grid;
+      gap: 10px;
+      width: min(360px, calc(100vw - 24px));
+    }
+
+    .toast {
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(14, 24, 41, 0.96);
+      color: #fff;
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    .toast[data-tone="success"] {
+      border-color: rgba(81, 224, 190, 0.22);
+    }
+
+    .toast[data-tone="error"] {
+      border-color: rgba(255, 107, 129, 0.22);
+    }
+
+    @media (max-width: 1180px) {
+      .admin-app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .topbar,
+      .hero-grid,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .main {
+        padding: 16px;
+      }
+
+      .stats-grid,
+      .form-grid,
+      .login-form,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .card-head,
+      .dialog-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .dialog-actions-right {
+        margin-left: 0;
+      }
+
+      .profile-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
-<body class="admin-body">
-  <div class="aurora aurora-a" aria-hidden="true"></div>
-  <div class="aurora aurora-b" aria-hidden="true"></div>
-
-  <header class="site-header">
-    <div class="container header-row">
-      <a href="/" class="brand">
-        <span class="brand-mark">HA</span>
-        <span>
-          <strong>Hồi Âm Admin</strong>
-          <small>Trang quản trị tách riêng khỏi client công khai</small>
-        </span>
-      </a>
-
-      <div class="header-actions">
-        <a href="/" class="btn btn-secondary">Về trang chủ</a>
-        <button id="logoutBtn" class="btn btn-secondary hidden" type="button">Đăng xuất</button>
+<body>
+  <div class="admin-app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">
+          <i class="fa-solid fa-wave-square"></i>
+        </div>
+        <div class="brand-copy">
+          <strong>Control Panel</strong>
+          <span>Hồi Âm Admin Dashboard</span>
+        </div>
       </div>
-    </div>
-  </header>
 
-  <main class="section">
-    <div class="container admin-layout">
-      <section id="loginCard" class="card admin-login">
-        <span class="eyebrow">Admin riêng, an toàn hơn</span>
-        <h1>Đăng nhập quản trị</h1>
-        <p>Mật khẩu admin không còn nằm trong mã frontend công khai. Phiên đăng nhập được ký bằng cookie HttpOnly ở phía server.</p>
+      <div class="sidebar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Tìm nhanh trong trang quản trị">
+      </div>
 
-        <form id="loginForm" class="stack" novalidate>
-          <label class="field">
-            <span>Mật khẩu admin</span>
-            <input id="password" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu admin">
-          </label>
-          <button class="btn btn-primary" type="submit">Đăng nhập</button>
+      <nav class="sidebar-nav">
+        <a class="nav-item is-active" href="#">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Tổng quan</span>
+        </a>
+        <a class="nav-item" href="/">
+          <i class="fa-solid fa-house"></i>
+          <span>Về trang chủ</span>
+        </a>
+        <a class="nav-item" href="#stories-panel">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Danh sách truyện</span>
+        </a>
+        <a class="nav-item" href="#editDialog">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span>Chỉnh sửa dữ liệu</span>
+        </a>
+        <a class="nav-item" href="#tips-panel">
+          <i class="fa-solid fa-sparkles"></i>
+          <span>Tips quản trị</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-card">
+        <h4>Luồng quản trị mới</h4>
+        <p>
+          Truyện mới sẽ vào <strong>đề xuất</strong>, khi duyệt sẽ chuyển sang
+          <strong>đang đọc</strong>, và khi đọc xong thì xóa khỏi hệ thống.
+        </p>
+        <a class="ghost-link" href="/">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Quay lại trang chủ</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Please enter your search criteria">
+          <i class="fa-solid fa-sliders"></i>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-meta">
+            <img
+              class="profile-avatar"
+              src="https://api.dicebear.com/8.x/shapes/svg?seed=HoiAmAdmin"
+              alt="Admin avatar"
+            >
+            <div class="profile-text">
+              <strong>Hi, Admin 👋</strong>
+              <span>Dashboard quản trị truyện và lịch lên sóng</span>
+            </div>
+          </div>
+
+          <button id="logoutBtn" class="logout-btn hidden" type="button">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Đăng xuất
+          </button>
+        </div>
+      </header>
+
+      <section id="loginCard" class="login-card">
+        <span class="eyebrow">
+          <i class="fa-solid fa-shield-halved"></i>
+          Admin riêng, an toàn hơn
+        </span>
+
+        <h1>Đăng nhập trang quản trị Hồi Âm</h1>
+        <p>
+          Mật khẩu admin không còn nằm ở frontend công khai. Phiên đăng nhập được
+          ký bằng cookie HttpOnly phía server. Đăng nhập xong, bạn sẽ quản lý toàn bộ
+          danh sách truyện theo đúng luồng: đề xuất → đang đọc → xóa.
+        </p>
+
+        <form id="loginForm" class="login-form">
+          <div class="input-shell">
+            <i class="fa-solid fa-lock"></i>
+            <input
+              id="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Nhập mật khẩu admin"
+            >
+          </div>
+          <button class="btn btn-primary" type="submit">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            Đăng nhập
+          </button>
         </form>
       </section>
 
-      <section id="dashboard" class="hidden admin-dashboard">
-        <div class="stats-grid admin-stats">
-          <article class="stat-card card"><span class="stat-label">Tổng</span><strong id="aStatTotal">0</strong></article>
-          <article class="stat-card card"><span class="stat-label">Đang hiển thị</span><strong id="aStatVisible">0</strong></article>
-          <article class="stat-card card"><span class="stat-label">Đang ẩn</span><strong id="aStatHidden">0</strong></article>
-          <article class="stat-card card"><span class="stat-label">Đang phát</span><strong id="aStatOnAir">0</strong></article>
+      <section id="dashboard" class="dashboard hidden">
+        <div class="hero-grid">
+          <article class="hero-card">
+            <div class="hero-copy">
+              <span class="eyebrow">
+                <i class="fa-solid fa-chart-pie"></i>
+                Dashboard
+              </span>
+
+              <h2>Quản lý danh sách truyện theo giao diện mới</h2>
+              <p>
+                Giao diện này ưu tiên nhìn nhanh số liệu, lọc truyện dễ hơn,
+                sửa thông tin gọn hơn và đồng bộ với luồng dữ liệu hiện tại của web:
+                chỉ còn <strong>đề xuất</strong> và <strong>đang đọc</strong>.
+              </p>
+
+              <div class="hero-tags">
+                <span class="hero-tag">
+                  <i class="fa-solid fa-bolt"></i>
+                  Tối ưu thao tác admin
+                </span>
+                <span class="hero-tag">
+                  <i class="fa-solid fa-heart-circle-check"></i>
+                  Theo dõi vote nhanh
+                </span>
+                <span class="hero-tag">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  Dễ nâng cấp giao diện
+                </span>
+              </div>
+            </div>
+          </article>
+
+          <aside class="info-card">
+            <div>
+              <div class="info-top">
+                <h3>Hoạt động</h3>
+                <span class="pulse"></span>
+              </div>
+
+              <ul class="info-list">
+                <li>
+                  <span>Trạng thái hệ thống</span>
+                  <strong>Đang hoạt động</strong>
+                </li>
+                <li>
+                  <span>Luồng dữ liệu</span>
+                  <strong>2 trạng thái</strong>
+                </li>
+                <li>
+                  <span>Top hiển thị</span>
+                  <strong>Top 3 theo vote</strong>
+                </li>
+                <li>
+                  <span>Kiểu quản trị</span>
+                  <strong>Xóa khi đọc xong</strong>
+                </li>
+              </ul>
+            </div>
+          </aside>
         </div>
 
-        <div class="card admin-tools">
-          <div class="search-wrap">
-            <span>⌕</span>
-            <input id="adminSearch" type="search" placeholder="Tìm theo tên truyện...">
-          </div>
+        <div class="stats-grid">
+          <article class="metric-card" data-tone="blue">
+            <div class="metric-top">
+              <span class="metric-label">Tổng số truyện</span>
+              <div class="metric-icon">
+                <i class="fa-solid fa-books"></i>
+              </div>
+            </div>
+            <strong id="aStatTotal">0</strong>
+            <div class="metric-note">Toàn bộ bản ghi đang còn trong hệ thống</div>
+          </article>
 
-          <div class="toolbar-actions">
-            <select id="adminFilter">
-              <option value="all">Tất cả trạng thái</option>
-              <option value="đề xuất">Đề xuất</option>
-              <option value="đang đọc">Đang phát</option>
-              <option value="đã đọc">Hoàn thành</option>
-            </select>
-            <select id="adminVisibility">
-              <option value="all">Hiển thị + Ẩn</option>
-              <option value="visible">Chỉ đang hiển thị</option>
-              <option value="hidden">Chỉ đang ẩn</option>
-            </select>
-          </div>
+          <article class="metric-card" data-tone="purple">
+            <div class="metric-top">
+              <span class="metric-label">Đề xuất</span>
+              <div class="metric-icon">
+                <i class="fa-solid fa-lightbulb"></i>
+              </div>
+            </div>
+            <strong id="aStatSuggest">0</strong>
+            <div class="metric-note">Các truyện mới đang chờ duyệt / chờ lên sóng</div>
+          </article>
+
+          <article class="metric-card" data-tone="green">
+            <div class="metric-top">
+              <span class="metric-label">Đang đọc</span>
+              <div class="metric-icon">
+                <i class="fa-solid fa-headphones"></i>
+              </div>
+            </div>
+            <strong id="aStatReading">0</strong>
+            <div class="metric-note">Các truyện đang được thực hiện / đang lên sóng</div>
+          </article>
+
+          <article class="metric-card" data-tone="orange">
+            <div class="metric-top">
+              <span class="metric-label">Top thịnh hành</span>
+              <div class="metric-icon">
+                <i class="fa-solid fa-fire"></i>
+              </div>
+            </div>
+            <strong id="aStatTop">3</strong>
+            <div class="metric-note">Top hiển thị tự động theo số vote cao nhất</div>
+          </article>
         </div>
 
-        <div class="card admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Truyện</th>
-                <th>Trạng thái</th>
-                <th>Vote</th>
-                <th>Hiển thị</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="adminTable"></tbody>
-          </table>
+        <div class="content-grid">
+          <section id="stories-panel" class="table-card">
+            <div class="card-head">
+              <div>
+                <h3>Danh sách truyện</h3>
+                <p>
+                  Chỉ còn 2 trạng thái: <strong>đề xuất</strong> và
+                  <strong>đang đọc</strong>. Khi hoàn tất, bạn xóa truyện khỏi database.
+                </p>
+              </div>
+
+              <div class="head-actions">
+                <a class="btn btn-secondary" href="/" target="_blank" rel="noopener noreferrer">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  Mở trang chủ
+                </a>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="toolbar-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="adminSearch" type="text" placeholder="Tìm theo tên truyện...">
+              </div>
+
+              <div>
+                <select id="adminFilter">
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="đề xuất">Đề xuất</option>
+                  <option value="đang đọc">Đang đọc</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Truyện</th>
+                    <th>Trạng thái</th>
+                    <th>Vote</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="adminTable">
+                  <tr>
+                    <td colspan="4">Đang tải dữ liệu...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside id="tips-panel" class="aside-stack">
+            <article class="mini-card">
+              <h4>Tips quản trị</h4>
+              <p>
+                Khi một truyện được chọn để làm audio, chỉ cần chuyển sang
+                <strong>đang đọc</strong>. Không cần trạng thái đã đọc nữa.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <h4>Top 3 theo vote</h4>
+              <p>
+                Khối top thịnh hành nên lấy trực tiếp từ dữ liệu còn tồn tại trong bảng,
+                sắp xếp theo <strong>votes desc</strong> và cắt 3 dòng đầu.
+              </p>
+            </article>
+
+            <article class="mini-card">
+              <h4>Nâng cấp tiếp theo</h4>
+              <p>
+                Bước sau nên đồng bộ luôn <strong>assets/admin.js</strong> và
+                phần render ở <strong>index.html</strong> để giao diện và dữ liệu
+                khớp hoàn toàn.
+              </p>
+            </article>
+          </aside>
         </div>
       </section>
-    </div>
-  </main>
+    </main>
+  </div>
 
-  <dialog id="editDialog" class="story-dialog admin-dialog">
-    <article class="dialog-shell">
-      <button id="closeEditDialogBtn" class="dialog-close" type="button" aria-label="Đóng">×</button>
-      <form id="editForm" class="stack">
+  <dialog id="editDialog" class="dialog">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <div>
+          <span class="eyebrow">
+            <i class="fa-solid fa-pen"></i>
+            Chỉnh sửa
+          </span>
+          <h3>Cập nhật truyện</h3>
+        </div>
+
+        <button id="closeEditDialogBtn" class="close-btn" type="button" aria-label="Đóng">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="editForm">
         <input id="editId" type="hidden">
-        <div class="section-heading compact">
-          <div>
-            <span class="eyebrow">Chỉnh sửa</span>
-            <h2>Cập nhật truyện</h2>
+
+        <div class="form-grid">
+          <div class="field full">
+            <label for="editTitle">Tên truyện</label>
+            <input id="editTitle" class="control" type="text" placeholder="Nhập tên truyện">
           </div>
-        </div>
 
-        <label class="field">
-          <span>Tên truyện</span>
-          <input id="editTitle" type="text" maxlength="120" required>
-        </label>
+          <div class="field">
+            <label for="editLinkStory">Link gốc</label>
+            <input id="editLinkStory" class="control" type="url" placeholder="https://...">
+          </div>
 
-        <div class="grid-2">
-          <label class="field">
-            <span>Link gốc</span>
-            <input id="editLinkStory" type="url" placeholder="https://...">
-          </label>
-          <label class="field">
-            <span>Link audio / YouTube</span>
-            <input id="editYoutubeLink" type="url" placeholder="https://...">
-          </label>
-        </div>
+          <div class="field">
+            <label for="editYoutubeLink">Link audio / YouTube</label>
+            <input id="editYoutubeLink" class="control" type="url" placeholder="https://...">
+          </div>
 
-        <div class="grid-2">
-          <label class="field">
-            <span>Trạng thái</span>
-            <select id="editStatus">
+          <div class="field">
+            <label for="editStatus">Trạng thái</label>
+            <select id="editStatus" class="control">
               <option value="đề xuất">Đề xuất</option>
-              <option value="đang đọc">Đang phát</option>
-              <option value="đã đọc">Hoàn thành</option>
+              <option value="đang đọc">Đang đọc</option>
             </select>
-          </label>
-
-          <label class="field">
-            <span>Vote</span>
-            <input id="editVotes" type="number" min="0" step="1">
-          </label>
-        </div>
-
-        <fieldset class="field">
-          <span>Loại bản</span>
-          <div class="pill-row">
-            <label class="choice-pill">
-              <input type="radio" name="editVersion" value="Edit">
-              <span>Edit</span>
-            </label>
-            <label class="choice-pill">
-              <input type="radio" name="editVersion" value="Convert">
-              <span>Convert</span>
-            </label>
           </div>
-        </fieldset>
 
-        <label class="field">
-          <span>Ghi chú</span>
-          <textarea id="editNote" rows="5" maxlength="300"></textarea>
-        </label>
+          <div class="field">
+            <label for="editVotes">Vote</label>
+            <input id="editVotes" class="control" type="number" min="0" step="1" placeholder="0">
+          </div>
 
-        <label class="choice-pill" style="width: fit-content;">
-          <input id="editVisible" type="checkbox">
-          <span>Đang hiển thị ngoài trang công khai</span>
-        </label>
+          <div class="field full">
+            <label>Loại bản</label>
+            <div class="radio-row">
+              <label class="choice-pill">
+                <input type="radio" name="editVersion" value="Edit" checked>
+                <span>Edit</span>
+              </label>
+
+              <label class="choice-pill">
+                <input type="radio" name="editVersion" value="Convert">
+                <span>Convert</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label for="editNote">Ghi chú</label>
+            <textarea id="editNote" class="textarea" placeholder="Ghi chú về truyện..."></textarea>
+          </div>
+        </div>
 
         <div class="dialog-actions">
-          <button id="hideBtn" class="btn btn-secondary" type="button">Ẩn truyện</button>
-          <button id="deleteBtn" class="btn btn-danger" type="button">Xóa hẳn</button>
-          <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+          <button id="deleteBtn" class="btn btn-danger" type="button">
+            <i class="fa-solid fa-trash"></i>
+            Xóa hẳn
+          </button>
+
+          <div class="dialog-actions-right">
+            <button class="btn btn-secondary" type="button" id="cancelEditBtn" onclick="document.getElementById('editDialog').close()">
+              Hủy
+            </button>
+            <button class="btn btn-primary" type="submit">
+              <i class="fa-solid fa-floppy-disk"></i>
+              Lưu thay đổi
+            </button>
+          </div>
         </div>
       </form>
-    </article>
+    </div>
   </dialog>
 
   <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
-  <script src="/assets/admin.js" defer></script>
+
+  <script src="/assets/admin.js"></script>
 </body>
 </html>
