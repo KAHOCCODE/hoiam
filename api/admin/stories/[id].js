@@ -58,7 +58,9 @@ module.exports = async (req, res) => {
 
     const body = await parseJson(req);
 
-    // Cộng vote theo donate: không tạo bảng riêng, không lưu lịch sử.
+    // Donate đổi vote:
+    // Không tạo bảng riêng, không lưu lịch sử.
+    // Chỉ tính vote rồi cộng thẳng vào cột votes của truyện.
     if ('donate_amount_vnd' in body) {
       const amountVnd = Number(body.donate_amount_vnd);
 
@@ -144,9 +146,9 @@ module.exports = async (req, res) => {
       body: JSON.stringify(payload),
     });
 
-    json(res, 200, { story: updated?.[0] || payload });
+    return json(res, 200, { story: updated?.[0] || payload });
   } catch (error) {
-    json(res, error.status || 500, {
+    return json(res, error.status || 500, {
       error: error.message || 'Không cập nhật được truyện.',
     });
   }
