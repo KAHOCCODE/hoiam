@@ -11,11 +11,9 @@ const els = {
   loginForm: document.getElementById('loginForm'),
   password: document.getElementById('password'),
   logoutBtn: document.getElementById('logoutBtn'),
-
   adminSearch: document.getElementById('adminSearch'),
   adminFilter: document.getElementById('adminFilter'),
   adminTable: document.getElementById('adminTable'),
-
   editDialog: document.getElementById('editDialog'),
   closeEditDialogBtn: document.getElementById('closeEditDialogBtn'),
   editForm: document.getElementById('editForm'),
@@ -41,6 +39,7 @@ function showToast(message, tone = 'info') {
   node.className = 'toast';
   node.dataset.tone = tone;
   node.textContent = message;
+
   els.toastRegion.appendChild(node);
 
   setTimeout(() => {
@@ -59,6 +58,7 @@ async function request(path, options = {}) {
   });
 
   let payload = null;
+
   try {
     payload = await response.json();
   } catch {
@@ -96,7 +96,7 @@ function normalize(item) {
     note: String(item.note || ''),
     status: normalizeStatus(item.status),
     votes: Number.isFinite(Number(item.votes))
-      ? Math.max(0, Number(item.votes))
+      ? Math.max(0, Math.floor(Number(item.votes)))
       : 0,
     createdat: item.createdat || new Date().toISOString(),
   };
@@ -104,6 +104,10 @@ function normalize(item) {
 
 function statusLabel(status) {
   return status === 'đang đọc' ? 'Đang đọc' : 'Đề xuất';
+}
+
+function formatVnd(value) {
+  return Number(value || 0).toLocaleString('vi-VN') + 'đ';
 }
 
 function updateStats() {
@@ -135,6 +139,7 @@ function applyFilters() {
   state.filtered = state.stories.filter((item) => {
     const matchTitle = item.title.toLowerCase().includes(query);
     const matchStatus = statusFilter === 'all' || item.status === statusFilter;
+
     return matchTitle && matchStatus;
   });
 }
@@ -143,6 +148,7 @@ function createRow(story) {
   const tr = document.createElement('tr');
 
   const tdTitle = document.createElement('td');
+
   const title = document.createElement('span');
   title.className = 'story-title';
   title.textContent = story.title;
@@ -155,11 +161,13 @@ function createRow(story) {
     link.rel = 'noopener noreferrer';
     link.className = 'inline-link';
     link.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i> Mở link gốc';
+
     tdTitle.appendChild(document.createElement('br'));
     tdTitle.appendChild(link);
   }
 
   const tdStatus = document.createElement('td');
+
   const status = document.createElement('span');
   status.className = 'status-pill';
   status.dataset.status = story.status;
@@ -167,25 +175,28 @@ function createRow(story) {
   tdStatus.appendChild(status);
 
   const tdVotes = document.createElement('td');
+
   const vote = document.createElement('span');
   vote.className = 'vote-badge';
   vote.innerHTML = `<i class="fa-solid fa-heart"></i> ${story.votes}`;
   tdVotes.appendChild(vote);
 
   const tdAction = document.createElement('td');
+
   const actions = document.createElement('div');
   actions.className = 'admin-row-actions';
 
   const edit = document.createElement('button');
   edit.type = 'button';
   edit.className = 'small-btn';
-  edit.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Sửa';
+  edit.innerHTML = '<i class="fa-solid fa-pen"></i> Sửa';
   edit.addEventListener('click', () => openEdit(story.id));
 
   actions.appendChild(edit);
   tdAction.appendChild(actions);
 
   tr.append(tdTitle, tdStatus, tdVotes, tdAction);
+
   return tr;
 }
 
@@ -193,15 +204,19 @@ function renderTable() {
   if (!els.adminTable) return;
 
   applyFilters();
+
   els.adminTable.textContent = '';
 
   if (!state.filtered.length) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
+
     td.colSpan = 4;
     td.textContent = 'Không có dữ liệu phù hợp.';
+
     tr.appendChild(td);
     els.adminTable.appendChild(tr);
+
     return;
   }
 
@@ -226,6 +241,7 @@ function setAuthenticated(on) {
 
 async function fetchStories() {
   const payload = await request('/admin/stories');
+
   state.stories = Array.isArray(payload?.stories)
     ? payload.stories.map(normalize)
     : [];
@@ -240,6 +256,7 @@ async function trySession() {
     setAuthenticated(true);
   } catch (error) {
     setAuthenticated(false);
+
     if (error.status && error.status !== 401) {
       showToast(error.message || 'Không tải được dữ liệu.', 'error');
     }
@@ -250,6 +267,7 @@ async function login(event) {
   event.preventDefault();
 
   const password = els.password?.value || '';
+
   if (!password.trim()) {
     showToast('Hãy nhập mật khẩu.', 'error');
     return;
@@ -267,6 +285,7 @@ async function login(event) {
 
     setAuthenticated(true);
     await fetchStories();
+
     showToast('Đăng nhập thành công.', 'success');
   } catch (error) {
     showToast(error.message || 'Đăng nhập thất bại.', 'error');
@@ -280,13 +299,26 @@ async function logout() {
       body: '{}',
     });
   } catch {
-    // bỏ qua
+    // Bỏ qua lỗi logout để vẫn đóng giao diện admin.
   }
 
   setAuthenticated(false);
+
   state.stories = [];
   state.filtered = [];
+
   renderTable();
+}
+
+function resetDonateBox() {
+  const donateAmount = document.getElementById('donateAmount');
+  const donatePreview = document.getElementById('donatePreview');
+
+  if (donateAmount) donateAmount.value = '';
+
+  if (donatePreview) {
+    donatePreview.textContent = 'Nhập số tiền để xem số vote sẽ được cộng.';
+  }
 }
 
 function openEdit(id) {
@@ -312,6 +344,7 @@ function openEdit(id) {
   const versionRadio = document.querySelector(
     `input[name="editVersion"][value="${story.version}"]`
   );
+
   if (versionRadio) {
     versionRadio.checked = true;
   }
@@ -320,14 +353,20 @@ function openEdit(id) {
     els.deleteBtn.dataset.id = String(story.id);
   }
 
+  resetDonateBox();
+
   if (els.editDialog?.showModal) {
     els.editDialog.showModal();
+  } else if (els.editDialog) {
+    els.editDialog.classList.remove('hidden');
   }
 }
 
 function closeEdit() {
   if (els.editDialog?.open) {
     els.editDialog.close();
+  } else if (els.editDialog) {
+    els.editDialog.classList.add('hidden');
   }
 }
 
@@ -343,6 +382,7 @@ async function saveEdit(event) {
   const editNote = document.getElementById('editNote');
 
   const id = editId?.value;
+
   if (!id) {
     showToast('Không tìm thấy ID truyện.', 'error');
     return;
@@ -355,8 +395,7 @@ async function saveEdit(event) {
     status: editStatus?.value || 'đề xuất',
     votes: Number(editVotes?.value || 0),
     note: (editNote?.value || '').trim(),
-    version:
-      document.querySelector('input[name="editVersion"]:checked')?.value || 'Edit',
+    version: document.querySelector('input[name="editVersion"]:checked')?.value || 'Edit',
   };
 
   try {
@@ -366,6 +405,7 @@ async function saveEdit(event) {
     });
 
     showToast('Đã lưu thay đổi.', 'success');
+
     closeEdit();
     await fetchStories();
   } catch (error) {
@@ -379,6 +419,7 @@ async function removeStory(id) {
   const ok = window.confirm(
     'Bạn chắc chắn muốn xóa hẳn truyện này khỏi database?'
   );
+
   if (!ok) return;
 
   try {
@@ -388,10 +429,119 @@ async function removeStory(id) {
     });
 
     showToast('Đã xóa hẳn truyện.', 'success');
+
     closeEdit();
     await fetchStories();
   } catch (error) {
     showToast(error.message || 'Không thể xóa.', 'error');
+  }
+}
+
+function calculateDonatePreview(amountVnd) {
+  let pricePerVote = 5000;
+  let discountPercent = 0;
+
+  if (amountVnd >= 1000000) {
+    pricePerVote = 3000;
+    discountPercent = 40;
+  } else if (amountVnd >= 500000) {
+    pricePerVote = 3500;
+    discountPercent = 30;
+  } else if (amountVnd >= 200000) {
+    pricePerVote = 4000;
+    discountPercent = 20;
+  } else if (amountVnd >= 100000) {
+    pricePerVote = 4500;
+    discountPercent = 10;
+  }
+
+  return {
+    votes: Math.floor(amountVnd / pricePerVote),
+    pricePerVote,
+    discountPercent,
+  };
+}
+
+function updateDonatePreview() {
+  const donateAmount = document.getElementById('donateAmount');
+  const donatePreview = document.getElementById('donatePreview');
+
+  if (!donateAmount || !donatePreview) return;
+
+  const amount = Number(donateAmount.value || 0);
+
+  if (!Number.isInteger(amount) || amount <= 0) {
+    donatePreview.textContent = 'Nhập số tiền để xem số vote sẽ được cộng.';
+    return;
+  }
+
+  const result = calculateDonatePreview(amount);
+
+  donatePreview.textContent =
+    `${formatVnd(amount)} = ${result.votes} vote` +
+    ` · ${formatVnd(result.pricePerVote)}/vote` +
+    ` · giảm ${result.discountPercent}%`;
+}
+
+async function applyDonateVote() {
+  const editId = document.getElementById('editId');
+  const editVotes = document.getElementById('editVotes');
+  const donateAmount = document.getElementById('donateAmount');
+
+  const id = editId?.value;
+  const amount = Number(donateAmount?.value || 0);
+
+  if (!id) {
+    showToast('Không tìm thấy ID truyện.', 'error');
+    return;
+  }
+
+  if (!Number.isInteger(amount) || amount <= 0) {
+    showToast('Số tiền donate không hợp lệ.', 'error');
+    return;
+  }
+
+  const preview = calculateDonatePreview(amount);
+
+  if (preview.votes <= 0) {
+    showToast('Số tiền donate chưa đủ để đổi thành vote.', 'error');
+    return;
+  }
+
+  const ok = window.confirm(
+    `Cộng ${preview.votes} vote cho truyện này?\n` +
+    `Số tiền: ${formatVnd(amount)}\n` +
+    `Tỷ lệ: ${formatVnd(preview.pricePerVote)}/vote`
+  );
+
+  if (!ok) return;
+
+  try {
+    const payload = await request(`/admin/stories/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        donate_amount_vnd: amount,
+      }),
+    });
+
+    if (editVotes) {
+      editVotes.value = String(payload.new_votes);
+    }
+
+    if (donateAmount) {
+      donateAmount.value = '';
+    }
+
+    updateDonatePreview();
+
+    showToast(
+      `Đã cộng ${payload.votes_added} vote. Tổng mới: ${payload.new_votes} vote.`,
+      'success'
+    );
+
+    await fetchStories();
+  } catch (error) {
+    showToast(error.message || 'Không cộng vote donate được.', 'error');
   }
 }
 
@@ -406,11 +556,15 @@ bind(els.deleteBtn, 'click', () => {
   removeStory(els.deleteBtn?.dataset?.id);
 });
 
+bind(document.getElementById('donateAmount'), 'input', updateDonatePreview);
+bind(document.getElementById('applyDonateVoteBtn'), 'click', applyDonateVote);
+
 bind(els.editDialog, 'click', (event) => {
   const dialog = els.editDialog;
   if (!dialog) return;
 
   const rect = dialog.getBoundingClientRect();
+
   const inDialog =
     rect.top <= event.clientY &&
     event.clientY <= rect.top + rect.height &&
