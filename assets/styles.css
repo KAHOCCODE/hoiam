@@ -716,3 +716,58 @@ button { cursor: pointer; }
     white-space: nowrap;
   }
 }
+
+.donate-vote-box {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.donate-vote-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.donate-vote-head strong {
+  display: block;
+  font-size: 0.98rem;
+}
+
+.donate-vote-head small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.donate-preview {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  color: var(--soft);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  font-size: 0.92rem;
+}
+
+.vote-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  color: #f9a8d4;
+  background: rgba(236, 72, 153, 0.12);
+  border: 1px solid rgba(236, 72, 153, 0.22);
+  font-weight: 700;
+}
+
+.story-title {
+  font-weight: 800;
+}
