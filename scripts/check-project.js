@@ -20,7 +20,7 @@ const required = [
   'robots.txt',
   'sitemap.xml',
   'supabase.sql',
-  'api/[...path].js',
+  'api/index.js',
 ];
 
 for (const relative of required) {
@@ -90,8 +90,12 @@ const { normalizeStatus } = require(path.join(root, 'api/_routes/_lib/utils'));
 assert.equal(normalizeStatus('đang đọc'), 'đang lên sóng');
 assert.equal(normalizeStatus('ĐÃ HOÀN THÀNH'), 'đã hoàn thành');
 
-JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
+const vercelConfig = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+assert.deepEqual(vercelConfig.rewrites?.[0], {
+  source: '/api/:path*',
+  destination: '/api?path=:path*',
+}, 'Vercel must rewrite every nested API route to the shared function');
 
 const deployableFunctions = [];
 function collectFunctions(directory) {
