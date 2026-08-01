@@ -20,6 +20,7 @@ const required = [
   'robots.txt',
   'sitemap.xml',
   'supabase.sql',
+  'api/[...path].js',
 ];
 
 for (const relative of required) {
@@ -78,18 +79,30 @@ assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs 
 assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its own background');
 assert.match(fs.readFileSync(path.join(root, 'ads.txt'), 'utf8'), /pub-6051983418402912/, 'ads.txt publisher must be preserved');
 
-const { calculateDonation } = require(path.join(root, 'api/_lib/donations'));
+const { calculateDonation } = require(path.join(root, 'api/_routes/_lib/donations'));
 assert.deepEqual(calculateDonation(50_000), { amountVnd: 50_000, stoneCount: 50, suggestedVotes: 10, pricePerVote: 5000 });
 assert.equal(calculateDonation(100_000).suggestedVotes, 22);
 assert.equal(calculateDonation(200_000).suggestedVotes, 50);
 assert.equal(calculateDonation(500_000).suggestedVotes, 142);
 assert.equal(calculateDonation(1_000_000).suggestedVotes, 333);
 
-const { normalizeStatus } = require(path.join(root, 'api/_lib/utils'));
+const { normalizeStatus } = require(path.join(root, 'api/_routes/_lib/utils'));
 assert.equal(normalizeStatus('đang đọc'), 'đang lên sóng');
 assert.equal(normalizeStatus('ĐÃ HOÀN THÀNH'), 'đã hoàn thành');
 
 JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 
-console.log(`Project check passed (${jsFiles.length} JavaScript files, ${htmlFiles.length} pages).`);
+const deployableFunctions = [];
+function collectFunctions(directory) {
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    if (entry.name.startsWith('_') || entry.name.startsWith('.')) continue;
+    const absolute = path.join(directory, entry.name);
+    if (entry.isDirectory()) collectFunctions(absolute);
+    else if (entry.name.endsWith('.js')) deployableFunctions.push(absolute);
+  }
+}
+collectFunctions(path.join(root, 'api'));
+assert.equal(deployableFunctions.length, 1, 'Hobby deployment must expose exactly one Vercel Function');
+
+console.log(`Project check passed (${jsFiles.length} JavaScript files, ${htmlFiles.length} pages, ${deployableFunctions.length} Vercel Function).`);

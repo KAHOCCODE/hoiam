@@ -21,14 +21,14 @@ function response() {
 }
 
 (async () => {
-  const { setSession } = require('../api/_lib/auth');
+  const { setSession } = require('../api/_routes/_lib/auth');
   const sessionResponse = response();
   setSession({ headers: {} }, sessionResponse);
   const cookie = sessionResponse.headers['set-cookie'].split(';')[0];
   const checks = [
-    ['../api/admin/donations/index', 'donations'],
-    ['../api/admin/source-replacements/index', 'replacements'],
-    ['../api/admin/announcements/index', 'announcements'],
+    ['../api/_routes/admin/donations/index', 'donations'],
+    ['../api/_routes/admin/source-replacements/index', 'replacements'],
+    ['../api/_routes/admin/announcements/index', 'announcements'],
   ];
 
   for (const [modulePath, key] of checks) {

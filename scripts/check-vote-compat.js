@@ -29,7 +29,7 @@ function response(status, payload) {
 }
 
 (async () => {
-  const { incrementStoryVotes } = require('../api/_lib/stories');
+  const { incrementStoryVotes } = require('../api/_routes/_lib/stories');
   assert.equal(await incrementStoryVotes(92, -1), 4, 'Legacy database must support unvote');
   assert.ok(calls.some((call) => call.method === 'PATCH' && call.body.includes('"votes":4')));
 

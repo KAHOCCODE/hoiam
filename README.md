@@ -1,6 +1,8 @@
-# Hồi Âm Đam Mỹ V06.1.1
+# Hồi Âm Đam Mỹ V06.1.2
 
-Phiên bản V06.1.1 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
+Phiên bản V06.1.2 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
+
+Toàn bộ endpoint được điều phối qua một Vercel Function để tương thích giới hạn của gói Hobby. URL API công khai và cách sử dụng không thay đổi.
 
 ## Có gì mới
 

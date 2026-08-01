@@ -1,10 +1,10 @@
 {
   "name": "hoiam-v06",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "private": true,
   "description": "Cổng đề xuất truyện của Hồi Âm Đam Mỹ",
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "6.7.2",
@@ -12,6 +12,6 @@
     "sweetalert2": "^11.22.4"
   },
   "scripts": {
-    "check": "node scripts/check-project.js && node scripts/check-vote-compat.js && node scripts/check-legacy-admin.js"
+    "check": "node scripts/check-project.js && node scripts/check-api-router.js && node scripts/check-vote-compat.js && node scripts/check-legacy-admin.js"
   }
 }
