@@ -1,1370 +1,167 @@
 <!DOCTYPE html>
-<html lang="vi" class="scroll-smooth">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hồi Âm Đam Mỹ - Vũ Trụ Truyện</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        night: '#0B0B15',
-                        glass: 'rgba(255, 255, 255, 0.05)',
-                        glassBorder: 'rgba(255, 255, 255, 0.1)',
-                        primary: '#8B5CF6',
-                        secondary: '#EC4899'
-                    },
-                    fontFamily: {
-                        sans: ['Quicksand', 'sans-serif'],
-                    },
-                    animation: {
-                        'blob': 'blob 7s infinite',
-                        'spin-slow': 'spin 12s linear infinite',
-                        'float-card': 'floatCard 6s ease-in-out infinite',
-                        'pulse-soft': 'pulseSoft 2.4s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                        },
-                        floatCard: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-6px)' }
-                        },
-                        pulseSoft: {
-                            '0%, 100%': { transform: 'scale(1)', opacity: '0.65' },
-                            '50%': { transform: 'scale(1.08)', opacity: '1' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
-
-        body {
-            background-color: #0B0B15;
-            color: #E2E8F0;
-            font-family: 'Quicksand', sans-serif;
-            overflow-x: hidden;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #0B0B15;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #4c1d95;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6d28d9;
-        }
-
-        .glass-panel {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        }
-
-        .text-gradient {
-            background: linear-gradient(to right, #c084fc, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .loader {
-            width: 48px;
-            height: 48px;
-            border: 3px solid #FFF;
-            border-bottom-color: #8B5CF6;
-            border-radius: 50%;
-            display: inline-block;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .heart-pop:active {
-            transform: scale(0.8);
-        }
-
-        .heart-pop.active {
-            color: #ef4444;
-            animation: heartBeat 0.5s forwards;
-        }
-
-        @keyframes heartBeat {
-            0% { transform: scale(1); }
-            25% { transform: scale(1.3); }
-            50% { transform: scale(1); }
-            75% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .top-stage {
-            width: 100%;
-            max-width: 980px;
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(280px, 0.78fr);
-            gap: 1rem;
-            margin: 0 auto;
-        }
-
-        .top-stage-side {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .top-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.08);
-            background:
-                linear-gradient(180deg, rgba(17,24,39,0.86), rgba(17,24,39,0.94)),
-                rgba(17,24,39,0.82);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.34);
-            cursor: pointer;
-            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
-            isolation: isolate;
-        }
-
-        .top-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(196,132,252,0.28);
-            box-shadow: 0 22px 48px rgba(91,33,182,0.22);
-        }
-
-        .top-card::before {
-            content: "";
-            position: absolute;
-            inset: -30% auto auto -20%;
-            width: 180px;
-            height: 180px;
-            border-radius: 999px;
-            background: radial-gradient(circle, rgba(139,92,246,0.26), transparent 68%);
-            z-index: -1;
-            filter: blur(12px);
-        }
-
-        .top-card::after {
-            content: "";
-            position: absolute;
-            inset: auto -10% -20% auto;
-            width: 160px;
-            height: 160px;
-            border-radius: 999px;
-            background: radial-gradient(circle, rgba(236,72,153,0.16), transparent 68%);
-            z-index: -1;
-            filter: blur(14px);
-        }
-
-        .top-card-featured {
-            min-height: 300px;
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            background:
-                linear-gradient(180deg, rgba(17,24,39,0.06) 0%, rgba(17,24,39,0.78) 52%, rgba(17,24,39,0.96) 100%),
-                radial-gradient(circle at top right, rgba(245,158,11,0.16), transparent 22%),
-                radial-gradient(circle at left center, rgba(139,92,246,0.14), transparent 28%),
-                rgba(17,24,39,0.84);
-        }
-
-        .top-card-side-item {
-            min-height: 144px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            background:
-                linear-gradient(180deg, rgba(17,24,39,0.08) 0%, rgba(17,24,39,0.74) 54%, rgba(17,24,39,0.94) 100%),
-                radial-gradient(circle at top right, rgba(139,92,246,0.16), transparent 22%),
-                rgba(17,24,39,0.84);
-        }
-
-        .top-rank {
-            position: absolute;
-            top: 0.85rem;
-            left: 0.85rem;
-            width: 2.7rem;
-            height: 2.7rem;
-            border-radius: 999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            color: white;
-            font-size: 0.95rem;
-            box-shadow: 0 10px 22px rgba(0,0,0,0.28);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .top-rank.rank-1 {
-            background: linear-gradient(135deg, #f59e0b, #f97316);
-        }
-
-        .top-rank.rank-2 {
-            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
-        }
-
-        .top-rank.rank-3 {
-            background: linear-gradient(135deg, #fb7185, #f97316);
-        }
-
-        .top-orbit {
-            position: absolute;
-            top: 0.9rem;
-            right: 0.9rem;
-            width: 58px;
-            height: 58px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.1);
-            opacity: 0.6;
-            animation: pulse-soft 2.8s ease-in-out infinite;
-        }
-
-        .top-orbit::before,
-        .top-orbit::after {
-            content: "";
-            position: absolute;
-            inset: 8px;
-            border-radius: inherit;
-            border: 1px dashed rgba(255,255,255,0.07);
-        }
-
-        .top-orbit::after {
-            inset: 16px;
-            border-style: solid;
-            border-color: rgba(139,92,246,0.12);
-        }
-
-        .top-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.62rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: #f8fafc;
-            padding: 0.42rem 0.72rem;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.07);
-            width: fit-content;
-            margin-bottom: 0.8rem;
-        }
-
-        .top-shine {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.06) 50%, transparent 80%);
-            transform: translateX(-120%);
-            transition: transform 0.9s ease;
-            pointer-events: none;
-        }
-
-        .top-card:hover .top-shine {
-            transform: translateX(120%);
-        }
-
-        .top-score {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            font-size: 0.82rem;
-            font-weight: 800;
-            color: #f472b6;
-            padding: 0.5rem 0.72rem;
-            border-radius: 999px;
-            background: rgba(17,24,39,0.58);
-            border: 1px solid rgba(255,255,255,0.05);
-            width: fit-content;
-        }
-
-        .top-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem;
-            margin-top: 0.85rem;
-        }
-
-        .top-action-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            padding: 0.68rem 0.9rem;
-            border-radius: 0.85rem;
-            font-size: 0.78rem;
-            font-weight: 700;
-            transition: all 0.25s ease;
-        }
-
-        .top-action-primary {
-            background: linear-gradient(to right, #8B5CF6, #EC4899);
-            color: white;
-            box-shadow: 0 10px 24px rgba(139,92,246,0.22);
-        }
-
-        .top-action-secondary {
-            background: rgba(255,255,255,0.07);
-            color: #E2E8F0;
-            border: 1px solid rgba(255,255,255,0.07);
-        }
-
-        .top-meta-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.42rem;
-            font-size: 0.62rem;
-            font-weight: 700;
-            color: #cbd5e1;
-            padding: 0.36rem 0.6rem;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        @media (max-width: 1024px) {
-            .top-stage {
-                grid-template-columns: 1fr;
-                max-width: 760px;
-            }
-
-            .top-card-featured {
-                min-height: 260px;
-            }
-
-            .top-card-side-item {
-                min-height: 136px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .top-stage {
-                gap: 0.85rem;
-            }
-
-            .top-card-featured {
-                min-height: 230px;
-                padding: 1rem;
-            }
-
-            .top-card-side-item {
-                min-height: 126px;
-                padding: 0.9rem;
-            }
-
-            .top-rank {
-                width: 2.4rem;
-                height: 2.4rem;
-                font-size: 0.88rem;
-            }
-
-            .top-orbit {
-                width: 46px;
-                height: 46px;
-            }
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.18);
-            border-radius: 999px;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#08091a">
+  <meta name="description" content="Đề xuất, bình chọn và theo dõi các truyện đam mỹ được cộng đồng Hồi Âm Đam Mỹ lựa chọn để lên sóng YouTube.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="google-adsense-account" content="ca-pub-6051983418402912">
+  <link rel="canonical" href="https://hoiam.vercel.app/">
+  <meta property="og:type" content="website"><meta property="og:locale" content="vi_VN"><meta property="og:site_name" content="Hồi Âm Đam Mỹ">
+  <meta property="og:title" content="Hồi Âm Đam Mỹ — Cùng chọn truyện tiếp theo"><meta property="og:description" content="Đề xuất, vote và theo dõi truyện đam mỹ đang lên sóng trên kênh Hồi Âm Đam Mỹ."><meta property="og:url" content="https://hoiam.vercel.app/"><meta property="og:image" content="https://hoiam.vercel.app/assets/images/galaxy.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Hồi Âm Đam Mỹ — Đề xuất &amp; bình chọn truyện</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css">
+  <link rel="stylesheet" href="/assets/site.css?v=0611">
+  <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
+  <script src="/assets/app.js?v=0611" defer></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6051983418402912" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hồi Âm Đam Mỹ","url":"https://hoiam.vercel.app/","description":"Cộng đồng đề xuất và bình chọn truyện đam mỹ cho kênh Hồi Âm Đam Mỹ","inLanguage":"vi-VN","publisher":{"@type":"Organization","name":"Hồi Âm Đam Mỹ","email":"hoiamdammy@gmail.com"}}</script>
 </head>
+<body data-page="home">
+  <a class="skip-link" href="#mainContent">Đi đến nội dung</a>
+  <div class="galaxy" aria-hidden="true"><span class="nebula nebula-a"></span><span class="nebula nebula-b"></span><span class="shooting-star"></span></div>
 
-<body class="antialiased selection:bg-purple-500 selection:text-white">
-
-    <canvas id="stars" class="fixed top-0 left-0 w-full h-full -z-20 opacity-60"></canvas>
-    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div class="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob [animation-delay:2000ms]"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob [animation-delay:4000ms]"></div>
+  <header class="site-header">
+    <div class="shell nav-row">
+      <a class="brand" href="/" aria-label="Hồi Âm Đam Mỹ">
+        <span class="brand-orbit"><i class="fa-solid fa-headphones-simple"></i></span>
+        <span><strong data-channel-name>Hồi Âm Đam Mỹ</strong><small>Vũ trụ đề xuất truyện</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="Điều hướng chính">
+        <a class="nav-trending" data-nav-section="trending" href="#trending"><i class="fa-solid fa-ranking-star"></i><span>Thịnh hành</span></a><a class="nav-airing" data-nav-section="airing" href="#airing"><i class="fa-solid fa-tower-broadcast"></i><span>Lên sóng</span></a><a class="nav-library" data-nav-section="library" href="#library"><i class="fa-solid fa-book-open-reader"></i><span>Kho truyện</span></a>
+        <a class="nav-completed" href="/completed.html"><i class="fa-solid fa-circle-check"></i><span>Đã hoàn thành</span></a><a class="nav-guide" href="/guide.html"><i class="fa-solid fa-compass"></i><span>Hướng dẫn</span></a><a class="nav-about" href="/about.html"><i class="fa-solid fa-address-card"></i><span>About Me</span></a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-button mobile-only" id="menuButton" type="button" aria-label="Mở menu" aria-expanded="false"><i class="fa-solid fa-bars-staggered"></i></button>
+        <button class="button button-primary compact" data-open-suggestion type="button"><i class="fa-solid fa-wand-magic-sparkles"></i> Đề xuất</button>
+      </div>
     </div>
-
-    <nav class="fixed w-full z-50 transition-all duration-300 top-0 glass-panel border-t-0 border-x-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <a href="#home" class="flex items-center gap-3 group cursor-pointer">
-                    <div class="relative w-8 h-8 flex items-center justify-center">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full animate-spin-slow blur-[2px] opacity-70"></div>
-                        <div class="relative w-full h-full bg-black rounded-full border border-white/20 flex items-center justify-center">
-                            <i class="fa-solid fa-compact-disc text-purple-400 text-lg"></i>
-                        </div>
-                    </div>
-                    <span class="text-xl font-bold tracking-wider text-white group-hover:text-purple-300 transition">HồiÂm<span class="text-purple-400">ĐamMỹ</span></span>
-                </a>
-
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#home" class="text-sm font-medium text-gray-300 hover:text-white transition hover:scale-105">Trang chủ</a>
-                    <a href="#reading" class="text-sm font-medium text-gray-300 hover:text-white transition hover:scale-105">Đang phát</a>
-                    <a href="#suggest" class="text-sm font-medium text-gray-300 hover:text-white transition hover:scale-105">Đề xuất</a>
-                    <a href="#list" class="text-sm font-medium text-gray-300 hover:text-white transition hover:scale-105">Kho truyện</a>
-                    <a href="/admin.html" class="text-gray-400 hover:text-white transition"><i class="fa-solid fa-gear"></i></a>
-                </div>
-
-                <button id="mobileMenuBtn" class="md:hidden text-gray-300 hover:text-white focus:outline-none text-xl">
-                    <i class="fa-solid fa-bars-staggered"></i>
-                </button>
-            </div>
-        </div>
-
-        <div id="mobileMenu" class="hidden md:hidden glass-panel border-t border-white/10 absolute w-full">
-            <div class="px-4 pt-2 pb-6 space-y-1">
-                <a href="#home" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10">Home</a>
-                <a href="#reading" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10">Radio Đang Phát</a>
-                <a href="#suggest" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10">Gửi đề xuất</a>
-                <a href="#list" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10">Danh sách truyện</a>
-                <div class="pt-4 border-t border-white/10 mt-2">
-                    <a href="/admin.html" class="w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-300 flex items-center gap-2">
-                        <i class="fa-solid fa-user-shield"></i> Trang admin
-                    </a>
-                </div>
-            </div>
-        </div>
+    <nav id="mobileNav" class="mobile-nav shell" aria-label="Điều hướng điện thoại" hidden>
+      <a class="nav-trending" data-nav-section="trending" href="#trending"><i class="fa-solid fa-ranking-star"></i><span>Thịnh hành</span></a><a class="nav-airing" data-nav-section="airing" href="#airing"><i class="fa-solid fa-tower-broadcast"></i><span>Lên sóng</span></a><a class="nav-library" data-nav-section="library" href="#library"><i class="fa-solid fa-book-open-reader"></i><span>Kho truyện</span></a>
+      <a class="nav-completed" href="/completed.html"><i class="fa-solid fa-circle-check"></i><span>Đã hoàn thành</span></a><a class="nav-guide" href="/guide.html"><i class="fa-solid fa-compass"></i><span>Hướng dẫn</span></a><a class="nav-about" href="/about.html"><i class="fa-solid fa-address-card"></i><span>About Me</span></a>
     </nav>
+  </header>
 
-    <main class="pt-20">
-        <section id="home" class="min-h-[70vh] flex flex-col justify-center items-center px-4 py-12 relative">
-            <div class="text-center mb-12" data-aos="fade-down">
-                <span class="inline-block py-1 px-3 rounded-full bg-purple-500/20 border border-purple-500/50 text-purple-300 text-xs font-bold tracking-widest uppercase mb-4">Vũ Trụ Audio Đam Mỹ</span>
-                <h1 class="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-xl">
-                    Top <span class="text-gradient">Thịnh Hành</span>
-                </h1>
-                <p class="text-gray-400 max-w-lg mx-auto text-sm md:text-base">Top 3 truyện đề xuất được cộng đồng yêu thích nhất, xếp hạng theo số vote hiện tại.</p>
-            </div>
+  <div id="announcementHost" class="announcement-host shell" aria-live="polite"></div>
 
-            <div id="loadingTop" class="loader"></div>
-            <div id="topStories" class="w-full max-w-5xl z-10"></div>
-        </section>
-
-        <section id="reading" class="max-w-7xl mx-auto px-4 py-16" data-aos="fade-up">
-            <div class="flex items-center gap-4 mb-8">
-                <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]">
-                    <i class="fa-solid fa-podcast text-xl animate-pulse"></i>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold text-white">Đang Lên Sóng</h2>
-                    <p class="text-xs text-gray-400">Các bộ truyện đang được chuyển thể audio</p>
-                </div>
-            </div>
-
-            <div id="readingList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </section>
-
-        <section id="suggest" class="max-w-3xl mx-auto px-4 py-16 mb-12" data-aos="fade-up">
-            <div class="glass-panel rounded-3xl p-8 border border-purple-500/30 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
-
-                <h2 class="text-2xl font-bold text-center mb-6 text-white"><i class="fa-solid fa-meteor text-purple-400 mr-2"></i> Đóng Góp Truyện Mới</h2>
-
-                <div class="mb-8 p-5 bg-black/40 rounded-2xl border border-white/10 text-sm text-gray-300 shadow-inner">
-                    <h3 class="text-base font-bold text-white mb-3 flex items-center gap-2">
-                        <i class="fa-regular fa-lightbulb text-yellow-400"></i> Quy Chế Lên Sóng
-                    </h3>
-                    <ul class="space-y-3">
-                        <li class="flex gap-3">
-                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs border border-blue-500/30">1</span>
-                            <span><b>Đề xuất:</b> Điền thông tin truyện bạn muốn nghe vào form bên dưới.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold text-xs border border-pink-500/30">2</span>
-                            <span><b>Tích vote:</b> Truyện sẽ xuất hiện tại Kho Tàng. Hãy kêu gọi mọi người thả tim để tăng hạng.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs border border-purple-500/30">3</span>
-                            <span><b>On Air:</b> Admin sẽ chọn truyện nổi bật để chuyển sang mục đang đọc.</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <form id="formSuggest" class="space-y-5">
-                    <div class="grid md:grid-cols-2 gap-5">
-                        <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-400 ml-2">Tên truyện</label>
-                            <input id="title" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition" placeholder="Nhập tên truyện..." required>
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-400 ml-2">Link gốc</label>
-                            <input id="linkStory" type="url" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition" placeholder="https://..." required>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4 px-2">
-                        <label class="flex items-center gap-2 cursor-pointer group">
-                            <div class="relative w-5 h-5 rounded-full border-2 border-gray-500 flex items-center justify-center transition group-hover:border-blue-400">
-                                <input type="radio" name="version" value="Edit" class="appearance-none absolute inset-0 rounded-full checked:bg-blue-500 checked:border-blue-500" checked required>
-                            </div>
-                            <span class="text-sm font-semibold text-gray-300 group-hover:text-blue-400 transition">Bản Edit</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer group">
-                            <div class="relative w-5 h-5 rounded-full border-2 border-gray-500 flex items-center justify-center transition group-hover:border-orange-400">
-                                <input type="radio" name="version" value="Convert" class="appearance-none absolute inset-0 rounded-full checked:bg-orange-500 checked:border-orange-500">
-                            </div>
-                            <span class="text-sm font-semibold text-gray-300 group-hover:text-orange-400 transition">Bản Convert</span>
-                        </label>
-                    </div>
-
-                    <div class="space-y-1">
-                        <textarea id="note" rows="3" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition resize-none" placeholder="Lời nhắn gửi tới Admin..."></textarea>
-                    </div>
-
-                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold tracking-wide shadow-lg shadow-purple-900/40 hover:shadow-purple-600/60 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-paper-plane"></i> GỬI ĐỀ XUẤT
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <section id="list" class="max-w-7xl mx-auto px-4 py-16 relative">
-            <div class="glass-panel rounded-3xl p-6 md:p-8 overflow-hidden">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-book-open text-purple-400"></i> Kho Tàng
-                    </h2>
-
-                    <div class="flex w-full md:w-auto gap-3 bg-black/20 p-1.5 rounded-2xl border border-white/10">
-                        <div class="relative flex-1 md:w-64">
-                            <i class="fa-solid fa-search absolute left-3 top-3 text-gray-500 text-sm"></i>
-                            <input id="searchInput" onkeyup="handleSearch()" class="w-full bg-transparent text-sm text-white pl-9 pr-4 py-2 focus:outline-none placeholder-gray-500" placeholder="Tìm tên truyện...">
-                        </div>
-                        <select id="sortSelect" onchange="handleSearch()" class="bg-white/10 text-white text-xs font-bold py-2 px-4 rounded-xl border-none focus:ring-0 cursor-pointer hover:bg-white/20 transition">
-                            <option value="vote" class="bg-gray-900">🔥 Hot</option>
-                            <option value="new" class="bg-gray-900">✨ Mới</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="loadingList" class="loader"></div>
-
-                <div class="hidden md:block overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="text-gray-400 text-xs uppercase font-bold border-b border-white/10">
-                            <tr>
-                                <th class="pb-4 pl-4">Tên Truyện</th>
-                                <th class="pb-4 text-center">Loại</th>
-                                <th class="pb-4">Note</th>
-                                <th class="pb-4 text-center">Yêu thích</th>
-                                <th class="pb-4 text-right pr-4">Link</th>
-                            </tr>
-                        </thead>
-                        <tbody id="storyList" class="text-sm text-gray-300 divide-y divide-white/5"></tbody>
-                    </table>
-                </div>
-
-                <div id="storyListMobile" class="md:hidden space-y-4"></div>
-
-                <div class="text-center mt-8">
-                    <button id="loadMoreBtn" onclick="loadMore()" class="hidden px-6 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-bold text-sm transition-all hover:scale-105">
-                        Xem thêm <i class="fa-solid fa-chevron-down ml-1"></i>
-                    </button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <div id="detailModal" class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-[#13131f] border border-white/10 rounded-2xl w-full max-w-lg relative shadow-2xl transform scale-95 transition-transform duration-300" id="detailModalContent">
-            <button onclick="closeStoryDetail()" class="absolute top-4 right-4 text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-
-            <div class="p-6 md:p-8">
-                <div class="mb-6">
-                    <div class="flex items-center gap-3 mb-2 flex-wrap">
-                        <span id="m-version" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border"></span>
-                        <span id="m-new" class="hidden px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">NEW</span>
-                    </div>
-                    <h2 id="m-title" class="text-2xl md:text-3xl font-bold text-white leading-tight mb-2"></h2>
-                    <div class="flex items-center gap-4 text-sm text-gray-400 flex-wrap">
-                        <span id="m-status" class="flex items-center gap-1"></span>
-                        <span class="flex items-center gap-1 text-pink-500 font-bold"><i class="fa-solid fa-heart"></i> <span id="m-votes">0</span></span>
-                    </div>
-                </div>
-
-                <div class="bg-white/5 rounded-xl p-4 border border-white/5 mb-6">
-                    <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Lời nhắn / Note</h4>
-                    <p id="m-note" class="text-gray-300 text-sm leading-relaxed whitespace-pre-line max-h-60 overflow-y-auto pr-2 custom-scrollbar"></p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <a id="m-link" href="#" target="_blank" rel="noopener noreferrer" class="col-span-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/30 transition">
-                        <i class="fa-solid fa-book-open"></i> Đọc Ngay
-                    </a>
-                    <a id="m-youtube" href="#" target="_blank" rel="noopener noreferrer" class="hidden col-span-1 py-3 rounded-xl bg-red-600 text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-red-500/30 transition">
-                        <i class="fa-brands fa-youtube"></i> Nghe Audio
-                    </a>
-                </div>
-            </div>
+  <main id="mainContent">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <span class="eyebrow"><i class="fa-solid fa-sparkles"></i> Cộng đồng Hồi Âm</span>
+        <h1>Câu chuyện tiếp theo,<br><em>mình cùng chọn.</em></h1>
+        <p data-channel-tagline>Nơi cộng đồng cùng chọn câu chuyện tiếp theo.</p>
+        <div class="hero-actions">
+          <button class="button button-primary" data-open-suggestion type="button"><i class="fa-solid fa-paper-plane"></i> Gửi đề xuất</button>
+          <a class="button button-ghost" href="#library"><i class="fa-solid fa-book-open"></i> Xem kho truyện</a>
         </div>
-    </div>
-
-    <footer class="mt-12 py-8 text-center text-gray-600 text-xs border-t border-white/5 glass-panel">
-        <p>&copy; 2026 Hồi Âm Đam Mỹ. Design by Galaxy.</p>
-    </footer>
-
-    <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 w-12 h-12 bg-purple-600 text-white rounded-full shadow-lg shadow-purple-600/40 flex items-center justify-center translate-y-20 opacity-0 transition-all duration-300 hover:bg-purple-500 z-40">
-        <i class="fa-solid fa-chevron-up"></i>
-    </button>
-
-    <script>
-        AOS.init({ once: true, offset: 50, duration: 800 });
-
-        const SUPABASE_URL = 'https://xklmcebwxkqbotqexprn.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrbG1jZWJ3eGtxYm90cWV4cHJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzM1NDEsImV4cCI6MjA3OTIwOTU0MX0.vZj-5C_HhVgemG0LOTH3axf4P0bxXngzeQ3PSo93-m4';
-        const TABLE = 'stories';
-        const API_BASE = `${SUPABASE_URL}/rest/v1`;
-        const RPC_BASE = `${SUPABASE_URL}/rest/v1/rpc`;
-
-        const esc = (value) => String(value ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-
-        const safeUrl = (value) => {
-            if (!value) return '';
-            try {
-                const url = new URL(value, window.location.origin);
-                return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
-            } catch {
-                return '';
-            }
-        };
-
-        function normalizeStatus(value = '') {
-            const cleaned = String(value)
-                .normalize('NFC')
-                .replace(/\u202F/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim()
-                .toLowerCase();
-
-            if (cleaned === 'đang đọc') return 'đang đọc';
-            return 'đề xuất';
-        }
-
-        function normalizeStory(item) {
-            return {
-                id: Number(item.id),
-                title: String(item.title || ''),
-                linkstory: String(item.linkstory || ''),
-                version: item.version === 'Convert' ? 'Convert' : 'Edit',
-                note: String(item.note || ''),
-                votes: Number.isFinite(Number(item.votes)) ? Math.max(0, Number(item.votes)) : 0,
-                status: normalizeStatus(item.status),
-                youtubelink: String(item.youtubelink || ''),
-                createdat: item.createdat || new Date().toISOString()
-            };
-        }
-
-        const getYoutubeID = (url) => {
-            const match = url?.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
-            return (match && match[2].length === 11) ? match[2] : null;
-        };
-
-        let stories = [];
-        let debounceTimer;
-        let visibleLimit = 10;
-
-        const canvas = document.getElementById("stars");
-        const ctx = canvas.getContext("2d");
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        window.onresize = resize;
-        resize();
-
-        const starsArray = Array(100).fill().map(() => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: Math.random() * 1.5,
-            o: Math.random(),
-            dx: (Math.random() - 0.5) * 0.2,
-            dy: (Math.random() - 0.5) * 0.2
-        }));
-
-        function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-
-            starsArray.forEach(s => {
-                ctx.globalAlpha = s.o;
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-                ctx.fill();
-                s.x += s.dx;
-                s.y += s.dy;
-                if (s.x < 0 || s.x > canvas.width) s.x = Math.random() * canvas.width;
-                if (s.y < 0 || s.y > canvas.height) s.y = Math.random() * canvas.height;
-            });
-
-            requestAnimationFrame(animateStars);
-        }
-
-        animateStars();
-
-        async function restFetch(path, options = {}) {
-            const response = await fetch(`${API_BASE}/${path}`, {
-                ...options,
-                headers: {
-                    'Content-Type': 'application/json',
-                    apikey: SUPABASE_KEY,
-                    Authorization: `Bearer ${SUPABASE_KEY}`,
-                    Prefer: 'return=representation',
-                    ...(options.headers || {})
-                }
-            });
-
-            let payload = null;
-            try {
-                payload = await response.json();
-            } catch {
-                payload = null;
-            }
-
-            if (!response.ok) {
-                throw new Error(payload?.message || payload?.error || 'Supabase request failed');
-            }
-
-            return payload;
-        }
-
-        function handleSearch() {
-            visibleLimit = 10;
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(filterStories, 300);
-        }
-
-        function loadMore() {
-            visibleLimit += 10;
-            filterStories();
-        }
-
-        function getFilteredListPool() {
-            const kw = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (!kw) return [...stories];
-
-            return stories.filter(s =>
-                s.title.toLowerCase().includes(kw) ||
-                s.note.toLowerCase().includes(kw)
-            );
-        }
-
-        async function fetchStories() {
-            document.getElementById('loadingTop').style.display = 'block';
-            document.getElementById('loadingList').style.display = 'block';
-
-            try {
-                const rows = await restFetch(`${TABLE}?select=*&order=createdat.desc`);
-                stories = Array.isArray(rows) ? rows.map(normalizeStory) : [];
-                refresh();
-            } catch (e) {
-                console.error(e);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Không tải được dữ liệu',
-                    text: 'Vui lòng thử lại sau.',
-                    background: '#1f2937',
-                    color: '#fff',
-                    confirmButtonColor: '#8B5CF6'
-                });
-            } finally {
-                document.getElementById('loadingTop').style.display = 'none';
-                document.getElementById('loadingList').style.display = 'none';
-            }
-        }
-
-        async function incrementVoteWithFallback(story) {
-            try {
-                const rpcRes = await fetch(`${RPC_BASE}/increment_votes`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        apikey: SUPABASE_KEY,
-                        Authorization: `Bearer ${SUPABASE_KEY}`
-                    },
-                    body: JSON.stringify({ story_id: story.id })
-                });
-
-                if (rpcRes.ok) {
-                    const newVotes = await rpcRes.json();
-                    return Number(newVotes ?? (story.votes + 1));
-                }
-            } catch {}
-
-            const patched = await restFetch(`${TABLE}?id=eq.${story.id}`, {
-                method: 'PATCH',
-                body: JSON.stringify({ votes: story.votes + 1 })
-            });
-
-            const first = Array.isArray(patched) ? patched[0] : null;
-            return Number(first?.votes ?? (story.votes + 1));
-        }
-
-        async function toggleVote(id) {
-            const btn = document.querySelector(`.vote-btn-${id}`);
-            const count = document.getElementById(`vote-count-${id}`);
-            const story = stories.find(x => x.id === id);
-            if (!story || !btn) return;
-
-            const key = `vote_${id}`;
-            if (localStorage.getItem(key)) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Bạn đã tim rồi',
-                    text: 'Mỗi thiết bị chỉ tính 1 lượt tim cho 1 truyện.',
-                    background: '#1f2937',
-                    color: '#fff',
-                    confirmButtonColor: '#8B5CF6'
-                });
-                return;
-            }
-
-            btn.disabled = true;
-
-            try {
-                const newVotes = await incrementVoteWithFallback(story);
-                story.votes = newVotes;
-                localStorage.setItem(key, 'true');
-
-                btn.classList.add('active', 'text-red-500');
-                btn.classList.remove('text-gray-400');
-
-                if (count) count.innerText = newVotes;
-
-                const heart = document.createElement('div');
-                heart.textContent = '❤️';
-                heart.style.position = 'absolute';
-                heart.style.left = `${btn.getBoundingClientRect().left}px`;
-                heart.style.top = `${btn.getBoundingClientRect().top}px`;
-                heart.style.transition = '1s';
-                heart.style.pointerEvents = 'none';
-                heart.style.zIndex = '9999';
-                document.body.appendChild(heart);
-
-                setTimeout(() => {
-                    heart.style.transform = 'translateY(-50px) scale(1.5)';
-                    heart.style.opacity = '0';
-                }, 50);
-
-                setTimeout(() => heart.remove(), 1000);
-                refresh();
-            } catch (error) {
-                console.error(error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Không vote được',
-                    text: 'Vui lòng thử lại sau.',
-                    background: '#1f2937',
-                    color: '#fff',
-                    confirmButtonColor: '#8B5CF6'
-                });
-            } finally {
-                btn.disabled = false;
-            }
-        }
-
-        document.getElementById('formSuggest').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const btn = e.target.querySelector('button');
-            const oldTxt = btn.innerHTML;
-            const last = localStorage.getItem('last_submit');
-
-            if (last && Date.now() - Number(last) < 300000) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Chậm lại',
-                    text: 'Vui lòng đợi 5 phút rồi gửi tiếp.',
-                    background: '#1f2937',
-                    color: '#fff',
-                    confirmButtonColor: '#8B5CF6'
-                });
-                return;
-            }
-
-            const title = document.getElementById('title').value.trim();
-            const link = document.getElementById('linkStory').value.trim();
-            const version = document.querySelector('input[name="version"]:checked')?.value || 'Edit';
-            const note = document.getElementById('note').value.trim();
-
-            if (!title) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Thiếu tên truyện',
-                    background: '#1f2937',
-                    color: '#fff',
-                    confirmButtonColor: '#8B5CF6'
-                });
-                return;
-            }
-
-            if (!link) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Thiếu link gốc',
-                    background: '#1f2937',
-                    color: '#fff',
-                    confirmButtonColor: '#8B5CF6'
-                });
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
-
-            try {
-                const check = await fetch(
-                    `${API_BASE}/${TABLE}?select=id&linkstory=eq.${encodeURIComponent(link)}`,
-                    {
-                        headers: {
-                            apikey: SUPABASE_KEY,
-                            Authorization: `Bearer ${SUPABASE_KEY}`
-                        }
-                    }
-                );
-
-                const existed = await check.json();
-                if (Array.isArray(existed) && existed.length > 0) {
-                    throw new Error('Dup');
-                }
-
-                await restFetch(TABLE, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        title,
-                        linkstory: link,
-                        version,
-                        note,
-                        votes: 0,
-                        status: 'đề xuất',
-                        youtubelink: '',
-                        createdat: new Date().toISOString()
-                    })
-                });
-
-                localStorage.setItem('last_submit', String(Date.now()));
-                e.target.reset();
-                document.querySelector('input[name="version"][value="Edit"]').checked = true;
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Đã gửi đề xuất',
-                    background: '#1f2937',
-                    color: '#fff',
-                    confirmButtonColor: '#8B5CF6'
-                });
-
-                await fetchStories();
-            } catch (err) {
-                if (err.message === 'Dup') {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Truyện này đã có',
-                        text: 'Không cần gửi trùng nữa.',
-                        background: '#1f2937',
-                        color: '#fff',
-                        confirmButtonColor: '#8B5CF6'
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Có lỗi',
-                        text: 'Thử lại sau.',
-                        background: '#1f2937',
-                        color: '#fff',
-                        confirmButtonColor: '#8B5CF6'
-                    });
-                }
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = oldTxt;
-            }
-        });
-
-        function refresh() {
-            filterStories();
-        }
-
-        function filterStories() {
-            const sort = document.getElementById('sortSelect').value;
-            const poolForList = getFilteredListPool();
-
-            let suggestList = poolForList.filter(s => s.status === 'đề xuất');
-
-            if (sort === 'vote') {
-                suggestList.sort((a, b) => b.votes - a.votes);
-            } else {
-                suggestList.sort((a, b) => new Date(b.createdat) - new Date(a.createdat));
-            }
-
-            const visibleList = suggestList.slice(0, visibleLimit);
-            const btnMore = document.getElementById('loadMoreBtn');
-
-            if (suggestList.length > visibleLimit) btnMore.classList.remove('hidden');
-            else btnMore.classList.add('hidden');
-
-            renderTop(stories);
-            renderReading(stories);
-            renderListPC(visibleList);
-            renderListMobile(visibleList);
-        }
-
-        function statusChipHtml(story) {
-            const isReading = story.status === 'đang đọc';
-            return `
-                <span class="top-meta-chip ${isReading ? 'text-green-300' : 'text-yellow-300'}">
-                    <i class="fa-solid ${isReading ? 'fa-podcast' : 'fa-star'}"></i>
-                    ${isReading ? 'Đang đọc' : 'Đề xuất'}
-                </span>
-            `;
-        }
-
-        function renderTopCard(story, rank, featured = false) {
-            const safeStoryLink = safeUrl(story.linkstory);
-            const safeYoutubeLink = safeUrl(story.youtubelink);
-            const createdDays = Math.floor((Date.now() - new Date(story.createdat).getTime()) / 86400000);
-            const isNew = createdDays < 3;
-            const badgeClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : 'rank-3';
-
-            return `
-                <article class="top-card ${featured ? 'top-card-featured animate-float-card' : 'top-card-side-item'}" onclick="openStoryDetail(${story.id})">
-                    <div class="top-shine"></div>
-                    <div class="top-rank ${badgeClass}">#${rank}</div>
-                    ${featured ? '<div class="top-orbit"></div>' : ''}
-
-                    <div class="relative z-10 mt-14">
-                        <div class="top-badge">
-                            <i class="fa-solid fa-crown"></i>
-                            ${featured ? 'Spotlight nổi bật' : 'Hạng cao'}
-                        </div>
-
-                        <h3 class="${featured ? 'text-2xl md:text-3xl' : 'text-xl'} font-black text-white leading-tight mb-3 line-clamp-2">
-                            ${esc(story.title)}
-                        </h3>
-
-                        <div class="flex flex-wrap gap-2 mb-3">
-                            ${statusChipHtml(story)}
-                            <span class="top-meta-chip">
-                                <i class="fa-solid fa-layer-group"></i>
-                                ${esc(story.version)}
-                            </span>
-                            ${isNew ? `
-                                <span class="top-meta-chip text-cyan-300">
-                                    <i class="fa-solid fa-sparkles"></i>
-                                    New
-                                </span>
-                            ` : ''}
-                        </div>
-
-                        <p class="${featured ? 'text-sm' : 'text-xs'} text-gray-300/90 leading-relaxed ${featured ? 'line-clamp-3' : 'line-clamp-2'}">
-                            ${esc(story.note || 'Chưa có ghi chú.')}
-                        </p>
-
-                        <div class="mt-5 flex flex-wrap items-center gap-3">
-                            <div class="top-score">
-                                <i class="fa-solid fa-heart"></i>
-                                ${story.votes} vote
-                            </div>
-                            <span class="top-meta-chip">
-                                <i class="fa-regular fa-calendar"></i>
-                                ${new Date(story.createdat).toLocaleDateString('vi-VN')}
-                            </span>
-                        </div>
-
-                        <div class="top-actions">
-                            ${safeStoryLink ? `
-                                <a href="${safeStoryLink}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="top-action-btn top-action-primary">
-                                    <i class="fa-solid fa-book-open"></i>
-                                    Đọc ngay
-                                </a>
-                            ` : ''}
-                            ${safeYoutubeLink ? `
-                                <a href="${safeYoutubeLink}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="top-action-btn top-action-secondary">
-                                    <i class="fa-brands fa-youtube"></i>
-                                    Audio
-                                </a>
-                            ` : `
-                                <button class="top-action-btn top-action-secondary" onclick="event.stopPropagation(); toggleVote(${story.id})">
-                                    <i class="fa-solid fa-heart"></i>
-                                    Bình chọn
-                                </button>
-                            `}
-                        </div>
-                    </div>
-                </article>
-            `;
-        }
-
-        function renderTop(pool) {
-            const container = document.getElementById('topStories');
-
-            const top = [...pool]
-                .filter(s => s.status === 'đề xuất')
-                .sort((a, b) => {
-                    if (b.votes !== a.votes) return b.votes - a.votes;
-                    return new Date(b.createdat) - new Date(a.createdat);
-                })
-                .slice(0, 3);
-
-            if (!top.length) {
-                container.innerHTML = `<div class="text-center text-gray-500 py-10 italic">Chưa có dữ liệu...</div>`;
-                return;
-            }
-
-            const [first, second, third] = top;
-
-            container.innerHTML = `
-                <div class="top-stage">
-                    ${first ? renderTopCard(first, 1, true) : ''}
-                    <div class="top-stage-side">
-                        ${second ? renderTopCard(second, 2, false) : `<div class="top-card top-card-side-item flex items-center justify-center text-gray-400">Chưa đủ dữ liệu</div>`}
-                        ${third ? renderTopCard(third, 3, false) : `<div class="top-card top-card-side-item flex items-center justify-center text-gray-400">Chưa đủ dữ liệu</div>`}
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderReading(pool) {
-            const list = pool.filter(s => s.status === 'đang đọc');
-            const c = document.getElementById('readingList');
-
-            c.innerHTML = list.length ? list.map(s => {
-                const vid = getYoutubeID(s.youtubelink);
-                const thumb = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
-
-                return `
-                    <div class="group relative rounded-2xl overflow-hidden aspect-video bg-gray-800 border border-white/10 shadow-lg cursor-pointer"
-                         onclick="window.open('${safeUrl(s.youtubelink || s.linkstory)}', '_blank', 'noopener')">
-                        ${thumb ? `<img src="${thumb}" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-105 transition duration-700">` : ''}
-                        <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black via-black/50 to-transparent">
-                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover:scale-110 transition">
-                                <i class="fa-solid fa-play text-white ml-1"></i>
-                            </div>
-                            <h3 class="text-white font-bold text-lg leading-tight">${esc(s.title)}</h3>
-                            <div class="flex items-center gap-2 mt-2">
-                                <span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                                <span class="text-xs text-red-400 font-bold uppercase tracking-wider">On Air</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('') : '<div class="col-span-full text-center text-gray-500 py-10 italic">Chưa có truyện nào đang phát...</div>';
-        }
-
-        function openStoryDetail(id) {
-            const s = stories.find(x => x.id === id);
-            if (!s) return;
-
-            document.getElementById('m-title').innerText = s.title;
-            document.getElementById('m-note').innerText = s.note || 'Không có ghi chú chi tiết.';
-            document.getElementById('m-votes').innerText = s.votes;
-
-            const vEl = document.getElementById('m-version');
-            vEl.innerText = s.version;
-            vEl.className = `px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${s.version === 'Edit'
-                ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-                : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}`;
-
-            const isNew = ((new Date() - new Date(s.createdat)) / 86400000 < 3);
-            document.getElementById('m-new').classList.toggle('hidden', !isNew);
-
-            const stEl = document.getElementById('m-status');
-            if (s.status === 'đề xuất') {
-                stEl.innerHTML = '<i class="fa-solid fa-circle text-[8px] text-yellow-500"></i> Đề xuất';
-            } else {
-                stEl.innerHTML = '<i class="fa-solid fa-circle text-[8px] text-green-500"></i> Đang phát';
-            }
-
-            const btnLink = document.getElementById('m-link');
-            const safeStoryLink = safeUrl(s.linkstory);
-
-            if (safeStoryLink) {
-                btnLink.href = safeStoryLink;
-                btnLink.classList.remove('hidden', 'col-span-2');
-                btnLink.classList.add('col-span-1');
-            } else {
-                btnLink.classList.add('hidden');
-            }
-
-            const btnYt = document.getElementById('m-youtube');
-            const safeYoutubeLink = safeUrl(s.youtubelink);
-
-            if (safeYoutubeLink) {
-                btnYt.href = safeYoutubeLink;
-                btnYt.classList.remove('hidden');
-                if (!s.linkstory) btnYt.classList.replace('col-span-1', 'col-span-2');
-            } else {
-                btnYt.classList.add('hidden');
-                if (s.linkstory) btnLink.classList.replace('col-span-1', 'col-span-2');
-            }
-
-            const modal = document.getElementById('detailModal');
-            const content = document.getElementById('detailModalContent');
-
-            modal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            });
-        }
-
-        function closeStoryDetail() {
-            const modal = document.getElementById('detailModal');
-            const content = document.getElementById('detailModalContent');
-
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
-        }
-
-        document.getElementById('detailModal').addEventListener('click', function (e) {
-            if (e.target === this) closeStoryDetail();
-        });
-
-        function renderListPC(list) {
-            const tb = document.getElementById('storyList');
-            tb.innerHTML = '';
-
-            list.forEach(s => {
-                const isLiked = localStorage.getItem(`vote_${s.id}`);
-
-                tb.innerHTML += `
-                    <tr onclick="openStoryDetail(${s.id})" class="hover:bg-white/5 transition group cursor-pointer border-b border-white/5 last:border-0">
-                        <td class="p-4 pl-4 font-semibold text-gray-200">
-                            ${safeUrl(s.linkstory)
-                                ? `<a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="hover:text-purple-400 transition relative z-10">${esc(s.title)}</a>`
-                                : `<span>${esc(s.title)}</span>`}
-                            ${((new Date() - new Date(s.createdat)) / 86400000 < 3) ? '<span class="ml-2 px-1.5 py-0.5 bg-green-500/20 text-green-400 text-[10px] rounded font-bold border border-green-500/30">NEW</span>' : ''}
-                        </td>
-                        <td class="p-4 text-center">
-                            <span class="px-2 py-1 rounded text-[10px] font-bold border ${s.version === 'Edit'
-                                ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-                                : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}">${s.version}</span>
-                        </td>
-                        <td class="p-4 text-xs italic text-gray-500 max-w-xs truncate group-hover:text-gray-300 transition">${esc(s.note || '-')}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="event.stopPropagation(); toggleVote(${s.id})" class="heart-pop vote-btn-${s.id} ${isLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-400 transition text-lg relative z-10">
-                                <i class="fa-solid fa-heart"></i>
-                            </button>
-                            <span id="vote-count-${s.id}" class="text-xs ml-1 font-bold text-gray-500">${s.votes}</span>
-                        </td>
-                        <td class="p-4 text-right pr-4">
-                            ${safeUrl(s.linkstory) ? `<a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="w-8 h-8 inline-flex items-center justify-center rounded-full bg-white/5 hover:bg-purple-600 hover:text-white transition relative z-10"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>` : ''}
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function renderListMobile(list) {
-            const mb = document.getElementById('storyListMobile');
-            mb.innerHTML = '';
-
-            list.forEach(s => {
-                const isLiked = localStorage.getItem(`vote_${s.id}`);
-
-                mb.innerHTML += `
-                    <div onclick="openStoryDetail(${s.id})" class="glass-panel p-4 rounded-2xl flex items-start gap-3 active:scale-[0.98] transition duration-200 cursor-pointer">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold border ${s.version === 'Edit'
-                                    ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-                                    : 'bg-orange-500/10 text-orange-400 border-orange-500/30'}">${s.version}</span>
-                                ${((new Date() - new Date(s.createdat)) / 86400000 < 3) ? '<span class="text-[9px] text-green-400 font-bold">NEW</span>' : ''}
-                            </div>
-                            <h4 class="font-bold text-white text-base leading-tight mb-2">${esc(s.title)}</h4>
-                            <p class="text-xs text-gray-400 italic line-clamp-2 mb-2">"${esc(s.note || '...')}"</p>
-                            ${safeUrl(s.linkstory) ? `<a href="${safeUrl(s.linkstory)}" onclick="event.stopPropagation()" target="_blank" rel="noopener noreferrer" class="text-purple-400 text-xs font-bold hover:underline relative z-10">Đọc ngay</a>` : ''}
-                        </div>
-                        <div class="flex flex-col items-center justify-center pl-3 border-l border-white/10">
-                            <button onclick="event.stopPropagation(); toggleVote(${s.id})" class="heart-pop vote-btn-${s.id} ${isLiked ? 'text-red-500' : 'text-gray-400'} text-xl mb-1 relative z-10">
-                                <i class="fa-solid fa-heart"></i>
-                            </button>
-                            <span id="vote-count-${s.id}" class="text-[10px] font-bold text-gray-500">${s.votes}</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        const btnTop = document.getElementById('backToTop');
-        window.onscroll = () => {
-            if (document.documentElement.scrollTop > 300) {
-                btnTop.classList.remove('translate-y-20', 'opacity-0');
-            } else {
-                btnTop.classList.add('translate-y-20', 'opacity-0');
-            }
-        };
-
-        const menuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        window.addEventListener('load', () => {
-            fetchStories();
-        });
-    </script>
+      </div>
+      <div class="hero-emblem" aria-hidden="true">
+        <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>
+        <span class="emblem-core"><i class="fa-solid fa-feather-pointed"></i></span>
+        <span class="float-icon float-heart"><i class="fa-solid fa-heart"></i></span>
+        <span class="float-icon float-star"><i class="fa-solid fa-star"></i></span>
+        <span class="float-icon float-book"><i class="fa-solid fa-book"></i></span>
+      </div>
+    </section>
+
+    <section id="trending" class="section shell">
+      <div class="section-head">
+        <div class="section-title"><span class="section-icon icon-gold"><i class="fa-solid fa-ranking-star"></i></span><div><span class="eyebrow">Bảng xếp hạng</span><h2>Top 3 thịnh hành</h2></div></div>
+      </div>
+      <div id="topStories" class="top-grid" aria-live="polite">
+        <article class="skeleton"></article><article class="skeleton"></article><article class="skeleton"></article>
+      </div>
+    </section>
+
+    <section id="airing" class="section shell">
+      <div class="section-head">
+        <div class="section-title"><span class="section-icon icon-pink"><i class="fa-solid fa-tower-broadcast"></i></span><div><span class="eyebrow live"><i class="fa-solid fa-circle"></i> Trên YouTube</span><h2>Đang lên sóng</h2></div></div>
+        <a class="text-link" href="/completed.html">Kho đã hoàn thành <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div id="airingStories" class="airing-grid" aria-live="polite"></div>
+    </section>
+
+    <section id="library" class="section shell">
+      <div class="panel library-panel">
+        <div class="section-head library-heading">
+          <div class="section-title"><span class="section-icon icon-cyan"><i class="fa-solid fa-book-open-reader"></i></span><div><span class="eyebrow">Kho cộng đồng</span><h2>Truyện được đề xuất</h2></div></div>
+          <span id="resultCount" class="result-count">Đang tải…</span>
+        </div>
+        <div class="filters" role="search">
+          <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="Tìm tên truyện…" autocomplete="off"></label>
+          <label><span class="sr-only">Loại bản</span><select id="versionFilter"><option value="all">Convert &amp; Edit</option><option value="Convert">Convert</option><option value="Edit">Edit</option></select></label>
+          <label><span class="sr-only">Nguồn</span><select id="sourceFilter"><option value="all">Mọi nguồn</option></select></label>
+          <label><span class="sr-only">Sắp xếp</span><select id="sortSelect"><option value="votes-desc">Vote cao → thấp</option><option value="votes-asc">Vote thấp → cao</option><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="title">Tên A → Z</option></select></label>
+        </div>
+        <div id="storyGrid" class="story-grid" aria-live="polite"></div>
+        <div class="center"><button id="loadMoreButton" class="button button-ghost" type="button" hidden>Xem thêm</button></div>
+      </div>
+    </section>
+
+    <section class="section shell quick-actions">
+      <button class="quick-card" data-open-suggestion type="button"><span><i class="fa-solid fa-meteor"></i></span><strong>Đề xuất truyện</strong><small>Form ngắn, mặc định Convert</small></button>
+      <button class="quick-card" data-open-external-donation type="button"><span><i class="fa-solid fa-fish-fins"></i></span><strong>Đã tặng Cá?</strong><small>Báo donate qua YouTube hoặc email</small></button>
+      <a class="quick-card" href="/guide.html"><span><i class="fa-solid fa-circle-question"></i></span><strong>Cần hướng dẫn?</strong><small>Xem quy định và cách sử dụng</small></a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell footer-row"><span>© 2026 <span data-channel-name>Hồi Âm Đam Mỹ</span></span><div><a href="/guide.html">Hướng dẫn</a><a href="/about.html">About Me</a><a href="/admin.html" aria-label="Admin"><i class="fa-solid fa-gear"></i></a></div></div>
+  </footer>
+
+  <dialog id="storyDialog" class="modal"><article class="modal-card detail-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng">×</button><div id="storyDialogContent"></div></article></dialog>
+
+  <dialog id="suggestionDialog" class="modal">
+    <article class="modal-card form-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng">×</button>
+      <div class="modal-heading"><span class="modal-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span><div><span class="eyebrow">Cộng đồng đề xuất</span><h2>Gửi truyện mới</h2></div></div>
+      <button id="suggestionHelp" class="help-banner" type="button" aria-expanded="false" aria-controls="suggestionHelpPanel"><i class="fa-solid fa-circle-question"></i><span><strong>Cần xem trước khi gửi?</strong><small>Mở hướng dẫn ngắn</small></span><i class="fa-solid fa-chevron-down help-chevron"></i></button>
+      <div id="suggestionHelpPanel" class="inline-help" hidden>
+        <div><i class="fa-solid fa-circle-check"></i><span><strong>Chọn truyện đã hoàn thành</strong><small>Ưu tiên truyện FULL để kênh có thể chuẩn bị trọn bộ.</small></span></div>
+        <div><i class="fa-solid fa-gem"></i><span><strong>Kiểm tra nguồn trước khi gửi</strong><small>Nếu nguồn cần nạp VIP, hãy gửi thêm nguồn đọc phù hợp trong phần ghi chú.</small></span></div>
+        <div><i class="fa-solid fa-book-open-reader"></i><span><strong>Convert là lựa chọn mặc định</strong><small>Bạn vẫn có thể đổi sang Edit nếu bản truyện đã được biên tập.</small></span></div>
+      </div>
+      <form id="suggestionForm" class="form-grid" aria-label="Form đề xuất truyện">
+        <label class="field full"><span>Tên truyện *</span><input name="title" type="text" required minlength="2" maxlength="220" placeholder="Tên truyện đã FULL"></label>
+        <label class="field full"><span>Link nguồn *</span><input name="linkstory" required type="url" placeholder="https://…"></label>
+        <fieldset class="choice-field full"><legend>Loại bản</legend><label><input name="version" type="radio" value="Convert" checked><span>Convert</span></label><label><input name="version" type="radio" value="Edit"><span>Edit</span></label></fieldset>
+        <label class="field full"><span>Ghi chú</span><textarea name="note" rows="3" maxlength="5000" placeholder="Thông tin thêm cho admin…"></textarea></label>
+        <label class="honeypot" aria-hidden="true">Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+        <button id="submitSuggestionButton" class="button button-primary full" type="submit"><i class="fa-solid fa-paper-plane"></i> Gửi đề xuất</button>
+      </form>
+    </article>
+  </dialog>
+
+  <dialog id="donationDialog" class="modal">
+    <article class="modal-card donation-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng">×</button>
+      <div class="modal-heading"><span class="modal-icon fish"><i class="fa-solid fa-fish-fins"></i></span><div><span class="eyebrow">Tặng Cá</span><h2 id="donationTitle">Ủng hộ truyện</h2></div></div>
+      <div class="donation-steps"><span><b>1</b> Chọn truyện</span><span><b>2</b> Chuyển khoản</span><span><b>3</b> Báo admin</span></div>
+      <p id="donationModeNote" class="donation-mode-note"></p>
+      <form id="donationForm" class="donation-layout" aria-label="Form báo donate">
+        <div class="form-grid">
+          <input name="story_id" type="hidden"><input name="source_channel" type="hidden" value="website">
+          <label class="field full"><span>Truyện *</span><select name="story_select" required></select></label>
+          <label class="field"><span>Tên người gửi *</span><input name="donor_name" type="text" required maxlength="120" placeholder="Tên dùng khi chuyển khoản"></label>
+          <label class="field"><span>Số tiền *</span><input name="amount_vnd" required type="number" min="1000" step="1000" placeholder="100000"></label>
+          <div id="donationPreview" class="donation-preview full">1 Cá = 1 Linh Thạch = 1.000đ</div>
+          <label class="field"><span>Mã/nội dung giao dịch</span><input name="transaction_ref" type="text" maxlength="120" placeholder="Không bắt buộc"></label>
+          <label class="field"><span>Thời gian chuyển</span><input name="donatedat" type="datetime-local"></label>
+          <label class="field full"><span>Email nhận thông báo</span><input name="donor_email" type="email" maxlength="254" placeholder="Không bắt buộc"></label>
+          <label class="field full"><span>Ghi chú</span><textarea name="note" rows="2" maxlength="1500"></textarea></label>
+          <label class="honeypot" aria-hidden="true">Website<input name="website" type="text" tabindex="-1"></label>
+        </div>
+        <aside id="bankPanel" class="bank-panel"><p class="muted">Nhập tên để tạo nội dung chuyển khoản.</p></aside>
+        <button id="submitDonationButton" class="button button-primary full-width" type="submit"><i class="fa-solid fa-fish-fins"></i> Tôi đã tặng Cá</button>
+      </form>
+    </article>
+  </dialog>
+
+  <dialog id="replacementDialog" class="modal"><article class="modal-card form-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng">×</button><div class="modal-heading"><span class="modal-icon"><i class="fa-solid fa-link"></i></span><div><span class="eyebrow">Giúp cộng đồng</span><h2>Gửi nguồn thay thế</h2></div></div><form id="replacementForm" class="form-grid" aria-label="Form gửi nguồn thay thế"><input name="story_id" type="hidden"><label class="field full"><span>Nguồn mới *</span><input name="replacement_url" type="url" required placeholder="https://…"></label><label class="field full"><span>Tên người gửi</span><input name="sender_name" type="text" maxlength="120"></label><label class="field full"><span>Ghi chú</span><textarea name="note" rows="3" maxlength="1500"></textarea></label><label class="honeypot" aria-hidden="true">Website<input name="website" type="text" tabindex="-1"></label><button class="button button-primary full" type="submit">Gửi admin kiểm tra</button></form></article></dialog>
 </body>
 </html>

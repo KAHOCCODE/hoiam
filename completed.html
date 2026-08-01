@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#08091a" />
+    <meta
+      name="description"
+      content="Kho truyện đam mỹ đã được Hồi Âm Đam Mỹ đăng hoàn chỉnh trên YouTube."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="google-adsense-account" content="ca-pub-6051983418402912" />
+    <link rel="canonical" href="https://hoiam.vercel.app/completed.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:site_name" content="Hồi Âm Đam Mỹ" />
+    <meta property="og:title" content="Truyện đã hoàn thành — Hồi Âm Đam Mỹ" />
+    <meta
+      property="og:description"
+      content="Xem kho truyện đã đăng trọn bộ trên kênh Hồi Âm Đam Mỹ."
+    />
+    <meta property="og:url" content="https://hoiam.vercel.app/completed.html" />
+    <meta
+      property="og:image"
+      content="https://hoiam.vercel.app/assets/images/galaxy.webp"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>Truyện đam mỹ đã hoàn thành — Hồi Âm Đam Mỹ</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css" />
+    <link rel="stylesheet" href="/assets/site.css?v=0611" />
+    <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
+    <script src="/assets/app.js?v=0611" defer></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6051983418402912"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body data-page="completed">
+    <div class="galaxy" aria-hidden="true"></div>
+    <header class="site-header">
+      <div class="shell nav-row">
+        <a class="brand" href="/"
+          ><span class="brand-orbit"
+            ><i class="fa-solid fa-headphones-simple"></i></span
+          ><span
+            ><strong data-channel-name>Hồi Âm Đam Mỹ</strong
+            ><small>Vũ trụ đề xuất truyện</small></span
+          ></a
+        >
+        <nav class="desktop-nav" aria-label="Điều hướng chính">
+          <a class="nav-home" href="/"
+            ><i class="fa-solid fa-house"></i><span>Trang chủ</span></a
+          ><a class="nav-completed" href="/completed.html"
+            ><i class="fa-solid fa-circle-check"></i
+            ><span>Đã hoàn thành</span></a
+          ><a class="nav-guide" href="/guide.html"
+            ><i class="fa-solid fa-compass"></i><span>Hướng dẫn</span></a
+          ><a class="nav-about" href="/about.html"
+            ><i class="fa-solid fa-address-card"></i><span>About Me</span></a
+          >
+        </nav>
+        <button
+          class="icon-button mobile-only"
+          id="menuButton"
+          type="button"
+          aria-label="Mở menu"
+        >
+          <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+      </div>
+      <nav
+        id="mobileNav"
+        class="mobile-nav shell"
+        aria-label="Điều hướng điện thoại"
+        hidden
+      >
+        <a class="nav-home" href="/"
+          ><i class="fa-solid fa-house"></i><span>Trang chủ</span></a
+        ><a class="nav-completed" href="/completed.html"
+          ><i class="fa-solid fa-circle-check"></i><span>Đã hoàn thành</span></a
+        ><a class="nav-guide" href="/guide.html"
+          ><i class="fa-solid fa-compass"></i><span>Hướng dẫn</span></a
+        ><a class="nav-about" href="/about.html"
+          ><i class="fa-solid fa-address-card"></i><span>About Me</span></a
+        >
+      </nav>
+    </header>
+    <div id="announcementHost" class="announcement-host shell"></div>
+    <main id="mainContent" class="page-main shell">
+      <header class="page-heading">
+        <span class="eyebrow"
+          ><i class="fa-solid fa-circle-check"></i> Kho đã lên sóng</span
+        >
+        <h1>Truyện đã hoàn thành</h1>
+        <p>Những câu chuyện đã được đăng đầy đủ trên kênh.</p>
+      </header>
+      <section class="panel">
+        <div class="filters">
+          <label class="search-box"
+            ><i class="fa-solid fa-magnifying-glass"></i
+            ><input
+              id="searchInput"
+              type="search"
+              placeholder="Tìm tên truyện…" /></label
+          ><label
+            ><select id="versionFilter">
+              <option value="all">Convert &amp; Edit</option>
+              <option value="Convert">Convert</option>
+              <option value="Edit">Edit</option>
+            </select></label
+          ><label
+            ><select id="sourceFilter">
+              <option value="all">Mọi nguồn</option>
+            </select></label
+          ><label
+            ><select id="sortSelect">
+              <option value="newest">Hoàn thành mới nhất</option>
+              <option value="oldest">Cũ nhất</option>
+              <option value="title">Tên A → Z</option>
+            </select></label
+          >
+        </div>
+        <div id="completedGrid" class="completed-grid" aria-live="polite"></div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="shell footer-row">
+        <a href="/"><i class="fa-solid fa-arrow-left"></i> Trang chủ</a
+        ><span>© 2026 <span data-channel-name>Hồi Âm Đam Mỹ</span></span>
+      </div>
+    </footer>
+    <dialog id="storyDialog" class="modal">
+      <article class="modal-card detail-card">
+        <button
+          class="modal-close"
+          data-close-dialog
+          type="button"
+          aria-label="Đóng"
+        >
+          ×
+        </button>
+        <div id="storyDialogContent"></div>
+      </article>
+    </dialog>
+  </body>
+</html>

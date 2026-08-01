@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#08091a" />
+    <meta
+      name="description"
+      content="Hướng dẫn đề xuất truyện, vote, tặng Cá và gửi nguồn thay thế trên website Hồi Âm Đam Mỹ."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="google-adsense-account" content="ca-pub-6051983418402912" />
+    <link rel="canonical" href="https://hoiam.vercel.app/guide.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:site_name" content="Hồi Âm Đam Mỹ" />
+    <meta property="og:title" content="Hướng dẫn sử dụng — Hồi Âm Đam Mỹ" />
+    <meta
+      property="og:description"
+      content="Cách đề xuất truyện, vote và tặng Cá thật dễ hiểu."
+    />
+    <meta property="og:url" content="https://hoiam.vercel.app/guide.html" />
+    <meta
+      property="og:image"
+      content="https://hoiam.vercel.app/assets/images/galaxy.webp"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>Hướng dẫn đề xuất truyện &amp; vote — Hồi Âm Đam Mỹ</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css" />
+    <link rel="stylesheet" href="/assets/site.css?v=0611" />
+    <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
+    <script src="/assets/app.js?v=0611" defer></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6051983418402912"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body data-page="guide">
+    <div class="galaxy" aria-hidden="true"></div>
+    <header class="site-header">
+      <div class="shell nav-row">
+        <a class="brand" href="/"
+          ><span class="brand-orbit"
+            ><i class="fa-solid fa-headphones-simple"></i></span
+          ><span
+            ><strong data-channel-name>Hồi Âm Đam Mỹ</strong
+            ><small>Vũ trụ đề xuất truyện</small></span
+          ></a
+        >
+        <nav class="desktop-nav" aria-label="Điều hướng chính">
+          <a class="nav-home" href="/"
+            ><i class="fa-solid fa-house"></i><span>Trang chủ</span></a
+          ><a class="nav-completed" href="/completed.html"
+            ><i class="fa-solid fa-circle-check"></i
+            ><span>Đã hoàn thành</span></a
+          ><a class="nav-guide" href="/guide.html"
+            ><i class="fa-solid fa-compass"></i><span>Hướng dẫn</span></a
+          ><a class="nav-about" href="/about.html"
+            ><i class="fa-solid fa-address-card"></i><span>About Me</span></a
+          >
+        </nav>
+        <button
+          class="icon-button mobile-only"
+          id="menuButton"
+          type="button"
+          aria-label="Mở menu"
+        >
+          <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+      </div>
+      <nav
+        id="mobileNav"
+        class="mobile-nav shell"
+        aria-label="Điều hướng điện thoại"
+        hidden
+      >
+        <a class="nav-home" href="/"
+          ><i class="fa-solid fa-house"></i><span>Trang chủ</span></a
+        ><a class="nav-completed" href="/completed.html"
+          ><i class="fa-solid fa-circle-check"></i><span>Đã hoàn thành</span></a
+        ><a class="nav-guide" href="/guide.html"
+          ><i class="fa-solid fa-compass"></i><span>Hướng dẫn</span></a
+        ><a class="nav-about" href="/about.html"
+          ><i class="fa-solid fa-address-card"></i><span>About Me</span></a
+        >
+      </nav>
+    </header>
+    <div id="announcementHost" class="announcement-host shell"></div>
+    <main class="page-main shell">
+      <header class="page-heading">
+        <span class="eyebrow"
+          ><i class="fa-solid fa-compass"></i> Bắt đầu thật dễ</span
+        >
+        <h1>Hướng dẫn</h1>
+        <p>Chọn nội dung bạn cần, mỗi mục chỉ mất một phút để xem.</p>
+      </header>
+      <div class="guide-stack">
+        <details class="guide-step" open>
+          <summary>
+            <span class="guide-icon icon-violet"
+              ><i class="fa-solid fa-wand-magic-sparkles"></i></span
+            ><span
+              ><strong>Gửi một truyện đề xuất</strong
+              ><small>Truyện FULL, nguồn đọc và loại bản</small></span
+            ><i class="fa-solid fa-chevron-down guide-chevron"></i>
+          </summary>
+          <div class="guide-content">
+            <p>
+              Hãy chọn truyện đã <strong>FULL</strong>, dán link nguồn và kiểm
+              tra tên truyện trước khi gửi. Form chọn sẵn
+              <strong>Convert</strong>; bạn có thể đổi sang Edit.
+            </p>
+            <p>
+              Nếu nguồn cần nạp VIP, hãy ghi thêm nguồn đọc thay thế phù hợp để
+              admin dễ kiểm tra.
+            </p>
+          </div>
+        </details>
+        <details class="guide-step">
+          <summary>
+            <span class="guide-icon icon-pink"
+              ><i class="fa-solid fa-heart"></i></span
+            ><span
+              ><strong>Vote cho truyện bạn thích</strong
+              ><small>Vote hoặc bỏ vote chỉ với một chạm</small></span
+            ><i class="fa-solid fa-chevron-down guide-chevron"></i>
+          </summary>
+          <div class="guide-content">
+            <p>
+              Nút <strong>Vote</strong> sẽ đổi thành
+              <strong>Đã vote</strong> ngay sau khi ghi nhận. Bạn có thể chạm
+              lại để bỏ vote khi truyện vẫn còn ở mục Đề xuất.
+            </p>
+            <div class="status-guide">
+              <span
+                ><i class="fa-solid fa-inbox"></i><b>Đề xuất</b> đang chờ bình
+                chọn</span
+              ><span
+                ><i class="fa-solid fa-pen-nib"></i><b>Đã chọn</b> đang được
+                chuẩn bị</span
+              ><span
+                ><i class="fa-solid fa-tower-broadcast"></i
+                ><b>Đang lên sóng</b> đã có trên YouTube</span
+              ><span
+                ><i class="fa-solid fa-circle-check"></i><b>Hoàn thành</b> đã
+                đăng trọn bộ</span
+              >
+            </div>
+          </div>
+        </details>
+        <details class="guide-step">
+          <summary>
+            <span class="guide-icon icon-cyan"
+              ><i class="fa-solid fa-fish-fins"></i></span
+            ><span
+              ><strong>Tặng Cá hoặc báo đã donate</strong
+              ><small>1 Cá = 1 Linh Thạch = 1.000đ</small></span
+            ><i class="fa-solid fa-chevron-down guide-chevron"></i>
+          </summary>
+          <div class="guide-content">
+            <p>
+              Chọn truyện, nhập tên rồi dùng đúng nội dung chuyển khoản được tạo
+              sẵn. Nếu bạn đã donate qua YouTube hoặc email, chọn
+              <strong>Đã tặng Cá?</strong> để báo lại.
+            </p>
+            <p>
+              Email nhận kết quả là tùy chọn. Admin sẽ kiểm tra giao dịch trước
+              khi cộng vote.
+            </p>
+          </div>
+        </details>
+        <details class="guide-step">
+          <summary>
+            <span class="guide-icon icon-gold"
+              ><i class="fa-solid fa-link"></i></span
+            ><span
+              ><strong>Khi nguồn truyện cần thay thế</strong
+              ><small>Gửi link mới để admin xem xét</small></span
+            ><i class="fa-solid fa-chevron-down guide-chevron"></i>
+          </summary>
+          <div class="guide-content">
+            <p>
+              Nếu một truyện hiện cảnh báo nguồn, bạn có thể mở chi tiết và gửi
+              link thay thế. Chỉ những cảnh báo đã được admin xác nhận mới xuất
+              hiện trên website.
+            </p>
+          </div>
+        </details>
+      </div>
+      <div class="center page-cta">
+        <a class="button button-primary" href="/#library"
+          ><i class="fa-solid fa-book-open-reader"></i> Vào kho truyện</a
+        >
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="shell footer-row">
+        <a href="/"><i class="fa-solid fa-arrow-left"></i> Trang chủ</a
+        ><span>© 2026 <span data-channel-name>Hồi Âm Đam Mỹ</span></span>
+      </div>
+    </footer>
+  </body>
+</html>
