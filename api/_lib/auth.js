@@ -44,13 +44,29 @@ function verifyPassword(value) {
   return crypto.timingSafeEqual(a, b);
 }
 
-function setSession(res) {
-  const token = encode({ role: 'admin', exp: Date.now() + 1000 * 60 * 60 * 8 });
-  res.setHeader('Set-Cookie', `${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Strict; Max-Age=${60 * 60 * 8}; Path=/`);
+function cookieSecurity(req) {
+  const protocol = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim();
+  return protocol === 'https' || process.env.NODE_ENV === 'production' ? '; Secure' : '';
 }
 
-function clearSession(res) {
-  res.setHeader('Set-Cookie', `${COOKIE_NAME}=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/`);
+function setSession(req, res) {
+  const token = encode({
+    role: 'admin',
+    iat: Date.now(),
+    exp: Date.now() + 1000 * 60 * 60 * 8,
+  });
+
+  res.setHeader(
+    'Set-Cookie',
+    `${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly${cookieSecurity(req)}; SameSite=Strict; Max-Age=${60 * 60 * 8}; Path=/`
+  );
+}
+
+function clearSession(req, res) {
+  res.setHeader(
+    'Set-Cookie',
+    `${COOKIE_NAME}=; HttpOnly${cookieSecurity(req)}; SameSite=Strict; Max-Age=0; Path=/`
+  );
 }
 
 function requireAdmin(req, res) {
