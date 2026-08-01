@@ -65,6 +65,10 @@ for (const name of htmlFiles) {
 const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const siteCss = fs.readFileSync(path.join(root, 'assets/site.css'), 'utf8');
+const appJs = fs.readFileSync(path.join(root, 'assets/app.js'), 'utf8');
+const publicStoriesApi = fs.readFileSync(path.join(root, 'api/_routes/stories/index.js'), 'utf8');
+const publicSettingsApi = fs.readFileSync(path.join(root, 'api/_routes/settings/index.js'), 'utf8');
+const apiUtils = fs.readFileSync(path.join(root, 'api/_routes/_lib/utils.js'), 'utf8');
 const migrationSql = fs.readFileSync(path.join(root, 'supabase.sql'), 'utf8');
 assert.match(homeHtml, /rel="canonical"/i, 'Homepage needs a canonical URL');
 assert.match(homeHtml, /application\/ld\+json/i, 'Homepage needs structured data');
@@ -79,6 +83,11 @@ assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidde
 assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs its own background');
 assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its own background');
 assert.match(fs.readFileSync(path.join(root, 'ads.txt'), 'utf8'), /pub-6051983418402912/, 'ads.txt publisher must be preserved');
+assert.match(appJs, /api\('\/api\/stories',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Story requests must bypass stale browser caches');
+assert.match(appJs, /api\('\/api\/settings',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Settings requests must bypass stale browser caches');
+assert.doesNotMatch(publicStoriesApi, /s-maxage|stale-while-revalidate/i, 'Story API must not cache changing vote totals');
+assert.doesNotMatch(publicSettingsApi, /s-maxage|stale-while-revalidate/i, 'Settings API must not cache cross-page changes');
+assert.match(apiUtils, /setHeader\('Cache-Control',\s*'no-store'\)/, 'Dynamic API responses must disable caching');
 
 const dropStatusConstraint = migrationSql.indexOf('drop constraint if exists stories_status_check');
 const normalizeStatuses = migrationSql.indexOf('update public.stories');

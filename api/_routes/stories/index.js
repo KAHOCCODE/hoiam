@@ -30,12 +30,7 @@ module.exports = async (req, res) => {
 
   try {
     const stories = await listPublicStories();
-    return json(
-      res,
-      200,
-      { stories: Array.isArray(stories) ? stories : [] },
-      { 'Cache-Control': 'public, max-age=15, s-maxage=30, stale-while-revalidate=120' }
-    );
+    return json(res, 200, { stories: Array.isArray(stories) ? stories : [] });
   } catch (error) {
     logServerError('api/stories', error);
     return json(res, error.status || 500, { error: 'Không tải được kho truyện.' });

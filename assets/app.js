@@ -658,7 +658,7 @@ function renderAnnouncements() {
 
 async function loadSettings() {
   try {
-    const payload = await api('/api/settings');
+    const payload = await api('/api/settings', { cache: 'no-store' });
     state.settings = payload.settings;
     state.announcements = payload.announcements || [];
     applySettings(); renderAnnouncements();
@@ -667,7 +667,7 @@ async function loadSettings() {
 
 async function loadStories() {
   try {
-    const payload = await api('/api/stories');
+    const payload = await api('/api/stories', { cache: 'no-store' });
     state.stories = Array.isArray(payload.stories) ? payload.stories.map(normalizeStory).filter((item) => item.id && item.title) : [];
     renderHome(); fillDonationStories();
   } catch (error) {

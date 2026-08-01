@@ -21,9 +21,7 @@ module.exports = async (req, res) => {
     } catch (error) {
       if (![400, 404].includes(error.status)) throw error;
     }
-    return json(res, 200, { settings, announcements: Array.isArray(announcements) ? announcements : [] }, {
-      'Cache-Control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300',
-    });
+    return json(res, 200, { settings, announcements: Array.isArray(announcements) ? announcements : [] });
   } catch (error) {
     logServerError('api/settings', error);
     return json(res, 200, { settings: null, announcements: [] });

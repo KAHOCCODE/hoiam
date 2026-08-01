@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.4
+# Hồi Âm Đam Mỹ V06.1.5
 
-Phiên bản V06.1.4 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
+Phiên bản V06.1.5 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
 
 Toàn bộ endpoint được rewrite vào một Vercel Function để tương thích giới hạn của gói Hobby, kể cả các URL nhiều tầng như vote và trang quản trị. URL API công khai và cách sử dụng không thay đổi.
 
@@ -23,6 +23,7 @@ Toàn bộ endpoint được rewrite vào một Vercel Function để tương th
 - SEO cơ bản gồm canonical, Open Graph, dữ liệu cấu trúc, `robots.txt` và `sitemap.xml`.
 - Sửa bỏ vote trên database cũ và ẩn lỗi 404 của các module chưa chạy migration.
 - Migration tự thay ràng buộc trạng thái cũ trước khi đổi `đang đọc` thành `đang lên sóng`.
+- Tắt cache dữ liệu động để vote, kho truyện, thông báo và thiết lập mới hiển thị ngay khi tải lại trang.
 - Icon được đóng gói trong website; menu có icon và tự đánh dấu khu vực đang xem.
 - Giữ nguyên `ads.txt` và gắn Google Auto Ads theo mã quảng cáo hiện có.
 
