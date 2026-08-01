@@ -1,285 +1,110 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hồi Âm Admin</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    referrerpolicy="no-referrer"
-  />
-  <link rel="stylesheet" href="/assets/styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b0b18">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Hồi Âm — Admin</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css">
+  <link rel="stylesheet" href="/assets/styles.css?v=0611">
+  <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
+  <script src="/assets/admin.js?v=0611" defer></script>
 </head>
-
 <body>
-  <div class="aurora aurora-a"></div>
-  <div class="aurora aurora-b"></div>
+  <div class="admin-cosmos" aria-hidden="true"></div>
 
-  <header class="site-header">
-    <div class="container header-row">
-      <a class="brand" href="/">
-        <span class="brand-mark">HA</span>
-        <span>
-          <strong>Hồi Âm Admin</strong>
-          <small>Quản trị truyện</small>
-        </span>
-      </a>
-
-      <div class="header-actions">
-        <a class="nav-ghost" href="/">Trang chủ</a>
-        <button id="logoutBtn" class="btn btn-secondary hidden" type="button">
-          Đăng xuất
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main class="container section">
-    <section id="loginCard" class="card admin-login">
-      <div class="section-heading compact">
-        <div>
-          <span class="eyebrow">
-            <i class="fa-solid fa-lock"></i>
-            Admin
-          </span>
-          <h1>Đăng nhập</h1>
-          <p>Truy cập bảng quản trị truyện.</p>
-        </div>
-      </div>
-
-      <form id="loginForm" class="stack">
-        <label class="field">
-          <span>Mật khẩu admin</span>
-          <input
-            id="password"
-            type="password"
-            autocomplete="current-password"
-            placeholder="Nhập mật khẩu"
-          />
-        </label>
-
-        <button class="btn btn-primary" type="submit">
-          Vào admin
-        </button>
-      </form>
-    </section>
-
-    <section id="dashboard" class="admin-layout hidden">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">
-            <i class="fa-solid fa-gauge-high"></i>
-            Dashboard
-          </span>
-          <h1>Quản lý truyện</h1>
-          <p>2 trạng thái: đề xuất · đang đọc. Có thể sửa truyện, đổi trạng thái, xóa và cộng vote theo donate.</p>
-        </div>
-      </div>
-
-      <div class="stats-grid admin-stats">
-        <article class="card stat-card">
-          <span class="stat-label">Tổng</span>
-          <strong id="aStatTotal">0</strong>
-          <span class="tiny-note">Tất cả truyện</span>
-        </article>
-
-        <article class="card stat-card">
-          <span class="stat-label">Đề xuất</span>
-          <strong id="aStatSuggest">0</strong>
-          <span class="tiny-note">Chờ chọn</span>
-        </article>
-
-        <article class="card stat-card">
-          <span class="stat-label">Đang đọc</span>
-          <strong id="aStatReading">0</strong>
-          <span class="tiny-note">Đang làm</span>
-        </article>
-
-        <article class="card stat-card">
-          <span class="stat-label">Top</span>
-          <strong id="aStatTop">3</strong>
-          <span class="tiny-note">Theo vote</span>
-        </article>
-      </div>
-
-      <section class="card admin-tools">
-        <div class="toolbar">
-          <label class="search-wrap">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input
-              id="adminSearch"
-              type="search"
-              placeholder="Tìm tên truyện..."
-            />
-          </label>
-
-          <div class="toolbar-actions">
-            <select id="adminFilter" aria-label="Lọc trạng thái">
-              <option value="all">Tất cả</option>
-              <option value="đề xuất">Đề xuất</option>
-              <option value="đang đọc">Đang đọc</option>
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <section class="card admin-table-wrap">
-        <div class="section-heading compact">
-          <div>
-            <h2>Danh sách truyện</h2>
-            <p>Sửa · đổi trạng thái · xóa · cộng vote donate</p>
-          </div>
-        </div>
-
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Truyện</th>
-              <th>Trạng thái</th>
-              <th>Vote</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="adminTable">
-            <tr>
-              <td colspan="4">Đang tải dữ liệu...</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+  <main id="loginView" class="login-view">
+    <section class="login-card">
+      <a class="login-brand" href="/"><span><i class="fa-solid fa-headphones-simple"></i></span><div><strong>Hồi Âm</strong><small>Control center</small></div></a>
+      <div class="login-copy"><span class="eyebrow">Khu vực quản trị</span><h1>Chào mừng trở lại.</h1><p>Quản lý truyện, nguồn, donate và nội dung website tại một nơi.</p></div>
+      <form id="loginForm" class="admin-form" aria-label="Đăng nhập admin"><label class="field"><span>Mật khẩu admin</span><span class="password-field"><i class="fa-solid fa-lock"></i><input id="password" type="password" required autocomplete="current-password" placeholder="Nhập mật khẩu"></span></label><button class="btn btn-primary" type="submit">Mở dashboard <i class="fa-solid fa-arrow-right"></i></button></form>
+      <a class="back-link" href="/"><i class="fa-solid fa-arrow-left"></i> Về trang công khai</a>
     </section>
   </main>
 
-  <dialog id="editDialog" class="story-dialog">
-    <form id="editForm" method="dialog" class="dialog-shell">
-      <button
-        id="closeEditDialogBtn"
-        type="button"
-        class="dialog-close"
-        aria-label="Đóng"
-      >
-        ×
-      </button>
+  <div id="adminApp" class="admin-app hidden">
+    <aside class="sidebar" aria-label="Điều hướng quản trị">
+      <a class="side-brand" href="/"><span><i class="fa-solid fa-headphones-simple"></i></span><div><strong>Hồi Âm</strong><small>ADMIN V06</small></div></a>
+      <nav id="adminNav" class="side-nav" aria-label="Khu vực quản trị">
+        <button class="active" data-view="overview" type="button"><i class="fa-solid fa-chart-pie"></i><span>Tổng quan</span></button>
+        <button data-view="stories" type="button"><i class="fa-solid fa-book-open"></i><span>Truyện</span><b id="navStoryCount">0</b></button>
+        <button data-view="donations" type="button"><i class="fa-solid fa-fish-fins"></i><span>Donate</span><b id="navDonationCount">0</b></button>
+        <button data-view="sources" type="button"><i class="fa-solid fa-link"></i><span>Nguồn truyện</span><b id="navSourceCount">0</b></button>
+        <button data-view="announcements" type="button"><i class="fa-solid fa-bell"></i><span>Thông báo</span></button>
+        <button data-view="settings" type="button"><i class="fa-solid fa-sliders"></i><span>Cài đặt</span></button>
+      </nav>
+      <div class="side-bottom"><a href="/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i><span>Xem website</span></a><button id="logoutButton" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Đăng xuất</span></button></div>
+    </aside>
 
-      <div class="dialog-head">
-        <span class="eyebrow">
-          <i class="fa-solid fa-pen-to-square"></i>
-          Edit
-        </span>
-        <h3>Cập nhật truyện</h3>
-      </div>
+    <div class="workspace">
+      <header class="topbar" aria-label="Thanh công cụ quản trị"><button id="sidebarToggle" class="square-btn mobile-only" type="button" aria-label="Mở thanh điều hướng"><i class="fa-solid fa-bars-staggered"></i></button><div><span class="breadcrumb">Hồi Âm / <b id="currentViewLabel">Tổng quan</b></span></div><div class="topbar-actions"><button id="refreshButton" class="square-btn" type="button" aria-label="Tải lại dữ liệu" title="Tải lại dữ liệu"><i class="fa-solid fa-rotate"></i></button></div></header>
 
-      <input id="editId" type="hidden" />
-
-      <div class="stack">
-        <label class="field">
-          <span>Tên truyện</span>
-          <input id="editTitle" type="text" placeholder="Tên truyện" />
-        </label>
-
-        <label class="field">
-          <span>Link gốc</span>
-          <input id="editLinkStory" type="url" placeholder="https://..." />
-        </label>
-
-        <label class="field">
-          <span>Link audio</span>
-          <input id="editYoutubeLink" type="url" placeholder="https://..." />
-        </label>
-
-        <div class="grid-2">
-          <label class="field">
-            <span>Trạng thái</span>
-            <select id="editStatus">
-              <option value="đề xuất">Đề xuất</option>
-              <option value="đang đọc">Đang đọc</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Vote</span>
-            <input id="editVotes" type="number" min="0" step="1" />
-          </label>
-        </div>
-
-        <section class="donate-vote-box">
-          <div class="donate-vote-head">
-            <div>
-              <strong>Donate đổi vote</strong>
-              <small>Nhập số tiền, hệ thống tự tính rồi cộng thẳng vào vote.</small>
-            </div>
+      <div class="content">
+        <section class="admin-view active" data-section="overview">
+          <header class="view-heading"><div><span class="eyebrow">Dashboard</span><h1>Toàn cảnh hôm nay</h1><p>Một nơi để nắm toàn bộ tiến độ của kênh.</p></div><button class="btn btn-primary" data-open-completed type="button"><i class="fa-solid fa-plus"></i> Thêm truyện cũ</button></header>
+          <div class="kpi-grid">
+            <article class="kpi"><span class="kpi-icon violet"><i class="fa-solid fa-inbox"></i></span><div><small>Đề xuất</small><strong id="statProposed">0</strong><em>đang chờ chọn</em></div></article>
+            <article class="kpi"><span class="kpi-icon gold"><i class="fa-solid fa-pen-nib"></i></span><div><small>Đã chọn</small><strong id="statSelected">0</strong><em>đang edit</em></div></article>
+            <article class="kpi"><span class="kpi-icon pink"><i class="fa-solid fa-tower-broadcast"></i></span><div><small>Lên sóng</small><strong id="statAiring">0</strong><em>trên YouTube</em></div></article>
+            <article class="kpi"><span class="kpi-icon cyan"><i class="fa-solid fa-fish-fins"></i></span><div><small>Donate chờ</small><strong id="statDonationPending">0</strong><em>cần kiểm tra</em></div></article>
           </div>
-
-          <label class="field">
-            <span>Số tiền donate</span>
-            <input
-              id="donateAmount"
-              type="number"
-              min="1000"
-              step="1000"
-              placeholder="Ví dụ: 100000"
-            />
-          </label>
-
-          <p id="donatePreview" class="donate-preview">
-            Nhập số tiền để xem số vote sẽ được cộng.
-          </p>
-
-          <button type="button" id="applyDonateVoteBtn" class="small-btn">
-            <i class="fa-solid fa-circle-plus"></i>
-            Cộng vote theo donate
-          </button>
+          <div class="dashboard-grid">
+            <section class="admin-card span-2"><div class="card-head"><div><h2>Top 3 đề xuất</h2><p>Xếp theo tổng vote hiện tại</p></div><button class="link-btn" data-go-view="stories" type="button">Xem tất cả</button></div><div id="dashboardTop" class="rank-list"></div></section>
+            <section class="admin-card"><div class="card-head"><div><h2>Cần xử lý</h2><p>Nguồn và donate</p></div></div><div id="attentionList" class="attention-list"></div></section>
+            <section class="admin-card"><div class="card-head"><div><h2>Nguồn truyện</h2><p>Phân bổ theo website</p></div></div><div id="sourceStats" class="source-bars"></div></section>
+            <section class="admin-card span-2"><div class="card-head"><div><h2>Được quan tâm</h2><p>Lượt mở và nhấn YouTube</p></div></div><div id="popularStories" class="compact-table"></div></section>
+          </div>
         </section>
 
-        <div class="field">
-          <span>Loại bản</span>
-          <div class="pill-row">
-            <label class="choice-pill">
-              <input type="radio" name="editVersion" value="Edit" checked />
-              <span>Edit</span>
-            </label>
+        <section class="admin-view" data-section="stories">
+          <header class="view-heading"><div><span class="eyebrow">Thư viện</span><h1>Quản lý truyện</h1><p>Lọc nhanh, sửa bằng ngăn kéo và không xóa cứng dữ liệu.</p></div><button class="btn btn-primary" data-open-completed type="button"><i class="fa-solid fa-plus"></i> Thêm đã hoàn thành</button></header>
+          <section class="admin-card table-card"><div class="table-toolbar story-toolbar"><label class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input id="storySearch" type="search" placeholder="Tìm tên hoặc nguồn…"></label><select id="storyStatusFilter" aria-label="Lọc trạng thái"><option value="all">Mọi trạng thái</option><option value="đề xuất">Đề xuất</option><option value="đã chọn">Đã chọn</option><option value="đang lên sóng">Đang lên sóng</option><option value="đã hoàn thành">Đã hoàn thành</option><option value="trash">Thùng rác</option></select><select id="storyVersionFilter" aria-label="Lọc loại bản"><option value="all">Convert &amp; Edit</option><option value="Convert">Convert</option><option value="Edit">Edit</option></select><select id="storySourceFilter" aria-label="Lọc nguồn"><option value="all">Mọi nguồn</option><option value="problem">Nguồn cần xử lý</option></select><select id="storySort" aria-label="Sắp xếp truyện"><option value="votes-desc">Vote cao → thấp</option><option value="votes-asc">Vote thấp → cao</option><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="title">Tên A → Z</option></select></div><div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Truyện</th><th scope="col">Nguồn</th><th scope="col">Trạng thái</th><th scope="col">Vote</th><th scope="col">Hoạt động</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="storyTable"><tr><td colspan="6">Đang tải…</td></tr></tbody></table></div></section>
+        </section>
 
-            <label class="choice-pill">
-              <input type="radio" name="editVersion" value="Convert" />
-              <span>Convert</span>
-            </label>
-          </div>
-        </div>
+        <section class="admin-view" data-section="donations">
+          <header class="view-heading"><div><span class="eyebrow">Cá &amp; Linh Thạch</span><h1>Donate</h1><p>Kiểm tra giao dịch trước khi cộng vote.</p></div><button id="openExternalDonation" class="btn btn-primary" type="button"><i class="fa-solid fa-plus"></i> Thêm giao dịch ngoài</button></header>
+          <div class="mini-stats"><span>Chờ kiểm tra <strong id="donationPendingCount">0</strong></span><span>Tổng ghi nhận <strong id="donationTotalAmount">0đ</strong></span><span>Cá/Linh Thạch <strong id="donationTotalStones">0</strong></span><span>Vote đã cộng <strong id="donationAppliedVotes">0</strong></span></div>
+          <section class="admin-card table-card"><div class="table-toolbar donation-toolbar"><label class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input id="donationSearch" type="search" placeholder="Tên người gửi, truyện hoặc mã giao dịch…"></label><select id="donationFilter" aria-label="Lọc donate"><option value="all">Mọi trạng thái</option><option value="pending">Chờ kiểm tra</option><option value="confirmed">Đã xác nhận</option><option value="waiting_votes">Chờ cộng vote</option><option value="applied">Đã cộng vote</option><option value="rejected">Từ chối</option></select><select id="donationSourceFilter" aria-label="Lọc nơi donate"><option value="all">Mọi kênh</option><option value="website">Website</option><option value="youtube">YouTube / email</option><option value="admin">Admin nhập</option></select><select id="donationSort" aria-label="Sắp xếp donate"><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="amount-desc">Số tiền cao → thấp</option><option value="amount-asc">Số tiền thấp → cao</option></select></div><div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Người gửi</th><th scope="col">Truyện</th><th scope="col">Giá trị</th><th scope="col">Vote</th><th scope="col">Trạng thái</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="donationTable"></tbody></table></div></section>
+        </section>
 
-        <label class="field">
-          <span>Ghi chú</span>
-          <textarea id="editNote" rows="5" placeholder="Ghi chú..."></textarea>
-        </label>
+        <section class="admin-view" data-section="sources">
+          <header class="view-heading"><div><span class="eyebrow">Kiểm soát nguồn</span><h1>Nguồn truyện</h1><p>Kiểm tra nguồn và chỉ hiển thị cảnh báo khi bạn thấy cần thiết.</p></div></header>
+          <div class="source-columns"><section class="admin-card"><div class="card-head"><div><h2>Nguồn cần chú ý</h2><p>Nghi ngờ hoặc đã xác nhận lỗi</p></div></div><div id="problemSourceList" class="source-list"></div></section><section class="admin-card"><div class="card-head"><div><h2>Nguồn thay thế</h2><p>Cộng đồng gửi, chờ bạn duyệt</p></div></div><div id="replacementList" class="source-list"></div></section></div>
+        </section>
 
-        <div class="form-footer">
-          <button id="deleteBtn" type="button" class="btn btn-danger">
-            Xóa
-          </button>
+        <section class="admin-view" data-section="announcements">
+          <header class="view-heading"><div><span class="eyebrow">Truyền tin</span><h1>Thông báo</h1><p>Banner, toast hoặc modal theo thời gian bạn chọn.</p></div><button id="newAnnouncement" class="btn btn-primary" type="button"><i class="fa-solid fa-plus"></i> Tạo thông báo</button></header>
+          <section class="admin-card"><div id="announcementList" class="announcement-list"></div></section>
+        </section>
 
-          <span style="flex: 1"></span>
-
-          <button type="button" class="btn btn-secondary" onclick="document.getElementById('editDialog').close()">
-            Hủy
-          </button>
-
-          <button type="submit" class="btn btn-primary">
-            Lưu
-          </button>
-        </div>
+        <section class="admin-view" data-section="settings">
+          <header class="view-heading"><div><span class="eyebrow">Nội dung linh động</span><h1>Cài đặt website</h1><p>Không cần sửa mã khi đổi thông tin kênh, ngân hàng hoặc liên kết.</p></div><button id="saveSettingsButton" class="btn btn-primary" type="submit" form="settingsForm"><i class="fa-solid fa-floppy-disk"></i> Lưu cài đặt</button></header>
+          <form id="settingsForm" class="settings-grid" aria-label="Cài đặt website">
+            <section class="admin-card"><div class="card-head"><div><h2>Nhận diện kênh</h2><p>Trang chủ chỉ dùng tên và tagline ngắn</p></div></div><div class="admin-form two-col"><label class="field"><span>Tên kênh</span><input name="channelName" type="text" maxlength="100"></label><label class="field"><span>Tagline ngắn</span><input name="tagline" type="text" maxlength="180"></label><label class="field"><span>Link YouTube</span><input name="youtubeUrl" type="url"></label><label class="field"><span>URL logo/ảnh đại diện</span><input name="logoUrl" type="url"></label></div></section>
+            <section class="admin-card"><div class="card-head"><div><h2>About Me</h2><p>Toàn bộ giới thiệu chi tiết nằm ở đây</p></div></div><div class="admin-form"><label class="field"><span>Tiêu đề</span><input name="aboutTitle" type="text" maxlength="140"></label><label class="field"><span>Nội dung</span><textarea name="aboutBody" rows="7" maxlength="8000"></textarea></label><label class="field"><span>Email công khai</span><input name="contactEmail" type="email"></label></div></section>
+            <section class="admin-card"><div class="card-head"><div><h2>Ngân hàng &amp; QR</h2><p>Chỉ hiện khi bật nhận donate</p></div><label class="switch"><input name="donationEnabled" type="checkbox" aria-label="Bật nhận donate"><span></span></label></div><div class="admin-form two-col"><label class="field"><span>Ngân hàng</span><input name="bankName" type="text"></label><label class="field"><span>Chủ tài khoản</span><input name="accountName" type="text"></label><label class="field"><span>Số tài khoản</span><input name="accountNumber" type="text"></label><label class="field"><span>URL ảnh QR</span><input name="qrUrl" type="url"></label><label class="field span-2"><span>Mẫu nội dung</span><input name="transferTemplate" type="text" placeholder="{story} - {name}"><small>Dùng {story} và {name} để tự điền.</small></label><label class="field span-2"><span>Lời nhắn</span><textarea name="donationNote" rows="3"></textarea></label></div></section>
+            <section class="admin-card"><div class="card-head"><div><h2>Email kết quả</h2><p>Gửi cho người donate sau khi cộng vote</p></div></div><div class="mail-card"><span><i class="fa-solid fa-envelope"></i></span><div><strong>hoiamdammy@gmail.com</strong><small>Email dùng để gửi lời xác nhận đến người ủng hộ.</small></div></div></section>
+            <section class="admin-card full-span"><div class="card-head"><div><h2>Website &amp; mạng xã hội</h2><p>Thêm bao nhiêu liên kết tùy ý</p></div><button id="addSocialLink" class="small-btn" type="button"><i class="fa-solid fa-plus"></i> Thêm liên kết</button></div><div id="socialLinkRows" class="social-editor"></div></section>
+          </form>
+        </section>
       </div>
-    </form>
-  </dialog>
+    </div>
+  </div>
 
-  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+  <aside id="storyDrawer" class="drawer" aria-label="Chỉnh sửa truyện"><div class="drawer-overlay" data-close-drawer></div><form id="storyEditForm" class="drawer-panel" aria-label="Chỉnh sửa truyện"><header aria-label="Đầu ngăn chỉnh sửa"><div><span class="eyebrow">Chỉnh sửa truyện</span><h2 id="drawerStoryTitle">Truyện</h2></div><button class="square-btn" data-close-drawer type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="drawer-body"><input name="id" type="hidden"><div class="admin-form"><label class="field"><span>Tên truyện</span><input name="title" type="text" required></label><div class="two-col"><label class="field"><span>Loại bản</span><select name="version"><option>Convert</option><option>Edit</option></select></label><label class="field"><span>Vote</span><input name="votes" type="number" min="0"></label></div><div class="field"><label for="editLinkStory">Link nguồn</label><div class="input-action"><input id="editLinkStory" name="linkstory" type="url"><button id="checkSourceButton" type="button" aria-label="Kiểm tra nguồn"><i class="fa-solid fa-satellite-dish"></i></button></div></div><div id="sourceCheckResult" class="inline-result hidden"></div><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><label class="field"><span>Trạng thái</span><select name="status"><option value="đề xuất">Đề xuất</option><option value="đã chọn">Đã chọn</option><option value="đang lên sóng">Đang lên sóng</option><option value="đã hoàn thành">Đã hoàn thành</option></select></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="4"></textarea></label><div class="subsection"><div class="subsection-head"><strong>Kiểm soát nguồn</strong><small>Không tự công khai</small></div><label class="field"><span>Trạng thái nguồn</span><select name="source_status"><option value="normal">Bình thường</option><option value="suspected">Nghi ngờ</option><option value="confirmed">Admin xác nhận lỗi</option><option value="replaced">Đã thay thế</option></select></label><label class="field"><span>Lý do</span><textarea name="source_reason" rows="3"></textarea></label><label class="field"><span>Hạn tìm nguồn</span><input name="source_deadline" type="datetime-local"></label><label class="check-row"><input name="source_warning_public" type="checkbox"><span>Công khai cảnh báo và đếm ngược</span></label></div><label class="check-row"><input name="visible" type="checkbox"><span>Hiển thị ngoài website</span></label></div></div><footer aria-label="Thao tác chỉnh sửa"><button id="trashStoryButton" class="btn btn-danger" type="button"><i class="fa-solid fa-trash"></i> Chuyển vào thùng rác</button><span></span><button class="btn btn-ghost" data-close-drawer type="button">Hủy</button><button class="btn btn-primary" type="submit">Lưu</button></footer></form></aside>
 
-  <script src="/assets/admin.js" defer></script>
+  <dialog id="completedDialog" class="admin-dialog"><form id="completedForm" class="dialog-card" aria-label="Thêm truyện đã hoàn thành"><header aria-label="Đầu form truyện hoàn thành"><div><span class="eyebrow">Kho hoàn thành</span><h2>Thêm truyện cũ</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="admin-form"><label class="field"><span>Tên truyện *</span><input name="title" type="text" required></label><div class="two-col"><label class="field"><span>Loại bản</span><select name="version"><option>Convert</option><option>Edit</option></select></label><label class="field"><span>Ngày hoàn thành</span><input name="completedat" type="date"></label></div><label class="field"><span>Link nguồn</span><input name="linkstory" type="url"></label><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="3"></textarea></label></div><footer aria-label="Thao tác form truyện hoàn thành"><button class="btn btn-ghost" data-close-dialog type="button">Hủy</button><button class="btn btn-primary" type="submit">Thêm vào kho</button></footer></form></dialog>
+
+  <dialog id="externalDonationDialog" class="admin-dialog"><form id="externalDonationForm" class="dialog-card" aria-label="Thêm giao dịch ngoài website"><header aria-label="Đầu form donate ngoài"><div><span class="eyebrow">Giao dịch ngoài web</span><h2>Thêm donate</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="admin-form"><label class="field"><span>Truyện *</span><select name="story_id" required></select></label><div class="two-col"><label class="field"><span>Người gửi *</span><input name="donor_name" type="text" required></label><label class="field"><span>Số tiền *</span><input name="amount_vnd" type="number" min="1000" step="1000" required></label></div><label class="field"><span>Email nhận kết quả</span><input name="donor_email" type="email"></label><label class="field"><span>Mã giao dịch</span><input name="transaction_ref" type="text"></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="3"></textarea></label></div><footer aria-label="Thao tác form donate ngoài"><button class="btn btn-ghost" data-close-dialog type="button">Hủy</button><button class="btn btn-primary" type="submit">Lưu giao dịch</button></footer></form></dialog>
+
+  <dialog id="donationDetailDialog" class="admin-dialog"><article class="dialog-card donation-detail-card" aria-label="Chi tiết donate"><header><div><span class="eyebrow">Chi tiết giao dịch</span><h2 id="donationDetailTitle">Donate</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div id="donationDetailBody" class="donation-detail-body"></div><footer id="donationDetailActions" class="donation-detail-actions"></footer></article></dialog>
+
+  <dialog id="announcementDialog" class="admin-dialog"><form id="announcementForm" class="dialog-card" aria-label="Tạo thông báo"><header aria-label="Đầu form thông báo"><div><span class="eyebrow">Thông báo mới</span><h2>Đăng thông báo</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="admin-form"><label class="field"><span>Tiêu đề *</span><input name="title" type="text" required></label><label class="field"><span>Nội dung *</span><textarea name="message" rows="4" required></textarea></label><div class="two-col"><label class="field"><span>Kiểu</span><select name="tone"><option value="info">Thông tin</option><option value="success">Thành công</option><option value="warning">Cảnh báo</option><option value="danger">Quan trọng</option></select></label><label class="field"><span>Hiển thị</span><select name="display_mode"><option value="banner">Banner</option><option value="toast">Toast</option><option value="modal">Modal</option></select></label></div><div class="two-col"><label class="field"><span>Bắt đầu</span><input name="startsat" type="datetime-local"></label><label class="field"><span>Kết thúc</span><input name="endsat" type="datetime-local"></label></div><label class="check-row"><input name="dismissible" type="checkbox" checked><span>Cho phép người dùng đóng</span></label></div><footer aria-label="Thao tác form thông báo"><button class="btn btn-ghost" data-close-dialog type="button">Hủy</button><button class="btn btn-primary" type="submit">Đăng</button></footer></form></dialog>
 </body>
 </html>
