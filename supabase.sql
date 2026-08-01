@@ -26,6 +26,10 @@ alter table public.stories add column if not exists source_warning_public boolea
 alter table public.stories add column if not exists views bigint not null default 0;
 alter table public.stories add column if not exists youtube_clicks bigint not null default 0;
 
+-- Database cũ chỉ cho phép "đề xuất" và "đang đọc".
+-- Gỡ ràng buộc cũ trước khi chuẩn hóa, rồi tạo lại ngay bên dưới.
+alter table public.stories drop constraint if exists stories_status_check;
+
 update public.stories
 set status = case
   when lower(trim(status)) in ('đang đọc', 'đang lên sóng') then 'đang lên sóng'
@@ -33,6 +37,10 @@ set status = case
   when lower(trim(status)) = 'đã hoàn thành' then 'đã hoàn thành'
   else 'đề xuất'
 end;
+
+alter table public.stories
+  add constraint stories_status_check
+  check (status in ('đề xuất', 'đã chọn', 'đang lên sóng', 'đã hoàn thành'));
 
 create index if not exists stories_visibility_status_idx
   on public.stories (visible, status, createdat desc);

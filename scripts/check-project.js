@@ -65,6 +65,7 @@ for (const name of htmlFiles) {
 const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const siteCss = fs.readFileSync(path.join(root, 'assets/site.css'), 'utf8');
+const migrationSql = fs.readFileSync(path.join(root, 'supabase.sql'), 'utf8');
 assert.match(homeHtml, /rel="canonical"/i, 'Homepage needs a canonical URL');
 assert.match(homeHtml, /application\/ld\+json/i, 'Homepage needs structured data');
 assert.match(homeHtml, /id="suggestionHelpPanel"/, 'Suggestion form needs inline help');
@@ -78,6 +79,14 @@ assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidde
 assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs its own background');
 assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its own background');
 assert.match(fs.readFileSync(path.join(root, 'ads.txt'), 'utf8'), /pub-6051983418402912/, 'ads.txt publisher must be preserved');
+
+const dropStatusConstraint = migrationSql.indexOf('drop constraint if exists stories_status_check');
+const normalizeStatuses = migrationSql.indexOf('update public.stories');
+const addStatusConstraint = migrationSql.indexOf('add constraint stories_status_check');
+assert.ok(
+  dropStatusConstraint >= 0 && dropStatusConstraint < normalizeStatuses && normalizeStatuses < addStatusConstraint,
+  'Migration must replace the legacy status constraint around status normalization'
+);
 
 const { calculateDonation } = require(path.join(root, 'api/_routes/_lib/donations'));
 assert.deepEqual(calculateDonation(50_000), { amountVnd: 50_000, stoneCount: 50, suggestedVotes: 10, pricePerVote: 5000 });
