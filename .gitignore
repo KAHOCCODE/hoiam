@@ -1,4 +1,6 @@
 .vs/
 .env
-.env.local
+.env.*
+!.env.example
+.vercel/
 node_modules/
