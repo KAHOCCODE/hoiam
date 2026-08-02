@@ -88,16 +88,19 @@ assert.doesNotMatch(homeHtml, /<select[^>]+name="story_select"/, 'Donation must 
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
 assert.match(homeHtml, /data-nav-section="trending"/, 'Homepage navigation needs section tracking');
 assert.match(homeHtml, /ca-pub-6051983418402912/, 'Existing AdSense account must be preserved');
-for (const pageName of ['index.html', 'completed.html', 'guide.html', 'about.html']) {
+for (const pageName of ['index.html', 'completed.html', 'guide.html', 'about.html', 'privacy.html', 'terms.html']) {
   const publicHtml = fs.readFileSync(path.join(root, pageName), 'utf8');
   assert.match(publicHtml, /href="\/privacy\.html"/, `${pageName} needs a privacy link`);
   assert.match(publicHtml, /href="\/terms\.html"/, `${pageName} needs a terms link`);
+  assert.match(publicHtml, /\/_vercel\/insights\/script\.js/, `${pageName} needs Vercel Web Analytics`);
 }
 assert.match(privacyHtml, /Google AdSense/, 'Privacy policy needs an advertising disclosure');
 assert.match(privacyHtml, /cookie/i, 'Privacy policy needs a cookie disclosure');
 assert.match(privacyHtml, /hoiamdammy@gmail\.com/, 'Privacy policy needs a contact method');
+assert.match(privacyHtml, /Vercel Web Analytics/, 'Privacy policy needs an analytics disclosure');
 assert.doesNotMatch(privacyHtml, /adsbygoogle\.js/, 'Privacy policy must not load advertising');
 assert.doesNotMatch(termsHtml, /adsbygoogle\.js/, 'Terms page must not load advertising');
+assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic must stay out of public analytics');
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');

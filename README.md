@@ -1,6 +1,13 @@
-# Hồi Âm Đam Mỹ V06.1.11
+# Hồi Âm Đam Mỹ V06.1.12
 
-Phiên bản V06.1.11 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
+Phiên bản V06.1.12 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
+
+## Thống kê truy cập
+
+- Vercel Web Analytics được bật trên toàn bộ trang công khai.
+- Trang quản trị không được đưa vào số liệu khách truy cập.
+- Dữ liệu bắt đầu được ghi nhận sau khi deploy và có lượt truy cập mới; không khôi phục được lịch sử trước đó.
+- Web Analytics tổng hợp dữ liệu ẩn danh và không dùng cookie bên thứ ba.
 
 Toàn bộ endpoint được rewrite vào một Vercel Function để tương thích giới hạn của gói Hobby, kể cả các URL nhiều tầng như vote và trang quản trị. URL API công khai và cách sử dụng không thay đổi.
 
