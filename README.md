@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.7
+# Hồi Âm Đam Mỹ V06.1.8
 
-Phiên bản V06.1.7 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
+Phiên bản V06.1.8 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
 
 Toàn bộ endpoint được rewrite vào một Vercel Function để tương thích giới hạn của gói Hobby, kể cả các URL nhiều tầng như vote và trang quản trị. URL API công khai và cách sử dụng không thay đổi.
 
@@ -16,6 +16,7 @@ Toàn bộ endpoint được rewrite vào một Vercel Function để tương th
 - Donate qua website, YouTube hoặc email; admin xác nhận trước khi cộng vote.
 - VietQR tự điền tài khoản, số tiền và nội dung; ảnh QR thủ công được giữ làm phương án dự phòng.
 - Trên điện thoại có thể chọn ứng dụng ngân hàng; các app hỗ trợ autofill được ưu tiên và form được giữ khi quay lại.
+- Nút mở ngân hàng có trạng thái tải, giới hạn chờ và danh sách dự phòng khi API VietQR chậm hoặc bị chặn.
 - `1 Cá = 1 Linh Thạch = 1.000 VNĐ`, vote dùng đúng bảng tỷ lệ cũ.
 - Email kết quả gửi từ `hoiamdammy@gmail.com` nếu người donate nhập email.
 - About Me, mạng xã hội, ngân hàng, QR và thông báo đều chỉnh được trong dashboard.

@@ -75,6 +75,7 @@ const migrationSql = fs.readFileSync(path.join(root, 'supabase.sql'), 'utf8');
 assert.match(homeHtml, /rel="canonical"/i, 'Homepage needs a canonical URL');
 assert.match(homeHtml, /application\/ld\+json/i, 'Homepage needs structured data');
 assert.match(homeHtml, /id="suggestionHelpPanel"/, 'Suggestion form needs inline help');
+assert.match(homeHtml, /id="donationStorySearch"/, 'Donation story picker needs search');
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
 assert.match(homeHtml, /data-nav-section="trending"/, 'Homepage navigation needs section tracking');
 assert.match(homeHtml, /ca-pub-6051983418402912/, 'Existing AdSense account must be preserved');
@@ -99,6 +100,11 @@ assert.match(appJs, /\$\{platform\}-app-deeplinks/, 'Mobile donation flow needs 
 assert.match(appJs, /https:\/\/dl\.vietqr\.io\/pay/, 'Mobile donation flow needs a bank app deeplink');
 assert.match(appJs, /hoiam_donation_draft/, 'Donation form must survive the trip to the bank app');
 assert.match(vercelConfigText, /https:\/\/api\.vietqr\.io/, 'Content Security Policy must allow VietQR app discovery');
+assert.match(appJs, /function fallbackBankApps\(/, 'Bank app selection needs an offline fallback');
+assert.match(appJs, /controller\.abort\(\)/, 'Bank app discovery needs a timeout');
+assert.match(appJs, /Đang tải ứng dụng ngân hàng/, 'Bank app selection needs immediate loading feedback');
+assert.match(appJs, /closeDialog\(\$\('#donationDialog'\)\)/, 'Bank picker must not render behind the native donation dialog');
+assert.match(appJs, /id=\"bankAppSearch\"/, 'Bank app picker needs search');
 
 const dropStatusConstraint = migrationSql.indexOf('drop constraint if exists stories_status_check');
 const normalizeStatuses = migrationSql.indexOf('update public.stories');

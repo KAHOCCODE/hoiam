@@ -480,11 +480,17 @@ function donationStories() {
   return state.stories.filter((story) => story.status !== 'đã hoàn thành');
 }
 
-function fillDonationStories() {
+function fillDonationStories(query = '', preferredId = null) {
   const select = $('#donationForm [name="story_select"]'); if (!select) return;
+  const current = String(preferredId === null ? (select.value || '') : preferredId);
+  const keyword = String(query || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi').trim();
   select.replaceChildren(element('option', '', 'Chọn truyện…'));
   select.firstChild.value = '';
-  donationStories().forEach((story) => { const option = element('option', '', story.title); option.value = String(story.id); select.append(option); });
+  donationStories().filter((story) => {
+    if (!keyword || String(story.id) === current) return true;
+    return story.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi').includes(keyword);
+  }).forEach((story) => { const option = element('option', '', story.title); option.value = String(story.id); select.append(option); });
+  if (current && Array.from(select.options).some((option) => option.value === current)) select.value = current;
 }
 
 function transferContent(story, name) {
@@ -573,42 +579,105 @@ function normalizeBankApp(item) {
   };
 }
 
+function fallbackBankApps() {
+  return [
+    { appId: 'mb', appName: 'MB Bank', bankName: 'Ngân hàng TMCP Quân đội', autofill: 1, monthlyInstall: 500000 },
+    { appId: 'icb', appName: 'VietinBank iPay', bankName: 'Ngân hàng TMCP Công thương Việt Nam', autofill: 1, monthlyInstall: 200000 },
+    { appId: 'bidv', appName: 'BIDV SmartBanking', bankName: 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam', autofill: 1, monthlyInstall: 200000 },
+    { appId: 'ocb', appName: 'OCB OMNI', bankName: 'Ngân hàng TMCP Phương Đông', autofill: 1, monthlyInstall: 80000 },
+    { appId: 'acb', appName: 'ACB One', bankName: 'Ngân hàng TMCP Á Châu', autofill: 1, monthlyInstall: 70000 },
+    { appId: 'vcb', appName: 'Vietcombank', bankName: 'Ngân hàng TMCP Ngoại Thương Việt Nam', autofill: 0, monthlyInstall: 300000 },
+    { appId: 'vba', appName: 'Agribank E-Mobile Banking', bankName: 'Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam', autofill: 0, monthlyInstall: 300000 },
+    { appId: 'tcb', appName: 'Techcombank Mobile', bankName: 'Ngân hàng TMCP Kỹ thương Việt Nam', autofill: 0, monthlyInstall: 200000 },
+  ].map(normalizeBankApp).filter(Boolean);
+}
+
+function seedBankCodes() {
+  state.bankCodes = new Map([
+    ['vcb', 'vcb'], ['vietcombank', 'vcb'], ['970436', 'vcb'],
+    ['mb', 'mb'], ['mbbank', 'mb'], ['970422', 'mb'],
+    ['icb', 'icb'], ['vietinbank', 'icb'], ['970415', 'icb'],
+    ['bidv', 'bidv'], ['970418', 'bidv'],
+    ['acb', 'acb'], ['970416', 'acb'],
+    ['ocb', 'ocb'], ['970448', 'ocb'],
+    ['tcb', 'tcb'], ['techcombank', 'tcb'], ['970407', 'tcb'],
+    ['vba', 'vba'], ['agribank', 'vba'], ['970405', 'vba'],
+  ]);
+}
+
 async function loadBankApps() {
   if (state.bankApps.length) return state.bankApps;
   const platform = /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'ios' : 'android';
-  const [appResponse, bankResponse] = await Promise.all([
-    fetch(`https://api.vietqr.io/v2/${platform}-app-deeplinks`, { cache: 'force-cache' }),
-    fetch('https://api.vietqr.io/v2/banks', { cache: 'force-cache' }),
-  ]);
-  if (!appResponse.ok || !bankResponse.ok) throw new Error('Không tải được danh sách ứng dụng ngân hàng.');
-  const [appPayload, bankPayload] = await Promise.all([appResponse.json(), bankResponse.json()]);
-  state.bankApps = (Array.isArray(appPayload?.apps) ? appPayload.apps : [])
-    .map(normalizeBankApp)
-    .filter(Boolean)
-    .sort((a, b) => Number(b.autofill) - Number(a.autofill) || b.popularity - a.popularity || a.appName.localeCompare(b.appName, 'vi'));
-  state.bankCodes = new Map();
-  (Array.isArray(bankPayload?.data) ? bankPayload.data : []).forEach((bank) => {
-    const code = String(bank?.code || '').trim().toLowerCase();
-    [bank?.code, bank?.bin, bank?.shortName].forEach((key) => {
-      const normalized = String(key || '').trim().toLowerCase();
-      if (normalized && code) state.bankCodes.set(normalized, code);
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 5000);
+  seedBankCodes();
+  try {
+    const [appResponse, bankResponse] = await Promise.all([
+      fetch(`https://api.vietqr.io/v2/${platform}-app-deeplinks`, { cache: 'force-cache', signal: controller.signal }),
+      fetch('https://api.vietqr.io/v2/banks', { cache: 'force-cache', signal: controller.signal }),
+    ]);
+    if (!appResponse.ok || !bankResponse.ok) throw new Error('VietQR không phản hồi.');
+    const [appPayload, bankPayload] = await Promise.all([appResponse.json(), bankResponse.json()]);
+    state.bankApps = (Array.isArray(appPayload?.apps) ? appPayload.apps : [])
+      .map(normalizeBankApp)
+      .filter(Boolean);
+    (Array.isArray(bankPayload?.data) ? bankPayload.data : []).forEach((bank) => {
+      const code = String(bank?.code || '').trim().toLowerCase();
+      [bank?.code, bank?.bin, bank?.shortName].forEach((key) => {
+        const normalized = String(key || '').trim().toLowerCase();
+        if (normalized && code) state.bankCodes.set(normalized, code);
+      });
     });
-  });
-  if (!state.bankApps.length) throw new Error('Chưa có ứng dụng ngân hàng phù hợp.');
+  } catch {
+    state.bankApps = fallbackBankApps();
+  } finally {
+    window.clearTimeout(timeout);
+  }
+  if (!state.bankApps.length) state.bankApps = fallbackBankApps();
+  state.bankApps.sort((a, b) => Number(b.autofill) - Number(a.autofill) || b.popularity - a.popularity || a.appName.localeCompare(b.appName, 'vi'));
   return state.bankApps;
 }
 
-function bankAppOptions(apps) {
-  const groups = {};
-  const autofill = {};
-  const openOnly = {};
-  apps.forEach((app) => {
-    const label = `${app.appName}${app.bankName ? ` · ${app.bankName}` : ''}`;
-    (app.autofill ? autofill : openOnly)[app.appId] = label;
+function bankSearchText(value) {
+  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi');
+}
+
+function chooseBankApp(apps, selectedId = '') {
+  return new Promise((resolve) => {
+    let chosen = false;
+    window.Swal.fire({
+      icon: 'info',
+      title: 'Chọn ứng dụng ngân hàng',
+      html: '<div class="bank-app-picker"><label class="bank-app-search"><i class="fa-solid fa-magnifying-glass"></i><input id="bankAppSearch" type="search" placeholder="Tìm tên ngân hàng hoặc ứng dụng…" autocomplete="off"></label><div id="bankAppChoices" class="bank-app-choices"></div></div>',
+      showConfirmButton: false,
+      showCancelButton: true,
+      cancelButtonText: 'Quay lại',
+      customClass: { popup: 'cosmic-swal bank-app-swal' },
+      didOpen: () => {
+        const search = document.getElementById('bankAppSearch');
+        const host = document.getElementById('bankAppChoices');
+        const render = () => {
+          const keyword = bankSearchText(search?.value).trim();
+          const visible = apps.filter((app) => !keyword || bankSearchText(`${app.appName} ${app.bankName}`).includes(keyword));
+          host.replaceChildren();
+          visible.forEach((app) => {
+            const button = element('button', `bank-app-choice${app.appId === selectedId ? ' recent' : ''}`);
+            button.type = 'button';
+            const mark = element('span', `bank-app-mark${app.autofill ? ' autofill' : ''}`); mark.append(icon(app.autofill ? 'bolt' : 'building-columns'));
+            const copy = element('span', 'bank-app-copy'); copy.append(element('strong', '', app.appName), element('small', '', app.bankName));
+            const badgeNode = element('b', app.autofill ? 'autofill' : 'open-only', app.autofill ? 'Tự điền' : 'Mở app');
+            button.append(mark, copy, badgeNode);
+            button.addEventListener('click', () => { chosen = true; resolve(app); window.Swal.close(); });
+            host.append(button);
+          });
+          if (!visible.length) host.append(element('p', 'bank-app-empty', 'Không tìm thấy ứng dụng phù hợp.'));
+        };
+        search?.addEventListener('input', render);
+        render();
+        window.setTimeout(() => search?.focus(), 50);
+      },
+    }).then(() => { if (!chosen) resolve(null); });
   });
-  if (Object.keys(autofill).length) groups['Tự điền thông tin chuyển khoản'] = autofill;
-  if (Object.keys(openOnly).length) groups['Chỉ mở ứng dụng'] = openOnly;
-  return groups;
 }
 
 function saveDonationDraft() {
@@ -635,8 +704,8 @@ function restoreDonationDraft() {
       if (form.elements[name]) form.elements[name].value = String(value || '');
     });
     form.elements.story_id.value = form.elements.story_select.value;
+    $('#donationModeNote').textContent = 'Thông tin tặng Cá đã được giữ lại. Chuyển xong hãy gửi admin kiểm tra nhé.';
     updateDonationPanel();
-    notify('Thông tin tặng Cá đã được giữ lại. Chuyển xong hãy gửi admin kiểm tra.', 'success');
   } catch {
     try { sessionStorage.removeItem('hoiam_donation_draft'); } catch { /* ignored */ }
   }
@@ -650,26 +719,23 @@ async function openBankPayment(donation, amount, content) {
   if (!account || !bankId) return notify('Admin chưa cập nhật đủ thông tin VietQR.', 'warning');
   if (value < 1000 || !content) return notify('Hãy chọn truyện, nhập tên và số tiền trước.', 'warning');
 
+  saveDonationDraft();
+  closeDialog($('#donationDialog'));
   try {
-    const apps = await loadBankApps();
-    const lastApp = storageGet('hoiam_bank_app') || '';
-    const result = await window.Swal.fire({
-      icon: 'info',
-      title: 'Mở ứng dụng ngân hàng',
-      text: 'Chọn ứng dụng bạn dùng để chuyển khoản. Sau khi chuyển xong, hãy quay lại website để báo admin.',
-      input: 'select',
-      inputOptions: bankAppOptions(apps),
-      inputValue: apps.some((app) => app.appId === lastApp) ? lastApp : '',
-      inputPlaceholder: 'Chọn ứng dụng ngân hàng…',
-      inputValidator: (valueSelected) => valueSelected ? undefined : 'Hãy chọn một ứng dụng.',
-      showCancelButton: true,
-      confirmButtonText: 'Mở ứng dụng',
-      cancelButtonText: 'Để sau',
-      customClass: { popup: 'cosmic-swal bank-app-swal' },
+    window.Swal.fire({
+      title: 'Đang tải ứng dụng ngân hàng…',
+      text: 'Chỉ mất vài giây.',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => window.Swal.showLoading(),
+      customClass: { popup: 'cosmic-swal' },
     });
-    if (!result.isConfirmed) return;
-    const selected = apps.find((app) => app.appId === result.value);
-    if (!selected) return notify('Ứng dụng đã chọn không hợp lệ.', 'warning');
+    const apps = await loadBankApps();
+    window.Swal.close();
+    const lastApp = storageGet('hoiam_bank_app') || '';
+    const selected = await chooseBankApp(apps, lastApp);
+    if (!selected) return restoreDonationDraft();
     if (!selected.autofill) {
       const warning = await window.Swal.fire({
         icon: 'warning',
@@ -680,7 +746,7 @@ async function openBankPayment(donation, amount, content) {
         cancelButtonText: 'Quay lại QR',
         customClass: { popup: 'cosmic-swal' },
       });
-      if (!warning.isConfirmed) return;
+      if (!warning.isConfirmed) return restoreDonationDraft();
     }
     storageSet('hoiam_bank_app', selected.appId);
     const receiverBank = state.bankCodes.get(bankId) || bankId;
@@ -691,10 +757,17 @@ async function openBankPayment(donation, amount, content) {
     deepLink.searchParams.set('tn', vietQrText(content));
     deepLink.searchParams.set('bn', vietQrText(donation.accountName));
     deepLink.searchParams.set('url', `${location.origin}${location.pathname}${location.search}`);
-    saveDonationDraft();
     window.location.assign(deepLink.href);
   } catch (error) {
-    notify(error.message || 'Không mở được ứng dụng ngân hàng.', 'danger');
+    window.Swal.close();
+    await window.Swal.fire({
+      icon: 'error',
+      title: 'Chưa mở được ứng dụng ngân hàng',
+      text: error.message || 'Bạn có thể tiếp tục dùng mã QR.',
+      confirmButtonText: 'Quay lại mã QR',
+      customClass: { popup: 'cosmic-swal' },
+    });
+    restoreDonationDraft();
   }
 }
 
@@ -745,7 +818,10 @@ function updateDonationPanel() {
 function openDonation(storyId = null, external = false) {
   if (!state.settings?.donation?.enabled) return notify('Kênh đang tạm đóng nhận donate trên website.', 'warning');
   const dialog = $('#donationDialog'); const form = $('#donationForm'); if (!dialog || !form) return;
-  form.reset(); fillDonationStories();
+  form.reset();
+  const storySearch = $('#donationStorySearch');
+  if (storySearch) { storySearch.value = ''; storySearch.disabled = Boolean(storyId && !external); }
+  fillDonationStories('', storyId ? String(storyId) : '');
   form.elements.source_channel.value = external ? 'youtube' : 'website';
   form.elements.story_select.disabled = Boolean(storyId && !external);
   if (storyId) form.elements.story_select.value = String(storyId);
@@ -924,6 +1000,11 @@ function bindEvents() {
   });
   $('#loadMoreButton')?.addEventListener('click', () => { state.visibleLimit += 12; renderLibrary(); });
   const donationForm = $('#donationForm');
+  $('#donationStorySearch')?.addEventListener('input', (event) => {
+    fillDonationStories(event.currentTarget.value, '');
+    donationForm.elements.story_id.value = donationForm.elements.story_select.value;
+    updateDonationPanel();
+  });
   ['story_select', 'donor_name', 'amount_vnd'].forEach((name) => donationForm?.elements[name]?.addEventListener('input', () => {
     donationForm.elements.story_id.value = donationForm.elements.story_select.value; updateDonationPanel();
   }));

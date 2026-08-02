@@ -18,9 +18,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css">
-  <link rel="stylesheet" href="/assets/site.css?v=0617">
+  <link rel="stylesheet" href="/assets/site.css?v=0618">
   <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
-  <script src="/assets/app.js?v=0617" defer></script>
+  <script src="/assets/app.js?v=0618" defer></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6051983418402912" crossorigin="anonymous"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hồi Âm Đam Mỹ","url":"https://hoiam.vercel.app/","description":"Cộng đồng đề xuất và bình chọn truyện đam mỹ cho kênh Hồi Âm Đam Mỹ","inLanguage":"vi-VN","publisher":{"@type":"Organization","name":"Hồi Âm Đam Mỹ","email":"hoiamdammy@gmail.com"}}</script>
 </head>
@@ -146,7 +146,8 @@
       <form id="donationForm" class="donation-layout" aria-label="Form báo donate">
         <div class="form-grid">
           <input name="story_id" type="hidden"><input name="source_channel" type="hidden" value="website">
-          <label class="field full"><span>Truyện *</span><select name="story_select" required></select></label>
+          <label class="field full"><span>Tìm truyện</span><span class="donation-story-search"><i class="fa-solid fa-magnifying-glass"></i><input id="donationStorySearch" type="search" placeholder="Nhập tên truyện để lọc…" autocomplete="off"></span></label>
+          <label class="field full"><span>Truyện *</span><select name="story_select" required></select><small>Danh sách sẽ thu gọn theo từ khóa phía trên.</small></label>
           <label class="field"><span>Tên người gửi *</span><input name="donor_name" type="text" required maxlength="120" placeholder="Tên dùng khi chuyển khoản"></label>
           <label class="field"><span>Số tiền *</span><input name="amount_vnd" required type="number" min="1000" step="1000" placeholder="100000"></label>
           <div id="donationPreview" class="donation-preview full">1 Cá = 1 Linh Thạch = 1.000đ</div>
