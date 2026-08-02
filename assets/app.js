@@ -480,17 +480,71 @@ function donationStories() {
   return state.stories.filter((story) => story.status !== 'đã hoàn thành');
 }
 
+function donationStorySearchText(value) {
+  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi');
+}
+
+function closeDonationStoryPicker() {
+  const menu = $('#donationStoryMenu'); const toggle = $('#donationStoryToggle');
+  if (menu) menu.hidden = true;
+  toggle?.setAttribute('aria-expanded', 'false');
+}
+
+function setDonationStory(storyId, closePicker = true) {
+  const form = $('#donationForm'); const valueNode = $('#donationStoryValue');
+  if (!form) return;
+  const value = storyId ? String(storyId) : '';
+  const story = state.stories.find((item) => String(item.id) === value);
+  form.elements.story_select.value = story ? value : '';
+  form.elements.story_id.value = story ? value : '';
+  if (valueNode) valueNode.textContent = story?.title || 'Chọn truyện…';
+  const optionsHost = $('#donationStoryOptions');
+  if (optionsHost) $$('.donation-story-option', optionsHost).forEach((button) => {
+    const selected = button.dataset.storyId === value;
+    button.classList.toggle('selected', selected);
+    button.setAttribute('aria-selected', String(selected));
+  });
+  if (closePicker) closeDonationStoryPicker();
+  updateDonationPanel();
+}
+
 function fillDonationStories(query = '', preferredId = null) {
-  const select = $('#donationForm [name="story_select"]'); if (!select) return;
-  const current = String(preferredId === null ? (select.value || '') : preferredId);
-  const keyword = String(query || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi').trim();
-  select.replaceChildren(element('option', '', 'Chọn truyện…'));
-  select.firstChild.value = '';
-  donationStories().filter((story) => {
-    if (!keyword || String(story.id) === current) return true;
-    return story.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('vi').includes(keyword);
-  }).forEach((story) => { const option = element('option', '', story.title); option.value = String(story.id); select.append(option); });
-  if (current && Array.from(select.options).some((option) => option.value === current)) select.value = current;
+  const form = $('#donationForm'); const host = $('#donationStoryOptions');
+  if (!form || !host) return;
+  const current = String(preferredId === null ? (form.elements.story_select.value || '') : (preferredId || ''));
+  const keyword = donationStorySearchText(query).trim();
+  const visible = donationStories().filter((story) => !keyword || donationStorySearchText(story.title).includes(keyword));
+  host.replaceChildren();
+  visible.forEach((story) => {
+    const button = element('button', 'donation-story-option');
+    button.type = 'button';
+    button.dataset.storyId = String(story.id);
+    button.setAttribute('role', 'option');
+    const selected = String(story.id) === current;
+    button.setAttribute('aria-selected', String(selected));
+    if (selected) button.classList.add('selected');
+    const copy = element('span', 'donation-story-option-copy');
+    copy.append(element('strong', '', story.title), element('small', '', `${story.version || 'Convert'} · ${number.format(Number(story.votes || 0))} vote`));
+    button.append(icon(selected ? 'circle-check' : 'book'), copy);
+    button.addEventListener('click', () => setDonationStory(story.id));
+    host.append(button);
+  });
+  if (!visible.length) host.append(element('p', 'donation-story-empty', 'Không tìm thấy truyện phù hợp.'));
+  setDonationStory(current, false);
+}
+
+function toggleDonationStoryPicker() {
+  const picker = $('#donationStoryPicker'); const menu = $('#donationStoryMenu'); const toggle = $('#donationStoryToggle');
+  if (!picker || !menu || !toggle || picker.dataset.locked === 'true') return;
+  const willOpen = menu.hidden;
+  menu.hidden = !willOpen;
+  toggle.setAttribute('aria-expanded', String(willOpen));
+  if (willOpen) {
+    const search = $('#donationStorySearch');
+    if (search) search.value = '';
+    fillDonationStories('', null);
+    window.setTimeout(() => search?.focus(), 30);
+  }
 }
 
 function transferContent(story, name) {
@@ -648,7 +702,7 @@ function chooseBankApp(apps, selectedId = '') {
     window.Swal.fire({
       icon: 'info',
       title: 'Chọn ứng dụng ngân hàng',
-      html: '<div class="bank-app-picker"><label class="bank-app-search"><i class="fa-solid fa-magnifying-glass"></i><input id="bankAppSearch" type="search" placeholder="Tìm tên ngân hàng hoặc ứng dụng…" autocomplete="off"></label><div id="bankAppChoices" class="bank-app-choices"></div></div>',
+      html: '<div class="bank-app-picker"><p class="bank-app-guide"><i class="fa-solid fa-bolt"></i> Ứng dụng mở thẳng chuyển tiền được ưu tiên ở đầu danh sách.</p><label class="bank-app-search"><i class="fa-solid fa-magnifying-glass"></i><input id="bankAppSearch" type="search" placeholder="Tìm tên ngân hàng hoặc ứng dụng…" autocomplete="off"></label><div id="bankAppChoices" class="bank-app-choices"></div></div>',
       showConfirmButton: false,
       showCancelButton: true,
       cancelButtonText: 'Quay lại',
@@ -664,8 +718,9 @@ function chooseBankApp(apps, selectedId = '') {
             const button = element('button', `bank-app-choice${app.appId === selectedId ? ' recent' : ''}`);
             button.type = 'button';
             const mark = element('span', `bank-app-mark${app.autofill ? ' autofill' : ''}`); mark.append(icon(app.autofill ? 'bolt' : 'building-columns'));
-            const copy = element('span', 'bank-app-copy'); copy.append(element('strong', '', app.appName), element('small', '', app.bankName));
-            const badgeNode = element('b', app.autofill ? 'autofill' : 'open-only', app.autofill ? 'Tự điền' : 'Mở app');
+            const copy = element('span', 'bank-app-copy');
+            copy.append(element('strong', '', app.appName), element('small', '', app.autofill ? `${app.bankName} · Mở thẳng chuyển tiền` : app.bankName));
+            const badgeNode = element('b', app.autofill ? 'autofill' : 'open-only', app.autofill ? 'Ưu tiên' : 'Mở app');
             button.append(mark, copy, badgeNode);
             button.addEventListener('click', () => { chosen = true; resolve(app); window.Swal.close(); });
             host.append(button);
@@ -686,7 +741,8 @@ function saveDonationDraft() {
   const values = {};
   ['story_select', 'donor_name', 'amount_vnd', 'transaction_ref', 'donatedat', 'donor_email', 'note', 'source_channel']
     .forEach((name) => { values[name] = form.elements[name]?.value || ''; });
-  storageSet('hoiam_donation_draft', JSON.stringify({ savedAt: Date.now(), values }), true);
+  const storyLocked = $('#donationStoryPicker')?.dataset.locked === 'true';
+  storageSet('hoiam_donation_draft', JSON.stringify({ savedAt: Date.now(), storyLocked, values }), true);
 }
 
 function restoreDonationDraft() {
@@ -698,12 +754,14 @@ function restoreDonationDraft() {
       sessionStorage.removeItem('hoiam_donation_draft');
       return;
     }
-    openDonation(null, false);
+    const draftStoryId = Number(draft.values?.story_select || 0) || null;
+    const external = draft.values?.source_channel === 'youtube';
+    openDonation(draft.storyLocked ? draftStoryId : null, external);
     const form = $('#donationForm');
     Object.entries(draft.values || {}).forEach(([name, value]) => {
       if (form.elements[name]) form.elements[name].value = String(value || '');
     });
-    form.elements.story_id.value = form.elements.story_select.value;
+    fillDonationStories('', form.elements.story_select.value);
     $('#donationModeNote').textContent = 'Thông tin tặng Cá đã được giữ lại. Chuyển xong hãy gửi admin kiểm tra nhé.';
     updateDonationPanel();
   } catch {
@@ -739,8 +797,8 @@ async function openBankPayment(donation, amount, content) {
     if (!selected.autofill) {
       const warning = await window.Swal.fire({
         icon: 'warning',
-        title: 'Ứng dụng này có thể chỉ được mở',
-        text: 'VietQR chưa xác nhận ứng dụng này tự điền đủ tài khoản, số tiền và nội dung. Bạn vẫn có thể dùng mã QR trên website.',
+        title: 'Ứng dụng này chỉ hỗ trợ mở app',
+        text: 'Ngân hàng chưa hỗ trợ đi thẳng đến màn hình chuyển tiền từ website. Bạn vẫn có thể mở app hoặc quay lại dùng mã QR.',
         showCancelButton: true,
         confirmButtonText: 'Vẫn mở ứng dụng',
         cancelButtonText: 'Quay lại QR',
@@ -819,14 +877,17 @@ function openDonation(storyId = null, external = false) {
   if (!state.settings?.donation?.enabled) return notify('Kênh đang tạm đóng nhận donate trên website.', 'warning');
   const dialog = $('#donationDialog'); const form = $('#donationForm'); if (!dialog || !form) return;
   form.reset();
-  const storySearch = $('#donationStorySearch');
-  if (storySearch) { storySearch.value = ''; storySearch.disabled = Boolean(storyId && !external); }
-  fillDonationStories('', storyId ? String(storyId) : '');
+  const story = state.stories.find((item) => item.id === Number(storyId));
+  const locked = Boolean(story && !external);
+  const storyPicker = $('#donationStoryPicker'); const storyToggle = $('#donationStoryToggle');
+  if (storyPicker) storyPicker.dataset.locked = String(locked);
+  if (storyToggle) storyToggle.disabled = locked;
+  if ($('#donationStorySearch')) $('#donationStorySearch').value = '';
+  closeDonationStoryPicker();
+  fillDonationStories('', story ? String(story.id) : '');
   form.elements.source_channel.value = external ? 'youtube' : 'website';
-  form.elements.story_select.disabled = Boolean(storyId && !external);
-  if (storyId) form.elements.story_select.value = String(storyId);
-  form.elements.story_id.value = storyId ? String(storyId) : '';
-  $('#donationTitle').textContent = external ? 'Báo đã donate' : 'Tặng Cá cho truyện';
+  $('#donationStoryHint').textContent = locked ? 'Truyện đã được chọn từ nút Tặng Cá.' : 'Bấm để chọn hoặc tìm truyện.';
+  $('#donationTitle').textContent = external ? 'Báo đã donate' : (locked ? 'Tặng Cá cho truyện này' : 'Tặng Cá cho truyện');
   $('#donationModeNote').textContent = external
     ? 'Bạn đã ủng hộ qua YouTube hoặc email? Điền thông tin bên dưới để admin đối chiếu giúp nhé.'
     : 'Chọn số tiền, dùng nội dung chuyển khoản được tạo sẵn rồi bấm “Tôi đã tặng Cá”.';
@@ -1000,14 +1061,16 @@ function bindEvents() {
   });
   $('#loadMoreButton')?.addEventListener('click', () => { state.visibleLimit += 12; renderLibrary(); });
   const donationForm = $('#donationForm');
+  $('#donationStoryToggle')?.addEventListener('click', toggleDonationStoryPicker);
   $('#donationStorySearch')?.addEventListener('input', (event) => {
-    fillDonationStories(event.currentTarget.value, '');
-    donationForm.elements.story_id.value = donationForm.elements.story_select.value;
-    updateDonationPanel();
+    fillDonationStories(event.currentTarget.value, null);
   });
-  ['story_select', 'donor_name', 'amount_vnd'].forEach((name) => donationForm?.elements[name]?.addEventListener('input', () => {
-    donationForm.elements.story_id.value = donationForm.elements.story_select.value; updateDonationPanel();
-  }));
+  document.addEventListener('click', (event) => {
+    const picker = $('#donationStoryPicker');
+    if (picker && !picker.contains(event.target)) closeDonationStoryPicker();
+  });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeDonationStoryPicker(); });
+  ['donor_name', 'amount_vnd'].forEach((name) => donationForm?.elements[name]?.addEventListener('input', updateDonationPanel));
 }
 
 bindEvents();

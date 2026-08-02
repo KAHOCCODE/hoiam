@@ -76,6 +76,9 @@ assert.match(homeHtml, /rel="canonical"/i, 'Homepage needs a canonical URL');
 assert.match(homeHtml, /application\/ld\+json/i, 'Homepage needs structured data');
 assert.match(homeHtml, /id="suggestionHelpPanel"/, 'Suggestion form needs inline help');
 assert.match(homeHtml, /id="donationStorySearch"/, 'Donation story picker needs search');
+assert.match(homeHtml, /id="donationStoryPicker"/, 'Donation needs one combined searchable story picker');
+assert.match(homeHtml, /name="story_select" type="hidden"/, 'Donation story value needs one hidden form field');
+assert.doesNotMatch(homeHtml, /<select[^>]+name="story_select"/, 'Donation must not show a second native story selector');
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
 assert.match(homeHtml, /data-nav-section="trending"/, 'Homepage navigation needs section tracking');
 assert.match(homeHtml, /ca-pub-6051983418402912/, 'Existing AdSense account must be preserved');
@@ -86,6 +89,7 @@ assert.match(adminHtml, /name="bankId"/, 'Admin settings need a VietQR bank iden
 assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidden mobile menu must not cover content');
 assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs its own background');
 assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its own background');
+assert.match(siteCss, /\.donation-story-menu\s*\{[^}]*overflow:\s*auto/i, 'Story search must scroll naturally with its options');
 assert.match(fs.readFileSync(path.join(root, 'ads.txt'), 'utf8'), /pub-6051983418402912/, 'ads.txt publisher must be preserved');
 assert.match(appJs, /api\('\/api\/stories',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Story requests must bypass stale browser caches');
 assert.match(appJs, /api\('\/api\/settings',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Settings requests must bypass stale browser caches');
@@ -105,6 +109,9 @@ assert.match(appJs, /controller\.abort\(\)/, 'Bank app discovery needs a timeout
 assert.match(appJs, /Đang tải ứng dụng ngân hàng/, 'Bank app selection needs immediate loading feedback');
 assert.match(appJs, /closeDialog\(\$\('#donationDialog'\)\)/, 'Bank picker must not render behind the native donation dialog');
 assert.match(appJs, /id=\"bankAppSearch\"/, 'Bank app picker needs search');
+assert.match(appJs, /Number\(b\.autofill\) - Number\(a\.autofill\)/, 'Autofill bank apps must stay at the top');
+assert.match(appJs, /app\.autofill \? 'Ưu tiên' : 'Mở app'/, 'Autofill bank apps need a priority label');
+assert.match(appJs, /dataset\.locked = String\(locked\)/, 'Story card donations must lock the selected story');
 
 const dropStatusConstraint = migrationSql.indexOf('drop constraint if exists stories_status_check');
 const normalizeStatuses = migrationSql.indexOf('update public.stories');
