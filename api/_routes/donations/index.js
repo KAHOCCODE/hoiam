@@ -4,16 +4,9 @@ const {
 } = require('../_lib/utils');
 const { supabase, table } = require('../_lib/supabase');
 const { donationsTable } = require('../_lib/config');
-const { calculateDonation } = require('../_lib/donations');
+const { calculateDonation, makeTransferContent } = require('../_lib/donations');
 const { loadSettings } = require('../_lib/settings');
 const { rateLimit } = require('../_lib/rate-limit');
-
-function makeTransferContent(template, story, name) {
-  const raw = String(template || '{story} - {name}')
-    .replaceAll('{story}', story)
-    .replaceAll('{name}', name);
-  return safeText(raw, { max: 180 });
-}
 
 module.exports = async (req, res) => {
   if (!allowMethods(req, res, ['POST'])) return;

@@ -487,7 +487,71 @@ function fillDonationStories() {
 
 function transferContent(story, name) {
   const template = state.settings?.donation?.transferTemplate || '{story} - {name}';
-  return template.replaceAll('{story}', story?.title || '').replaceAll('{name}', name || '').slice(0, 180);
+  const compactStory = vietQrText(story?.title, 32);
+  const compactName = vietQrText(name, 15);
+  return vietQrText(template.replaceAll('{story}', compactStory).replaceAll('{name}', compactName));
+}
+
+function vietQrText(value, max = 50) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, (letter) => (letter === 'đ' ? 'd' : 'D'))
+    .replace(/[^A-Za-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
+function vietQrUrl(donation, amount, content) {
+  const bankId = String(donation?.bankId || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 20);
+  const account = String(donation?.accountNumber || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 19);
+  if (!bankId || !account) return '';
+
+  const url = new URL(`https://img.vietqr.io/image/${bankId}-${account}-compact2.png`);
+  const value = Math.max(0, Math.floor(Number(amount || 0)));
+  const description = vietQrText(content);
+  const accountName = vietQrText(donation?.accountName);
+  if (value > 0) url.searchParams.set('amount', String(value));
+  if (description) url.searchParams.set('addInfo', description);
+  if (accountName) url.searchParams.set('accountName', accountName);
+  return url.href;
+}
+
+function appendBankQr(host, donation, amount, content) {
+  const dynamicUrl = vietQrUrl(donation, amount, content);
+  const fallbackUrl = safeUrl(donation?.qrUrl);
+  const initialUrl = dynamicUrl || fallbackUrl;
+  if (!initialUrl) return;
+
+  const card = element('div', 'bank-qr-card');
+  const image = new Image();
+  image.src = initialUrl;
+  image.alt = dynamicUrl ? 'Mã VietQR chuyển khoản tự động' : 'Mã QR chuyển khoản';
+  image.className = 'bank-qr';
+  const status = element('p', 'bank-qr-status');
+  status.append(icon(dynamicUrl ? 'wand-magic-sparkles' : 'image'), document.createTextNode(dynamicUrl
+    ? 'QR đã điền sẵn tài khoản, số tiền và nội dung.'
+    : 'Ảnh QR do admin cung cấp.'));
+  const open = element('a', 'bank-qr-open');
+  open.href = initialUrl;
+  open.target = '_blank';
+  open.rel = 'noopener noreferrer';
+  open.append(icon('expand'), document.createTextNode(' Mở mã QR'));
+
+  image.addEventListener('error', () => {
+    if (dynamicUrl && fallbackUrl && image.src !== fallbackUrl) {
+      image.src = fallbackUrl;
+      open.href = fallbackUrl;
+      status.replaceChildren(icon('image'), document.createTextNode(' Đang dùng ảnh QR dự phòng.'));
+      return;
+    }
+    image.hidden = true;
+    open.hidden = true;
+    status.replaceChildren(icon('triangle-exclamation'), document.createTextNode(' Chưa tải được mã QR. Bạn vẫn có thể dùng thông tin bên dưới.'));
+  });
+  card.append(image, status, open);
+  host.append(card);
 }
 
 function copyButton(value, label = 'Sao chép') {
@@ -508,13 +572,14 @@ function updateDonationPanel() {
   host.replaceChildren();
   const donation = state.settings?.donation;
   if (!donation?.enabled) return host.append(element('p', 'muted', 'Kênh đang tạm đóng nhận donate trên website.'));
-  if (donation.qrUrl) { const img = new Image(); img.src = donation.qrUrl; img.alt = 'Mã QR chuyển khoản'; img.className = 'bank-qr'; host.append(img); }
+  const content = story && name ? transferContent(story, name) : '';
+  appendBankQr(host, donation, amount, content);
   host.append(element('span', 'eyebrow', donation.bankName || 'Thông tin chuyển khoản'));
   host.append(detailRow('Chủ tài khoản', donation.accountName || 'Chưa cập nhật'));
   const account = detailRow('Số tài khoản', donation.accountNumber || 'Chưa cập nhật');
   if (donation.accountNumber) account.append(copyButton(donation.accountNumber)); host.append(account);
   if (story && name) {
-    const content = transferContent(story, name); const block = element('div', 'transfer-content'); block.append(element('small', '', 'Nội dung chuyển khoản'), element('strong', '', content), copyButton(content)); host.append(block);
+    const block = element('div', 'transfer-content'); block.append(element('small', '', 'Nội dung chuyển khoản'), element('strong', '', content), copyButton(content)); host.append(block);
   } else host.append(element('p', 'muted', 'Chọn truyện và nhập tên để tạo nội dung chuyển khoản.'));
   if (donation.note) host.append(element('p', 'bank-note', donation.note));
 }

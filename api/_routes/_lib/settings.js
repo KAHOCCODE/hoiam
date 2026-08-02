@@ -14,6 +14,7 @@ const defaults = {
   donation: {
     enabled: false,
     bankName: '',
+    bankId: '',
     accountName: '',
     accountNumber: '',
     qrUrl: '',
@@ -48,6 +49,7 @@ function sanitizeSettings(input = {}) {
     donation: {
       enabled: donation.enabled === true,
       bankName: safeText(donation.bankName, { max: 100 }),
+      bankId: safeText(donation.bankId, { max: 20 }).replace(/[^A-Za-z0-9]/g, ''),
       accountName: safeText(donation.accountName, { max: 120 }),
       accountNumber: safeText(donation.accountNumber, { max: 80 }),
       qrUrl: safeUrl(donation.qrUrl),

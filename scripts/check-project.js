@@ -66,6 +66,7 @@ const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const siteCss = fs.readFileSync(path.join(root, 'assets/site.css'), 'utf8');
 const appJs = fs.readFileSync(path.join(root, 'assets/app.js'), 'utf8');
+const settingsLib = fs.readFileSync(path.join(root, 'api/_routes/_lib/settings.js'), 'utf8');
 const publicStoriesApi = fs.readFileSync(path.join(root, 'api/_routes/stories/index.js'), 'utf8');
 const publicSettingsApi = fs.readFileSync(path.join(root, 'api/_routes/settings/index.js'), 'utf8');
 const apiUtils = fs.readFileSync(path.join(root, 'api/_routes/_lib/utils.js'), 'utf8');
@@ -79,6 +80,7 @@ assert.match(homeHtml, /ca-pub-6051983418402912/, 'Existing AdSense account must
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /id="donationDetailDialog"/, 'Admin donations need a detail dialog');
+assert.match(adminHtml, /name="bankId"/, 'Admin settings need a VietQR bank identifier');
 assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidden mobile menu must not cover content');
 assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs its own background');
 assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its own background');
@@ -88,6 +90,10 @@ assert.match(appJs, /api\('\/api\/settings',\s*\{\s*cache:\s*'no-store'\s*\}\)/,
 assert.doesNotMatch(publicStoriesApi, /s-maxage|stale-while-revalidate/i, 'Story API must not cache changing vote totals');
 assert.doesNotMatch(publicSettingsApi, /s-maxage|stale-while-revalidate/i, 'Settings API must not cache cross-page changes');
 assert.match(apiUtils, /setHeader\('Cache-Control',\s*'no-store'\)/, 'Dynamic API responses must disable caching');
+assert.match(appJs, /https:\/\/img\.vietqr\.io\/image\//, 'Donation panel needs dynamic VietQR generation');
+assert.match(appJs, /searchParams\.set\('amount'/, 'VietQR needs the selected donation amount');
+assert.match(appJs, /searchParams\.set\('addInfo'/, 'VietQR needs generated transfer content');
+assert.match(settingsLib, /bankId:/, 'VietQR bank identifier must be preserved in settings');
 
 const dropStatusConstraint = migrationSql.indexOf('drop constraint if exists stories_status_check');
 const normalizeStatuses = migrationSql.indexOf('update public.stories');
@@ -97,12 +103,14 @@ assert.ok(
   'Migration must replace the legacy status constraint around status normalization'
 );
 
-const { calculateDonation } = require(path.join(root, 'api/_routes/_lib/donations'));
+const { calculateDonation, makeTransferContent } = require(path.join(root, 'api/_routes/_lib/donations'));
 assert.deepEqual(calculateDonation(50_000), { amountVnd: 50_000, stoneCount: 50, suggestedVotes: 10, pricePerVote: 5000 });
 assert.equal(calculateDonation(100_000).suggestedVotes, 22);
 assert.equal(calculateDonation(200_000).suggestedVotes, 50);
 assert.equal(calculateDonation(500_000).suggestedVotes, 142);
 assert.equal(calculateDonation(1_000_000).suggestedVotes, 333);
+assert.equal(makeTransferContent('{story} - {name}', 'Truyện Đam Mỹ Rất Dài', 'Nguyễn Văn A'), 'Truyen Dam My Rat Dai Nguyen Van A');
+assert.ok(makeTransferContent('{story} - {name}', 'A'.repeat(100), 'B'.repeat(100)).length <= 50);
 
 const { normalizeStatus } = require(path.join(root, 'api/_routes/_lib/utils'));
 assert.equal(normalizeStatus('đang đọc'), 'đang lên sóng');

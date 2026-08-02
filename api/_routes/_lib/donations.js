@@ -20,4 +20,24 @@ function donationStatus(value) {
   return allowed.includes(value) ? value : 'pending';
 }
 
-module.exports = { calculateDonation, donationStatus };
+function normalizeTransferText(value, max = 50) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, (letter) => (letter === 'đ' ? 'd' : 'D'))
+    .replace(/[^A-Za-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
+function makeTransferContent(template, story, name) {
+  const compactStory = normalizeTransferText(story, 32);
+  const compactName = normalizeTransferText(name, 15);
+  const raw = String(template || '{story} - {name}')
+    .replaceAll('{story}', compactStory)
+    .replaceAll('{name}', compactName);
+  return normalizeTransferText(raw);
+}
+
+module.exports = { calculateDonation, donationStatus, normalizeTransferText, makeTransferContent };

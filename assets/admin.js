@@ -412,7 +412,7 @@ function renderSettings() {
   const form = $('#settingsForm'); const settings = state.settings; const donation = settings.donation || {};
   for (const key of ['channelName','tagline','youtubeUrl','logoUrl','aboutTitle','aboutBody','contactEmail']) form.elements[key].value = settings[key] || '';
   form.elements.donationEnabled.checked = donation.enabled === true;
-  for (const key of ['bankName','accountName','accountNumber','qrUrl','transferTemplate']) form.elements[key].value = donation[key] || '';
+  for (const key of ['bankName','bankId','accountName','accountNumber','qrUrl','transferTemplate']) form.elements[key].value = donation[key] || '';
   form.elements.donationNote.value = donation.note || '';
   const host = $('#socialLinkRows'); host.replaceChildren(...(settings.socialLinks || []).map(socialRow));
   if (!host.children.length) host.append(socialRow());
@@ -429,6 +429,7 @@ async function saveSettings(event) {
     contactEmail: form.elements.contactEmail.value, socialLinks,
     donation: {
       enabled: form.elements.donationEnabled.checked, bankName: form.elements.bankName.value,
+      bankId: form.elements.bankId.value,
       accountName: form.elements.accountName.value, accountNumber: form.elements.accountNumber.value,
       qrUrl: form.elements.qrUrl.value, transferTemplate: form.elements.transferTemplate.value,
       note: form.elements.donationNote.value, unitLabel: 'Cá/Linh Thạch',

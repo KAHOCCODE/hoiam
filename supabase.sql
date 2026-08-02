@@ -134,6 +134,7 @@ values (
     'donation', jsonb_build_object(
       'enabled', false,
       'bankName', '',
+      'bankId', '',
       'accountName', '',
       'accountNumber', '',
       'qrUrl', '',
