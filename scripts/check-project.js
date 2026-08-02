@@ -70,6 +70,7 @@ const settingsLib = fs.readFileSync(path.join(root, 'api/_routes/_lib/settings.j
 const publicStoriesApi = fs.readFileSync(path.join(root, 'api/_routes/stories/index.js'), 'utf8');
 const publicSettingsApi = fs.readFileSync(path.join(root, 'api/_routes/settings/index.js'), 'utf8');
 const apiUtils = fs.readFileSync(path.join(root, 'api/_routes/_lib/utils.js'), 'utf8');
+const vercelConfigText = fs.readFileSync(path.join(root, 'vercel.json'), 'utf8');
 const migrationSql = fs.readFileSync(path.join(root, 'supabase.sql'), 'utf8');
 assert.match(homeHtml, /rel="canonical"/i, 'Homepage needs a canonical URL');
 assert.match(homeHtml, /application\/ld\+json/i, 'Homepage needs structured data');
@@ -94,6 +95,10 @@ assert.match(appJs, /https:\/\/img\.vietqr\.io\/image\//, 'Donation panel needs 
 assert.match(appJs, /searchParams\.set\('amount'/, 'VietQR needs the selected donation amount');
 assert.match(appJs, /searchParams\.set\('addInfo'/, 'VietQR needs generated transfer content');
 assert.match(settingsLib, /bankId:/, 'VietQR bank identifier must be preserved in settings');
+assert.match(appJs, /\$\{platform\}-app-deeplinks/, 'Mobile donation flow needs the current bank app list');
+assert.match(appJs, /https:\/\/dl\.vietqr\.io\/pay/, 'Mobile donation flow needs a bank app deeplink');
+assert.match(appJs, /hoiam_donation_draft/, 'Donation form must survive the trip to the bank app');
+assert.match(vercelConfigText, /https:\/\/api\.vietqr\.io/, 'Content Security Policy must allow VietQR app discovery');
 
 const dropStatusConstraint = migrationSql.indexOf('drop constraint if exists stories_status_check');
 const normalizeStatuses = migrationSql.indexOf('update public.stories');
