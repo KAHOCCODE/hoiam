@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.10
+# Hồi Âm Đam Mỹ V06.1.11
 
-Phiên bản V06.1.10 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
+Phiên bản V06.1.11 nâng cấp toàn bộ giao diện công khai và dashboard quản trị nhưng vẫn dùng chung dữ liệu Supabase hiện có.
 
 Toàn bộ endpoint được rewrite vào một Vercel Function để tương thích giới hạn của gói Hobby, kể cả các URL nhiều tầng như vote và trang quản trị. URL API công khai và cách sử dụng không thay đổi.
 
@@ -26,6 +26,8 @@ Toàn bộ endpoint được rewrite vào một Vercel Function để tương th
 - Nút hướng dẫn nằm trực tiếp trong form, trạng thái vote rõ ràng và Top 3 có ảnh bìa/thông tin đầy đủ.
 - Bảng quản trị có thêm lọc nguồn, loại bản, kênh donate và sắp xếp theo vote hoặc số tiền.
 - SEO cơ bản gồm canonical, Open Graph, dữ liệu cấu trúc, `robots.txt` và `sitemap.xml`.
+- Chính sách quyền riêng tư và điều khoản sử dụng công khai, có liên kết ở chân trang và nội dung minh bạch về cookie, quảng cáo, vote cùng donate.
+- `ads.txt` được phục vụ dưới dạng văn bản thuần; CSP tương thích tài nguyên quảng cáo động và Google Privacy & messaging.
 - Sửa bỏ vote trên database cũ và ẩn lỗi 404 của các module chưa chạy migration.
 - Migration tự thay ràng buộc trạng thái cũ trước khi đổi `đang đọc` thành `đang lên sóng`.
 - Tắt cache dữ liệu động để vote, kho truyện, thông báo và thiết lập mới hiển thị ngay khi tải lại trang.
@@ -92,4 +94,12 @@ npm run check
 run-local.cmd
 ```
 
-Kiểm tra trang chủ, `/completed.html`, `/guide.html`, `/about.html` và `/admin.html`. Chỉ cập nhật GitHub/Vercel sau khi đã kiểm tra local và sao lưu Supabase.
+Kiểm tra trang chủ, `/completed.html`, `/guide.html`, `/about.html`, `/privacy.html`, `/terms.html` và `/admin.html`. Chỉ cập nhật GitHub/Vercel sau khi đã kiểm tra local và sao lưu Supabase.
+
+## Hoàn tất AdSense sau khi deploy
+
+1. Mở `/ads.txt` và xác nhận Publisher ID hiển thị dưới dạng văn bản thuần.
+2. Trong AdSense, xác minh quyền sở hữu bằng `ads.txt` hoặc thẻ meta rồi yêu cầu xem xét website.
+3. Vào **Quyền riêng tư và thông báo**, tạo thông báo **Quy định tại Châu Âu**, chọn giải pháp quản lý sự đồng ý của Google và xuất bản cho website.
+4. Chỉ bật Auto Ads trên các trang nội dung công khai; `admin.html`, `privacy.html` và `terms.html` không tải mã quảng cáo.
+5. Không tự bấm quảng cáo, không kêu gọi người khác bấm và không đặt quảng cáo sát nút vote, form hoặc nút điều hướng.

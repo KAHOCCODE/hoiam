@@ -9,6 +9,8 @@ const required = [
   'completed.html',
   'guide.html',
   'about.html',
+  'privacy.html',
+  'terms.html',
   'admin.html',
   'assets/app.js',
   'assets/admin.js',
@@ -18,6 +20,7 @@ const required = [
   'assets/vendor/fontawesome/css/all.min.css',
   'assets/vendor/fontawesome/webfonts/fa-solid-900.woff2',
   'robots.txt',
+  'ads.txt',
   'sitemap.xml',
   'supabase.sql',
   'api/index.js',
@@ -64,6 +67,9 @@ for (const name of htmlFiles) {
 
 const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
+const privacyHtml = fs.readFileSync(path.join(root, 'privacy.html'), 'utf8');
+const termsHtml = fs.readFileSync(path.join(root, 'terms.html'), 'utf8');
+const sitemapText = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const siteCss = fs.readFileSync(path.join(root, 'assets/site.css'), 'utf8');
 const appJs = fs.readFileSync(path.join(root, 'assets/app.js'), 'utf8');
 const settingsLib = fs.readFileSync(path.join(root, 'api/_routes/_lib/settings.js'), 'utf8');
@@ -82,6 +88,18 @@ assert.doesNotMatch(homeHtml, /<select[^>]+name="story_select"/, 'Donation must 
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
 assert.match(homeHtml, /data-nav-section="trending"/, 'Homepage navigation needs section tracking');
 assert.match(homeHtml, /ca-pub-6051983418402912/, 'Existing AdSense account must be preserved');
+for (const pageName of ['index.html', 'completed.html', 'guide.html', 'about.html']) {
+  const publicHtml = fs.readFileSync(path.join(root, pageName), 'utf8');
+  assert.match(publicHtml, /href="\/privacy\.html"/, `${pageName} needs a privacy link`);
+  assert.match(publicHtml, /href="\/terms\.html"/, `${pageName} needs a terms link`);
+}
+assert.match(privacyHtml, /Google AdSense/, 'Privacy policy needs an advertising disclosure');
+assert.match(privacyHtml, /cookie/i, 'Privacy policy needs a cookie disclosure');
+assert.match(privacyHtml, /hoiamdammy@gmail\.com/, 'Privacy policy needs a contact method');
+assert.doesNotMatch(privacyHtml, /adsbygoogle\.js/, 'Privacy policy must not load advertising');
+assert.doesNotMatch(termsHtml, /adsbygoogle\.js/, 'Terms page must not load advertising');
+assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
+assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /id="donationDetailDialog"/, 'Admin donations need a detail dialog');
@@ -90,7 +108,11 @@ assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidde
 assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs its own background');
 assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its own background');
 assert.match(siteCss, /\.donation-story-menu\s*\{[^}]*overflow:\s*auto/i, 'Story search must scroll naturally with its options');
-assert.match(fs.readFileSync(path.join(root, 'ads.txt'), 'utf8'), /pub-6051983418402912/, 'ads.txt publisher must be preserved');
+assert.equal(
+  fs.readFileSync(path.join(root, 'ads.txt'), 'utf8').trim(),
+  'google.com, pub-6051983418402912, DIRECT, f08c47fec0942fa0',
+  'ads.txt publisher record must stay exact'
+);
 assert.match(appJs, /api\('\/api\/stories',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Story requests must bypass stale browser caches');
 assert.match(appJs, /api\('\/api\/settings',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Settings requests must bypass stale browser caches');
 assert.doesNotMatch(publicStoriesApi, /s-maxage|stale-while-revalidate/i, 'Story API must not cache changing vote totals');
@@ -103,7 +125,10 @@ assert.match(settingsLib, /bankId:/, 'VietQR bank identifier must be preserved i
 assert.match(appJs, /\$\{platform\}-app-deeplinks/, 'Mobile donation flow needs the current bank app list');
 assert.match(appJs, /https:\/\/dl\.vietqr\.io\/pay/, 'Mobile donation flow needs a bank app deeplink');
 assert.match(appJs, /hoiam_donation_draft/, 'Donation form must survive the trip to the bank app');
-assert.match(vercelConfigText, /https:\/\/api\.vietqr\.io/, 'Content Security Policy must allow VietQR app discovery');
+assert.match(vercelConfigText, /script-src 'self' 'unsafe-inline' 'unsafe-eval' https:/, 'CSP must allow changing AdSense resources');
+assert.match(vercelConfigText, /"source": "\/ads\.txt"/, 'Vercel needs a dedicated ads.txt header');
+assert.match(vercelConfigText, /text\/plain; charset=utf-8/, 'ads.txt must be served as plain text');
+assert.match(appJs, /\['guide', 'about', 'privacy', 'terms'\]\.includes\(page\)/, 'Legal pages must not request the story catalog');
 assert.match(appJs, /function fallbackBankApps\(/, 'Bank app selection needs an offline fallback');
 assert.match(appJs, /controller\.abort\(\)/, 'Bank app discovery needs a timeout');
 assert.match(appJs, /Đang tải ứng dụng ngân hàng/, 'Bank app selection needs immediate loading feedback');

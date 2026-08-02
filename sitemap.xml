@@ -4,4 +4,6 @@
   <url><loc>https://hoiam.vercel.app/completed.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://hoiam.vercel.app/guide.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://hoiam.vercel.app/about.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://hoiam.vercel.app/privacy.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://hoiam.vercel.app/terms.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
 </urlset>

@@ -1111,7 +1111,7 @@ function bindEvents() {
 
 bindEvents();
 setupNavigation();
-Promise.all([loadSettings(), page === 'guide' || page === 'about' ? Promise.resolve() : loadStories()])
+Promise.all([loadSettings(), ['guide', 'about', 'privacy', 'terms'].includes(page) ? Promise.resolve() : loadStories()])
   .then(() => {
     if (restoreDonationDraft()) {
       try { sessionStorage.removeItem('hoiam_bank_trip_started'); } catch { /* ignored */ }
