@@ -747,12 +747,13 @@ function saveDonationDraft() {
 
 function restoreDonationDraft() {
   const raw = storageGet('hoiam_donation_draft', true);
-  if (!raw || !$('#donationForm') || !state.settings?.donation?.enabled) return;
+  if (!raw || !$('#donationForm') || !state.settings?.donation?.enabled || !state.stories.length) return false;
   try {
     const draft = JSON.parse(raw);
     if (!draft?.savedAt || Date.now() - Number(draft.savedAt) > 30 * 60_000) {
       sessionStorage.removeItem('hoiam_donation_draft');
-      return;
+      sessionStorage.removeItem('hoiam_bank_trip_started');
+      return false;
     }
     const draftStoryId = Number(draft.values?.story_select || 0) || null;
     const external = draft.values?.source_channel === 'youtube';
@@ -762,11 +763,38 @@ function restoreDonationDraft() {
       if (form.elements[name]) form.elements[name].value = String(value || '');
     });
     fillDonationStories('', form.elements.story_select.value);
-    $('#donationModeNote').textContent = 'Thông tin tặng Cá đã được giữ lại. Chuyển xong hãy gửi admin kiểm tra nhé.';
+    $('#donationModeNote').textContent = 'Thông tin vẫn còn nguyên. Nếu đã chuyển khoản, bấm “Tôi đã tặng Cá” ở cuối form để báo admin nhé.';
     updateDonationPanel();
+    const submitButton = $('#submitDonationButton');
+    submitButton?.classList.add('return-ready');
+    window.setTimeout(() => submitButton?.classList.remove('return-ready'), 4200);
+    return true;
   } catch {
     try { sessionStorage.removeItem('hoiam_donation_draft'); } catch { /* ignored */ }
+    return false;
   }
+}
+
+function restoreDonationAfterBankTrip() {
+  const startedAt = Number(storageGet('hoiam_bank_trip_started', true) || 0);
+  if (!startedAt || document.visibilityState === 'hidden') return;
+  const elapsed = Date.now() - startedAt;
+  if (elapsed < 800) {
+    window.setTimeout(restoreDonationAfterBankTrip, 820 - elapsed);
+    return;
+  }
+  if (!storageGet('hoiam_donation_draft', true)) {
+    try { sessionStorage.removeItem('hoiam_bank_trip_started'); } catch { /* ignored */ }
+    return;
+  }
+  if ($('#donationDialog')?.open || window.Swal?.isVisible?.()) return;
+  if (restoreDonationDraft()) {
+    try { sessionStorage.removeItem('hoiam_bank_trip_started'); } catch { /* ignored */ }
+  }
+}
+
+function scheduleDonationReturnCheck() {
+  window.setTimeout(restoreDonationAfterBankTrip, 180);
 }
 
 async function openBankPayment(donation, amount, content) {
@@ -815,8 +843,10 @@ async function openBankPayment(donation, amount, content) {
     deepLink.searchParams.set('tn', vietQrText(content));
     deepLink.searchParams.set('bn', vietQrText(donation.accountName));
     deepLink.searchParams.set('url', `${location.origin}${location.pathname}${location.search}`);
+    storageSet('hoiam_bank_trip_started', String(Date.now()), true);
     window.location.assign(deepLink.href);
   } catch (error) {
+    try { sessionStorage.removeItem('hoiam_bank_trip_started'); } catch { /* ignored */ }
     window.Swal.close();
     await window.Swal.fire({
       icon: 'error',
@@ -916,7 +946,10 @@ async function submitDonation(event) {
     };
     const result = await api('/api/donations', { method: 'POST', body: JSON.stringify(payload) });
     closeDialog($('#donationDialog')); form.reset();
-    try { sessionStorage.removeItem('hoiam_donation_draft'); } catch { /* ignored */ }
+    try {
+      sessionStorage.removeItem('hoiam_donation_draft');
+      sessionStorage.removeItem('hoiam_bank_trip_started');
+    } catch { /* ignored */ }
     await window.Swal?.fire({ icon: 'success', title: 'Admin đã nhận thông báo', html: `Mã báo nhận: <strong>#${result.donation?.id || ''}</strong><br>Hệ thống đề xuất ${number.format(result.donation?.suggested_votes || 0)} vote. Admin sẽ kiểm tra trước khi cộng.`, confirmButtonText: 'Đã hiểu', customClass: { popup: 'cosmic-swal' } });
   } catch (error) { notify(error.message, 'danger'); }
   finally { button.disabled = false; }
@@ -1070,10 +1103,17 @@ function bindEvents() {
     if (picker && !picker.contains(event.target)) closeDonationStoryPicker();
   });
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeDonationStoryPicker(); });
+  window.addEventListener('focus', scheduleDonationReturnCheck);
+  window.addEventListener('pageshow', scheduleDonationReturnCheck);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleDonationReturnCheck(); });
   ['donor_name', 'amount_vnd'].forEach((name) => donationForm?.elements[name]?.addEventListener('input', updateDonationPanel));
 }
 
 bindEvents();
 setupNavigation();
 Promise.all([loadSettings(), page === 'guide' || page === 'about' ? Promise.resolve() : loadStories()])
-  .then(restoreDonationDraft);
+  .then(() => {
+    if (restoreDonationDraft()) {
+      try { sessionStorage.removeItem('hoiam_bank_trip_started'); } catch { /* ignored */ }
+    }
+  });

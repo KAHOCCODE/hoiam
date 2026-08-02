@@ -112,6 +112,10 @@ assert.match(appJs, /id=\"bankAppSearch\"/, 'Bank app picker needs search');
 assert.match(appJs, /Number\(b\.autofill\) - Number\(a\.autofill\)/, 'Autofill bank apps must stay at the top');
 assert.match(appJs, /app\.autofill \? 'Ưu tiên' : 'Mở app'/, 'Autofill bank apps need a priority label');
 assert.match(appJs, /dataset\.locked = String\(locked\)/, 'Story card donations must lock the selected story');
+assert.match(appJs, /hoiam_bank_trip_started/, 'Donation flow must remember a trip to the bank app');
+assert.match(appJs, /addEventListener\('visibilitychange'/, 'Donation form must return when the bank app becomes hidden');
+assert.match(appJs, /addEventListener\('focus'/, 'Donation form must return when the browser regains focus');
+assert.match(appJs, /addEventListener\('pageshow'/, 'Donation form must return after browser history navigation');
 
 const dropStatusConstraint = migrationSql.indexOf('drop constraint if exists stories_status_check');
 const normalizeStatuses = migrationSql.indexOf('update public.stories');
