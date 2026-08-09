@@ -93,16 +93,29 @@
     <section id="library" class="section shell">
       <div class="panel library-panel">
         <div class="section-head library-heading">
-          <div class="section-title"><span class="section-icon icon-cyan"><i class="fa-solid fa-book-open-reader"></i></span><div><span class="eyebrow">Kho cộng đồng</span><h2>Truyện được đề xuất</h2></div></div>
+          <div class="section-title"><span class="section-icon icon-cyan"><i class="fa-solid fa-book-open-reader"></i></span><div><span class="eyebrow">Kho cộng đồng</span><h2>Kho truyện</h2></div></div>
           <span id="resultCount" class="result-count">Đang tải…</span>
         </div>
+        <div class="library-switch" role="tablist" aria-label="Chọn nhóm truyện">
+          <button class="library-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="storyGrid" data-library-view="proposed">
+            <span class="library-tab-icon"><i class="fa-solid fa-heart"></i></span>
+            <span><strong>Đề xuất</strong><small>Có thể bình chọn</small></span>
+            <b id="proposedStoryCount">0</b>
+          </button>
+          <button class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="storyGrid" data-library-view="selected">
+            <span class="library-tab-icon selected"><i class="fa-solid fa-bookmark"></i></span>
+            <span><strong>Đã chọn</strong><small>Admin đang chuẩn bị</small></span>
+            <b id="selectedStoryCount">0</b>
+          </button>
+        </div>
+        <p id="libraryViewNote" class="library-view-note"><i class="fa-solid fa-circle-info"></i><span>Chọn truyện bạn muốn kênh thực hiện tiếp theo.</span></p>
         <div class="filters" role="search">
           <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="Tìm tên truyện…" autocomplete="off"></label>
           <label><span class="sr-only">Loại bản</span><select id="versionFilter"><option value="all">Convert &amp; Edit</option><option value="Convert">Convert</option><option value="Edit">Edit</option></select></label>
           <label><span class="sr-only">Nguồn</span><select id="sourceFilter"><option value="all">Mọi nguồn</option></select></label>
           <label><span class="sr-only">Sắp xếp</span><select id="sortSelect"><option value="votes-desc">Vote cao → thấp</option><option value="votes-asc">Vote thấp → cao</option><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="title">Tên A → Z</option></select></label>
         </div>
-        <div id="storyGrid" class="story-grid" aria-live="polite"></div>
+        <div id="storyGrid" class="story-grid" role="tabpanel" aria-live="polite"></div>
         <div class="center"><button id="loadMoreButton" class="button button-ghost" type="button" hidden>Xem thêm</button></div>
       </div>
     </section>

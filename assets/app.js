@@ -4,6 +4,7 @@ const state = {
   settings: null,
   announcements: [],
   visibleLimit: 12,
+  libraryView: 'proposed',
   activeStory: null,
   voteBusy: new Set(),
   bankApps: [],
@@ -234,22 +235,34 @@ function voteNotice(voted, title) {
 }
 
 function storyCard(story) {
-  const card = element('article', 'story-card');
+  const selected = story.status === 'đã chọn';
+  const card = element('article', `story-card${selected ? ' selected-story' : ' proposed-story'}`);
   card.tabIndex = 0;
   const head = element('div', 'story-card-head');
   const badges = element('div', 'badge-row');
-  badges.append(badge(story.version, story.version.toLowerCase()), badge(sourceDomain(story), 'source'));
-  head.append(badges, voteButton(story, true));
+  badges.append(badge(story.version, story.version.toLowerCase()));
+  head.append(badges);
+  if (selected) {
+    const stage = element('span', 'selection-label');
+    stage.append(icon('bookmark'), document.createTextNode(' Đã chọn'));
+    head.append(stage);
+  } else head.append(voteButton(story, true));
   const title = element('h3', '', story.title);
+  const meta = element('p', 'story-source');
+  meta.append(icon('link'), element('span', '', sourceDomain(story)));
   const note = element('p', 'story-note', story.note || 'Chưa có ghi chú.');
   const footer = element('div', 'story-card-footer');
-  footer.append(badge(statusLabel(story.status), `status status-${story.status.replaceAll(' ', '-')}`));
+  if (selected) {
+    const progress = element('span', 'selection-progress');
+    progress.append(icon('pen-nib'), document.createTextNode(' Đang chuẩn bị'));
+    footer.append(progress);
+  }
   const view = element('button', 'text-button', 'Xem chi tiết');
   view.type = 'button';
   view.append(icon('arrow-right'));
   view.addEventListener('click', () => showStory(story.id));
   footer.append(view);
-  card.append(head, title, note);
+  card.append(head, title, meta, note);
   if (story.sourceWarningPublic && story.sourceStatus === 'confirmed') {
     const warning = element('div', 'source-alert');
     warning.append(icon('triangle-exclamation'), element('span', '', deadlineText(story) || 'Nguồn đang cần thay thế'));
@@ -348,7 +361,8 @@ function libraryStories() {
   const version = $('#versionFilter')?.value || 'all';
   const source = $('#sourceFilter')?.value || 'all';
   const sort = $('#sortSelect')?.value || 'votes-desc';
-  const list = state.stories.filter((story) => story.status === 'đề xuất' || story.status === 'đã chọn')
+  const status = state.libraryView === 'selected' ? 'đã chọn' : 'đề xuất';
+  const list = state.stories.filter((story) => story.status === status)
     .filter((story) => !query || `${story.title} ${story.note}`.toLocaleLowerCase('vi').includes(query))
     .filter((story) => version === 'all' || story.version === version)
     .filter((story) => source === 'all' || sourceDomain(story) === source);
@@ -379,7 +393,21 @@ function renderLibrary() {
   if (!host) return;
   renderSourceOptions();
   const list = libraryStories();
-  $('#resultCount').textContent = `${number.format(list.length)} truyện`;
+  const proposedCount = state.stories.filter((story) => story.status === 'đề xuất').length;
+  const selectedCount = state.stories.filter((story) => story.status === 'đã chọn').length;
+  const isSelected = state.libraryView === 'selected';
+  $('#proposedStoryCount').textContent = number.format(proposedCount);
+  $('#selectedStoryCount').textContent = number.format(selectedCount);
+  $('#resultCount').textContent = `${number.format(list.length)} ${isSelected ? 'đã chọn' : 'đề xuất'}`;
+  const note = $('#libraryViewNote span');
+  if (note) note.textContent = isSelected
+    ? 'Những truyện admin đã nhận để chuẩn bị biên tập và lên sóng.'
+    : 'Chọn truyện bạn muốn kênh thực hiện tiếp theo.';
+  $$('[data-library-view]').forEach((button) => {
+    const active = button.dataset.libraryView === state.libraryView;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-selected', String(active));
+  });
   host.replaceChildren(...(list.length ? list.slice(0, state.visibleLimit).map(storyCard) : [empty('Không tìm thấy truyện', 'Hãy thử thay đổi bộ lọc.') ]));
   const more = $('#loadMoreButton');
   if (more) more.hidden = list.length <= state.visibleLimit;
@@ -1092,6 +1120,11 @@ function bindEvents() {
   ['searchInput', 'versionFilter', 'sourceFilter', 'sortSelect'].forEach((id) => {
     $(`#${id}`)?.addEventListener(id === 'searchInput' ? 'input' : 'change', () => { state.visibleLimit = 12; renderLibrary(); renderCompleted(); });
   });
+  $$('[data-library-view]').forEach((button) => button.addEventListener('click', () => {
+    state.libraryView = button.dataset.libraryView === 'selected' ? 'selected' : 'proposed';
+    state.visibleLimit = 12;
+    renderLibrary();
+  }));
   $('#loadMoreButton')?.addEventListener('click', () => { state.visibleLimit += 12; renderLibrary(); });
   const donationForm = $('#donationForm');
   $('#donationStoryToggle')?.addEventListener('click', toggleDonationStoryPicker);
