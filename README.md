@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.17
+# Hồi Âm Đam Mỹ V06.1.18
 
-Phiên bản V06.1.17 thiết kế lại trang Hướng dẫn theo từng thao tác, bổ sung mục lục tương tác, các bước ngắn dễ đọc, trạng thái truyện rõ ràng và giao diện thích ứng tốt hơn trên điện thoại. Dữ liệu Supabase hiện có không thay đổi.
+Phiên bản V06.1.18 tổ chức lại trang quản trị theo luồng thao tác: Kho truyện có menu trạng thái riêng, bộ lọc phụ được thu gọn, bảng truyện dễ đọc hơn, ngăn chỉnh sửa chia theo nhóm và Dashboard thể hiện trực quan tiến độ cùng việc cần xử lý. Dữ liệu Supabase hiện có không thay đổi.
 
 ## Thống kê truy cập
 
