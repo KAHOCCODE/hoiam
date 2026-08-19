@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.22
+# Hồi Âm Đam Mỹ V06.1.23
 
-Phiên bản V06.1.22 tập trung vào khả năng thích ứng và tốc độ tải: Admin chuyển sang menu dạng ngăn kéo từ tablet, bảng truyện và donate thành thẻ dễ đọc trên điện thoại, modal vừa màn hình và khôi phục đúng vị trí thao tác. Trang công khai hiển thị dữ liệu đã lưu ngay trong lúc đồng bộ bản mới; API công khai và Admin đều gộp các lượt tải ban đầu để giảm thời gian chờ. Không cần thay đổi SQL.
+Phiên bản V06.1.23 mở rộng trình chỉnh sửa truyện thành workspace lớn, chia cột hợp lý trên máy tính và tự xếp lại trên tablet, điện thoại. Menu Admin chỉ đóng khi người quản trị chủ động đóng; URL bìa truyện, logo và QR đều có ảnh xem trước trực tiếp. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 
