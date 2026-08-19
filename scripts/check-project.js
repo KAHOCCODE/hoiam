@@ -87,6 +87,11 @@ assert.match(homeHtml, /data-library-view="proposed"/, 'Library needs a proposed
 assert.match(homeHtml, /data-library-view="selected"/, 'Library needs a separate selected-story view');
 assert.match(homeHtml, /id="libraryViewTitle"/, 'Library needs a clear title for the active story group');
 assert.match(homeHtml, /class="filter-select"/, 'Library filters need consistent icon labels');
+assert.match(homeHtml, /id="storyDialog"[^>]+aria-labelledby="storyDialogTitle"/, 'Story modal needs an accessible title');
+assert.match(homeHtml, /id="suggestionDialog"[^>]+aria-labelledby="suggestionDialogTitle"/, 'Suggestion modal needs an accessible title');
+assert.match(homeHtml, /id="donationDialog"[^>]+aria-labelledby="donationTitle"/, 'Donation modal needs an accessible title');
+assert.match(homeHtml, /id="replacementDialog"[^>]+aria-labelledby="replacementDialogTitle"/, 'Replacement modal needs an accessible title');
+assert.match(homeHtml, /data-modal-initial-focus/, 'Forms need an intentional initial focus target');
 assert.match(homeHtml, /name="story_select" type="hidden"/, 'Donation story value needs one hidden form field');
 assert.doesNotMatch(homeHtml, /<select[^>]+name="story_select"/, 'Donation must not show a second native story selector');
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
@@ -115,6 +120,8 @@ assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidde
 assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs its own background');
 assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its own background');
 assert.match(siteCss, /\.donation-story-menu\s*\{[^}]*overflow:\s*auto/i, 'Story search must scroll naturally with its options');
+assert.match(siteCss, /\.story-dialog-content\s*\{[^}]*grid-template-columns:/i, 'Story modal needs a structured desktop layout');
+assert.match(siteCss, /max-height:\s*calc\(100dvh/i, 'Modals must fit the mobile viewport');
 assert.equal(
   fs.readFileSync(path.join(root, 'ads.txt'), 'utf8').trim(),
   'google.com, pub-6051983418402912, DIRECT, f08c47fec0942fa0',
@@ -145,6 +152,9 @@ assert.match(appJs, /closeDialog\(\$\('#donationDialog'\)\)/, 'Bank picker must 
 assert.match(appJs, /id=\"bankAppSearch\"/, 'Bank app picker needs search');
 assert.match(appJs, /Number\(b\.autofill\) - Number\(a\.autofill\)/, 'Autofill bank apps must stay at the top');
 assert.match(appJs, /app\.autofill \? 'Ưu tiên' : 'Mở app'/, 'Autofill bank apps need a priority label');
+assert.match(appJs, /const dialogReturnFocus = new WeakMap\(\)/, 'Modals need to remember the opener');
+assert.match(appJs, /addEventListener\('cancel'/, 'Native dialog cancellation needs controlled cleanup');
+assert.match(appJs, /restoreDialogFocus\(dialog\)/, 'Closing a modal needs to restore keyboard focus');
 assert.match(appJs, /dataset\.locked = String\(locked\)/, 'Story card donations must lock the selected story');
 assert.match(appJs, /hoiam_bank_trip_started/, 'Donation flow must remember a trip to the bank app');
 assert.match(appJs, /addEventListener\('visibilitychange'/, 'Donation form must return when the bank app becomes hidden');

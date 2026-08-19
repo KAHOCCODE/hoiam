@@ -107,16 +107,37 @@ function notify(message, tone = 'success') {
   window.alert(message);
 }
 
+const dialogReturnFocus = new WeakMap();
+
+function syncModalState() {
+  document.body.classList.toggle('modal-open', Boolean(document.querySelector('dialog.modal[open]')));
+}
+
+function restoreDialogFocus(dialog) {
+  syncModalState();
+  const target = dialogReturnFocus.get(dialog);
+  dialogReturnFocus.delete(dialog);
+  if (target?.isConnected && typeof target.focus === 'function') {
+    window.requestAnimationFrame(() => target.focus({ preventScroll: true }));
+  }
+}
+
 function openDialog(dialog) {
   if (!dialog) return;
+  if (dialog.open) return;
+  dialogReturnFocus.set(dialog, document.activeElement);
   if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
   document.body.classList.add('modal-open');
+  window.requestAnimationFrame(() => {
+    const initial = dialog.querySelector('[data-modal-initial-focus]:not(:disabled), .modal-close');
+    initial?.focus({ preventScroll: true });
+  });
 }
 
 function closeDialog(dialog) {
   if (!dialog) return;
   if (dialog.open && dialog.close) dialog.close(); else dialog.removeAttribute('open');
-  document.body.classList.remove('modal-open');
+  if (!dialog.close) restoreDialogFocus(dialog);
 }
 
 function statusLabel(status) {
@@ -463,8 +484,13 @@ async function trackMetric(id, metric) {
   catch { /* thống kê không được cản thao tác chính */ }
 }
 
-function detailRow(label, value) {
-  const row = element('div', 'detail-row'); row.append(element('span', '', label), element('strong', '', value)); return row;
+function detailRow(label, value, iconName = '') {
+  const row = element('div', 'detail-row');
+  const caption = element('span');
+  if (iconName) caption.append(icon(iconName));
+  caption.append(document.createTextNode(label));
+  row.append(caption, element('strong', '', value));
+  return row;
 }
 
 function showStory(id) {
@@ -474,14 +500,22 @@ function showStory(id) {
   state.activeStory = story;
   host.replaceChildren();
   const image = storyImage(story);
-  if (image) {
-    const cover = element('div', 'detail-cover'); cover.style.backgroundImage = `url("${image.replace(/"/g, '')}")`; host.append(cover);
-  }
+  const cover = element('div', `detail-cover${image ? ' has-image' : ''}`);
+  if (image) cover.style.backgroundImage = `url("${image.replace(/"/g, '')}")`;
+  cover.append(icon('book-open-reader'), element('span', 'detail-cover-label', image ? 'Ảnh từ nội dung đang lên sóng' : 'Bìa truyện đang cập nhật'));
+  host.append(cover);
   const body = element('div', 'detail-body');
   const chips = element('div', 'badge-row'); chips.append(badge(story.version, story.version.toLowerCase()), badge(statusLabel(story.status), 'status'), badge(sourceDomain(story), 'source'));
-  body.append(chips, element('h2', '', story.title));
-  const info = element('div', 'detail-stats'); info.append(detailRow('Tổng vote', number.format(story.votes)), detailRow('Trạng thái', statusLabel(story.status)), detailRow('Nguồn', sourceDomain(story))); body.append(info);
-  if (story.note) body.append(element('p', 'detail-note', story.note));
+  const title = element('h2', '', story.title); title.id = 'storyDialogTitle';
+  body.append(chips, title);
+  const info = element('div', 'detail-stats');
+  info.append(detailRow('Tổng vote', number.format(story.votes), 'heart'), detailRow('Trạng thái', statusLabel(story.status), 'signal'), detailRow('Nguồn', sourceDomain(story), 'link'));
+  body.append(info);
+  if (story.note) {
+    const section = element('section', 'detail-section');
+    const heading = element('h3'); heading.append(icon('align-left'), document.createTextNode(' Thông tin truyện'));
+    section.append(heading, element('p', 'detail-note', story.note)); body.append(section);
+  }
   if (story.sourceWarningPublic && story.sourceStatus === 'confirmed') {
     const warning = element('div', 'detail-warning');
     warning.append(icon('triangle-exclamation'), element('div', '', ''));
@@ -993,7 +1027,11 @@ async function submitDonation(event) {
 
 function openReplacement(storyId) {
   const form = $('#replacementForm'); if (!form) return;
-  form.reset(); form.elements.story_id.value = String(storyId); openDialog($('#replacementDialog'));
+  const story = state.stories.find((item) => item.id === Number(storyId));
+  form.reset(); form.elements.story_id.value = String(storyId);
+  const name = $('#replacementStoryName');
+  if (name) name.textContent = story ? `Nguồn mới cho “${story.title}”` : 'Gửi một đường dẫn khác để admin kiểm tra.';
+  openDialog($('#replacementDialog'));
 }
 
 async function submitReplacement(event) {
@@ -1116,7 +1154,11 @@ function bindEvents() {
   $$('[data-open-suggestion]').forEach((button) => button.addEventListener('click', () => openDialog($('#suggestionDialog'))));
   $$('[data-open-external-donation]').forEach((button) => button.addEventListener('click', () => openDonation(null, true)));
   $$('[data-close-dialog]').forEach((button) => button.addEventListener('click', () => closeDialog(button.closest('dialog'))));
-  $$('dialog.modal').forEach((dialog) => dialog.addEventListener('click', (event) => { if (event.target === dialog) closeDialog(dialog); }));
+  $$('dialog.modal').forEach((dialog) => {
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) closeDialog(dialog); });
+    dialog.addEventListener('cancel', (event) => { event.preventDefault(); closeDialog(dialog); });
+    dialog.addEventListener('close', () => restoreDialogFocus(dialog));
+  });
   $('#suggestionHelp')?.addEventListener('click', () => {
     const button = $('#suggestionHelp'); const panel = $('#suggestionHelpPanel');
     const open = button.getAttribute('aria-expanded') === 'true';

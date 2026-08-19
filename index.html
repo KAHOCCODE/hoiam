@@ -128,19 +128,19 @@
     <div class="shell footer-row"><span>© 2026 <span data-channel-name>Hồi Âm Đam Mỹ</span></span><div><a href="/guide.html">Hướng dẫn</a><a href="/about.html">About Me</a><a href="/privacy.html">Quyền riêng tư</a><a href="/terms.html">Điều khoản</a><a href="/admin.html" aria-label="Admin"><i class="fa-solid fa-gear"></i></a></div></div>
   </footer>
 
-  <dialog id="storyDialog" class="modal"><article class="modal-card detail-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng">×</button><div id="storyDialogContent"></div></article></dialog>
+  <dialog id="storyDialog" class="modal modal-story" aria-labelledby="storyDialogTitle"><article class="modal-card detail-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng cửa sổ"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button><div id="storyDialogContent" class="story-dialog-content"></div></article></dialog>
 
-  <dialog id="suggestionDialog" class="modal">
-    <article class="modal-card form-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng">×</button>
-      <div class="modal-heading"><span class="modal-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span><div><span class="eyebrow">Cộng đồng đề xuất</span><h2>Gửi truyện mới</h2></div></div>
+  <dialog id="suggestionDialog" class="modal modal-form" aria-labelledby="suggestionDialogTitle">
+    <article class="modal-card form-card suggestion-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng cửa sổ"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <div class="modal-heading"><span class="modal-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span><div><span class="eyebrow">Cộng đồng đề xuất</span><h2 id="suggestionDialogTitle">Gửi truyện mới</h2><p class="modal-description">Chia sẻ một truyện bạn muốn nghe trên kênh.</p></div></div>
       <button id="suggestionHelp" class="help-banner" type="button" aria-expanded="false" aria-controls="suggestionHelpPanel"><i class="fa-solid fa-circle-question"></i><span><strong>Cần xem trước khi gửi?</strong><small>Mở hướng dẫn ngắn</small></span><i class="fa-solid fa-chevron-down help-chevron"></i></button>
       <div id="suggestionHelpPanel" class="inline-help" hidden>
         <div><i class="fa-solid fa-circle-check"></i><span><strong>Chọn truyện đã hoàn thành</strong><small>Ưu tiên truyện FULL để kênh có thể chuẩn bị trọn bộ.</small></span></div>
         <div><i class="fa-solid fa-gem"></i><span><strong>Kiểm tra nguồn trước khi gửi</strong><small>Nếu nguồn cần nạp VIP, hãy gửi thêm nguồn đọc phù hợp trong phần ghi chú.</small></span></div>
         <div><i class="fa-solid fa-book-open-reader"></i><span><strong>Convert là lựa chọn mặc định</strong><small>Bạn vẫn có thể đổi sang Edit nếu bản truyện đã được biên tập.</small></span></div>
       </div>
-      <form id="suggestionForm" class="form-grid" aria-label="Form đề xuất truyện">
-        <label class="field full"><span>Tên truyện *</span><input name="title" type="text" required minlength="2" maxlength="220" placeholder="Tên truyện đã FULL"></label>
+      <form id="suggestionForm" class="form-grid modal-form-grid" aria-label="Form đề xuất truyện">
+        <label class="field full"><span>Tên truyện *</span><input name="title" type="text" required minlength="2" maxlength="220" placeholder="Tên truyện đã FULL" data-modal-initial-focus></label>
         <label class="field full"><span>Link nguồn *</span><input name="linkstory" required type="url" placeholder="https://…"></label>
         <fieldset class="choice-field full"><legend>Loại bản</legend><label><input name="version" type="radio" value="Convert" checked><span>Convert</span></label><label><input name="version" type="radio" value="Edit"><span>Edit</span></label></fieldset>
         <label class="field full"><span>Ghi chú</span><textarea name="note" rows="3" maxlength="5000" placeholder="Thông tin thêm cho admin…"></textarea></label>
@@ -150,19 +150,19 @@
     </article>
   </dialog>
 
-  <dialog id="donationDialog" class="modal">
-    <article class="modal-card donation-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng">×</button>
-      <div class="modal-heading"><span class="modal-icon fish"><i class="fa-solid fa-fish-fins"></i></span><div><span class="eyebrow">Tặng Cá</span><h2 id="donationTitle">Ủng hộ truyện</h2></div></div>
+  <dialog id="donationDialog" class="modal modal-donation" aria-labelledby="donationTitle">
+    <article class="modal-card donation-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng cửa sổ"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <div class="modal-heading"><span class="modal-icon fish"><i class="fa-solid fa-fish-fins"></i></span><div><span class="eyebrow">Tặng Cá</span><h2 id="donationTitle">Ủng hộ truyện</h2><p class="modal-description">Chuyển khoản nhanh và gửi thông tin để admin đối chiếu.</p></div></div>
       <div class="donation-steps"><span><b>1</b> Chọn truyện</span><span><b>2</b> Chuyển khoản</span><span><b>3</b> Báo admin</span></div>
       <p id="donationModeNote" class="donation-mode-note"></p>
       <form id="donationForm" class="donation-layout" aria-label="Form báo donate">
-        <div class="form-grid">
+        <section class="form-grid donation-form-panel" aria-label="Thông tin tặng Cá">
           <input name="story_id" type="hidden"><input name="source_channel" type="hidden" value="website">
           <div id="donationStoryField" class="field full donation-story-field">
             <span>Truyện *</span>
             <input name="story_select" type="hidden">
             <div id="donationStoryPicker" class="donation-story-picker">
-              <button id="donationStoryToggle" class="donation-story-toggle" type="button" aria-expanded="false" aria-controls="donationStoryMenu">
+              <button id="donationStoryToggle" class="donation-story-toggle" type="button" aria-expanded="false" aria-controls="donationStoryMenu" data-modal-initial-focus>
                 <i class="fa-solid fa-book-open" aria-hidden="true"></i><span id="donationStoryValue">Chọn truyện…</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
               </button>
               <div id="donationStoryMenu" class="donation-story-menu" hidden>
@@ -180,13 +180,13 @@
           <label class="field full"><span>Email nhận thông báo</span><input name="donor_email" type="email" maxlength="254" placeholder="Không bắt buộc"></label>
           <label class="field full"><span>Ghi chú</span><textarea name="note" rows="2" maxlength="1500"></textarea></label>
           <label class="honeypot" aria-hidden="true">Website<input name="website" type="text" tabindex="-1"></label>
-        </div>
-        <aside id="bankPanel" class="bank-panel"><p class="muted">Nhập tên để tạo nội dung chuyển khoản.</p></aside>
+        </section>
+        <aside id="bankPanel" class="bank-panel" aria-label="Thông tin chuyển khoản"><p class="muted">Nhập tên để tạo nội dung chuyển khoản.</p></aside>
         <button id="submitDonationButton" class="button button-primary full-width" type="submit"><i class="fa-solid fa-fish-fins"></i> Tôi đã tặng Cá</button>
       </form>
     </article>
   </dialog>
 
-  <dialog id="replacementDialog" class="modal"><article class="modal-card form-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng">×</button><div class="modal-heading"><span class="modal-icon"><i class="fa-solid fa-link"></i></span><div><span class="eyebrow">Giúp cộng đồng</span><h2>Gửi nguồn thay thế</h2></div></div><form id="replacementForm" class="form-grid" aria-label="Form gửi nguồn thay thế"><input name="story_id" type="hidden"><label class="field full"><span>Nguồn mới *</span><input name="replacement_url" type="url" required placeholder="https://…"></label><label class="field full"><span>Tên người gửi</span><input name="sender_name" type="text" maxlength="120"></label><label class="field full"><span>Ghi chú</span><textarea name="note" rows="3" maxlength="1500"></textarea></label><label class="honeypot" aria-hidden="true">Website<input name="website" type="text" tabindex="-1"></label><button class="button button-primary full" type="submit">Gửi admin kiểm tra</button></form></article></dialog>
+  <dialog id="replacementDialog" class="modal modal-form" aria-labelledby="replacementDialogTitle"><article class="modal-card form-card replacement-card"><button class="modal-close" data-close-dialog type="button" aria-label="Đóng cửa sổ"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button><div class="modal-heading"><span class="modal-icon link"><i class="fa-solid fa-link"></i></span><div><span class="eyebrow">Giúp cộng đồng</span><h2 id="replacementDialogTitle">Gửi nguồn thay thế</h2><p id="replacementStoryName" class="modal-description">Gửi một đường dẫn khác để admin kiểm tra.</p></div></div><form id="replacementForm" class="form-grid modal-form-grid" aria-label="Form gửi nguồn thay thế"><input name="story_id" type="hidden"><label class="field full"><span>Nguồn mới *</span><input name="replacement_url" type="url" required placeholder="https://…" data-modal-initial-focus></label><label class="field full"><span>Tên người gửi</span><input name="sender_name" type="text" maxlength="120" placeholder="Không bắt buộc"></label><label class="field full"><span>Ghi chú</span><textarea name="note" rows="3" maxlength="1500" placeholder="Ví dụ: nguồn đã FULL, không cần tài khoản VIP…"></textarea></label><label class="honeypot" aria-hidden="true">Website<input name="website" type="text" tabindex="-1"></label><button class="button button-primary full" type="submit"><i class="fa-solid fa-paper-plane"></i> Gửi admin kiểm tra</button></form></article></dialog>
 </body>
 </html>
