@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.20
+# Hồi Âm Đam Mỹ V06.1.21
 
-Phiên bản V06.1.20 thiết kế lại About Me thành không gian giới thiệu và khám phá các kênh chính thức. YouTube, website, mạng xã hội và email được trình bày thành thẻ có màu nhận diện, mô tả, lời mời mở rõ ràng và dữ liệu SEO có cấu trúc. Admin có thêm mô tả ngắn cho từng liên kết, cỡ chữ dễ đọc hơn và menu trạng thái Kho truyện rõ ràng hơn; không cần thay đổi SQL.
+Phiên bản V06.1.21 tập trung vào tốc độ và độ trơn tru: danh sách truyện donate chỉ được dựng khi người dùng mở bộ chọn, chế độ báo giao dịch cũ bỏ bước ngân hàng thừa, điều hướng công khai nhất quán hơn. Admin chỉ tải lại mô-đun vừa thay đổi, có tìm truyện khi nhập donate ngoài, nhớ màn hình đang làm việc, khôi phục thùng rác, lưu cài đặt thuận tiện và chỉnh sửa thông báo theo từng trang. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 

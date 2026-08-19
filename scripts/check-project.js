@@ -136,7 +136,7 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
-assert.match(adminHtml, /name="admin-ui-version" content="06120"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /name="admin-ui-version" content="06121"/, 'Admin markup needs an explicit UI version');
 assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
@@ -146,6 +146,9 @@ assert.match(adminHtml, /id="overviewRing"/, 'Admin overview needs a visual prog
 assert.match(adminHtml, /id="storyContentSection"/, 'Story editor needs grouped display fields');
 assert.match(adminHtml, /id="storySourceSection"/, 'Story editor needs grouped source controls');
 assert.match(adminHtml, /id="donationDetailDialog"/, 'Admin donations need a detail dialog');
+assert.match(adminHtml, /id="externalDonationStoryList"/, 'External donations need searchable story choices');
+assert.match(adminHtml, /name="page_scope"/, 'Announcements need an editable page scope');
+assert.match(adminHtml, /id="settingsSaveState"/, 'Long settings need a visible save state');
 assert.match(adminHtml, /name="bankId"/, 'Admin settings need a VietQR bank identifier');
 assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidden mobile menu must not cover content');
 assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs its own background');
@@ -210,6 +213,9 @@ assert.match(adminJs, /setAttribute\('aria-current', 'location'\)/, 'Admin story
 assert.match(adminJs, /storyFilterToggle/, 'Admin secondary filters need an explicit toggle');
 assert.match(adminJs, /statReplacementPending/, 'Admin overview needs pending replacement data');
 assert.match(adminJs, /function ensureCompatibleMarkup\(/, 'Admin must detect mixed HTML and JavaScript versions');
+assert.match(adminJs, /function reloadStories\(/, 'Story mutations need a focused data refresh');
+assert.match(adminJs, /function openAnnouncementDialog\(/, 'Existing announcements need an edit flow');
+assert.match(adminJs, /Khôi phục truyện/, 'Trash needs an explicit restore action');
 assert.match(vercelConfigText, /"source": "\/admin\.html"[\s\S]*?private, no-store, no-cache, must-revalidate/, 'Admin HTML must bypass stale caches');
 assert.doesNotMatch(vercelConfigText, /stale-while-revalidate/, 'Changing interface assets must not be served stale');
 assert.match(appJs, /detail\.addEventListener\('toggle'/, 'Guide sections need synchronized active states');
