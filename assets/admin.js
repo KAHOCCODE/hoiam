@@ -1,4 +1,4 @@
-const ADMIN_UI_VERSION = '06121';
+const ADMIN_UI_VERSION = '06122';
 const state = {
   stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null,
   activeView: sessionStorage.getItem('hoiam_admin_view') || 'overview',
@@ -9,6 +9,16 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 const money = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
 const number = new Intl.NumberFormat('vi-VN');
+const returnFocus = new WeakMap();
+
+function setAdminLoading(loading) {
+  $('#adminApp')?.setAttribute('aria-busy', String(loading));
+  const refresh = $('#refreshButton');
+  if (refresh) {
+    refresh.disabled = loading;
+    refresh.classList.toggle('loading', loading);
+  }
+}
 
 async function request(path, options = {}) {
   const response = await fetch(`/api${path}`, {
@@ -97,21 +107,19 @@ function setAuthenticated(authenticated) {
 }
 
 async function loadAll() {
-  const results = await Promise.allSettled([
-    request('/admin/stories'), request('/admin/donations'), request('/admin/source-replacements'),
-    request('/admin/announcements'), request('/admin/settings'),
-  ]);
-  if (results[0].status === 'rejected') throw results[0].reason;
-  state.stories = (results[0].value.stories || []).map(normalizeStory);
-  state.donations = results[1].status === 'fulfilled' ? (results[1].value.donations || []).map(normalizeDonation) : [];
-  state.replacements = results[2].status === 'fulfilled' ? results[2].value.replacements || [] : [];
-  state.announcements = results[3].status === 'fulfilled' ? results[3].value.announcements || [] : [];
-  state.settings = results[4].status === 'fulfilled' ? results[4].value.settings : null;
-  renderAll();
-  selectStoryStatus(state.storyStatus, false);
-  switchView(['overview','stories','donations','sources','announcements','settings'].includes(state.activeView) ? state.activeView : 'overview');
-  const failed = results.slice(1).filter((item) => item.status === 'rejected');
-  if (failed.length) toast('Một số mục cần chạy supabase.sql V06 trước.', 'warning');
+  setAdminLoading(true);
+  try {
+    const payload = await request('/admin/bootstrap');
+    state.stories = (payload.stories || []).map(normalizeStory);
+    state.donations = (payload.donations || []).map(normalizeDonation);
+    state.replacements = payload.replacements || [];
+    state.announcements = payload.announcements || [];
+    state.settings = payload.settings || null;
+    renderAll();
+    selectStoryStatus(state.storyStatus, false);
+    switchView(['overview','stories','donations','sources','announcements','settings'].includes(state.activeView) ? state.activeView : 'overview');
+    if (payload.setup_required) toast('Một số mục cần chạy supabase.sql V06 trước.', 'warning');
+  } finally { setAdminLoading(false); }
 }
 
 async function reloadStories() {
@@ -153,8 +161,11 @@ async function login(event) {
   event.preventDefault();
   try {
     await request('/admin/login', { method: 'POST', body: JSON.stringify({ password: $('#password').value }) });
-    $('#password').value = ''; setAuthenticated(true); await loadAll(); toast('Đăng nhập thành công.');
-  } catch (error) { toast(error.message, 'error'); }
+    $('#password').value = '';
+    await loadAll();
+    setAuthenticated(true);
+    toast('Đăng nhập thành công.');
+  } catch (error) { setAuthenticated(false); toast(error.message, 'error'); }
 }
 
 async function logout() {
@@ -165,7 +176,7 @@ async function logout() {
 function setSidebar(open) {
   const sidebar = $('.sidebar'); const toggle = $('#sidebarToggle'); const backdrop = $('#sidebarBackdrop');
   if (!sidebar || !toggle || !backdrop) return;
-  const active = Boolean(open && window.innerWidth <= 760);
+  const active = Boolean(open && window.innerWidth <= 1024);
   sidebar.classList.toggle('open', active);
   toggle.setAttribute('aria-expanded', String(active));
   toggle.setAttribute('aria-label', active ? 'Đóng thanh điều hướng' : 'Mở thanh điều hướng');
@@ -318,7 +329,7 @@ function renderStories() {
   stories.forEach((story) => {
     const tr = document.createElement('tr');
     const status = story.deletedat ? 'trash' : story.status;
-    tr.innerHTML = `<td><div class="story-cell"><span><i class="fa-solid fa-book"></i></span><div><strong></strong><small><b class="story-version"></b><i></i></small></div></div></td><td><div class="source-state"><strong></strong><small></small></div></td><td><div class="story-interest"><strong><i class="fa-solid fa-heart"></i> ${number.format(story.votes)}</strong><small>${number.format(story.views)} mở · ${number.format(story.youtube_clicks)} YouTube</small></div></td><td><span class="status-pill" data-status="${status}">${statusLabel(status)}</span></td><td><div class="row-actions"><button type="button" title="Mở chỉnh sửa" aria-label="Mở chỉnh sửa truyện"><i class="fa-solid fa-pen"></i></button></div></td>`;
+    tr.innerHTML = `<td data-label="Truyện"><div class="story-cell"><span><i class="fa-solid fa-book"></i></span><div><strong></strong><small><b class="story-version"></b><i></i></small></div></div></td><td data-label="Nguồn"><div class="source-state"><strong></strong><small></small></div></td><td data-label="Quan tâm"><div class="story-interest"><strong><i class="fa-solid fa-heart"></i> ${number.format(story.votes)}</strong><small>${number.format(story.views)} mở · ${number.format(story.youtube_clicks)} YouTube</small></div></td><td data-label="Trạng thái"><span class="status-pill" data-status="${status}">${statusLabel(status)}</span></td><td data-label="Thao tác"><div class="row-actions"><button type="button" title="Mở chỉnh sửa" aria-label="Mở chỉnh sửa truyện"><i class="fa-solid fa-pen"></i></button></div></td>`;
     $('.story-cell strong', tr).textContent = story.title;
     $('.story-version', tr).textContent = story.version;
     $('.story-version', tr).dataset.version = story.version.toLowerCase();
@@ -326,10 +337,12 @@ function renderStories() {
     $('.source-state strong', tr).textContent = sourceDomain(story.linkstory); $('.source-state small', tr).textContent = sourceLabel(story.source_status);
     if (['suspected', 'confirmed'].includes(story.source_status)) $('.source-state', tr).classList.add('problem');
     $('button', tr).addEventListener('click', () => openStoryDrawer(story.id));
-    tr.addEventListener('dblclick', () => openStoryDrawer(story.id));
+    tr.tabIndex = 0;
+    tr.addEventListener('click', (event) => { if (!event.target.closest('button,a,input,select')) openStoryDrawer(story.id); });
+    tr.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.target.closest('button,a,input,select')) openStoryDrawer(story.id); });
     host.append(tr);
   });
-  if (!host.children.length) host.innerHTML = '<tr><td colspan="5"><div class="empty">Không có truyện phù hợp.</div></td></tr>';
+  if (!host.children.length) host.innerHTML = '<tr class="empty-row"><td colspan="5"><div class="empty">Không có truyện phù hợp.</div></td></tr>';
 }
 
 function localDateTime(value) {
@@ -351,10 +364,16 @@ function openStoryDrawer(id) {
   trashButton.dataset.action = story.deletedat ? 'restore' : 'trash';
   trashButton.className = `btn ${story.deletedat ? 'btn-success' : 'btn-danger'}`;
   trashButton.innerHTML = story.deletedat ? '<i class="fa-solid fa-trash-arrow-up"></i> Khôi phục truyện' : '<i class="fa-solid fa-trash"></i> Chuyển vào thùng rác';
-  $('#storyDrawer').classList.add('open');
+  const drawer = $('#storyDrawer'); returnFocus.set(drawer, document.activeElement);
+  drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false'); document.body.classList.add('drawer-open');
+  window.requestAnimationFrame(() => $('[data-close-drawer]', drawer)?.focus({ preventScroll: true }));
 }
 
-function closeDrawer() { $('#storyDrawer').classList.remove('open'); state.activeStory = null; }
+function closeDrawer() {
+  const drawer = $('#storyDrawer'); drawer.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true'); document.body.classList.remove('drawer-open'); state.activeStory = null;
+  const target = returnFocus.get(drawer); returnFocus.delete(drawer);
+  if (target?.isConnected) window.requestAnimationFrame(() => target.focus({ preventScroll: true }));
+}
 
 async function saveStory(event) {
   event.preventDefault(); const form = event.currentTarget; const id = Number(form.elements.id.value); const old = state.activeStory;
@@ -427,7 +446,7 @@ function renderDonations() {
   const host = $('#donationTable'); host.replaceChildren();
   donationFilters().forEach((item) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><div class="story-cell donation-person"><span><i class="fa-solid fa-user"></i></span><div><strong></strong><small></small></div></div></td><td><strong></strong></td><td><b>${money.format(item.amount_vnd)}</b><small class="cell-sub">${number.format(item.stone_count)} Cá/LT</small></td><td><b>${number.format(item.status === 'applied' ? item.applied_votes : item.suggested_votes)}</b><small class="cell-sub">${item.status === 'applied' ? 'đã cộng' : 'đề xuất'}</small></td><td><span class="status-pill" data-status="${item.status}">${donationLabel(item.status)}</span></td><td><div class="row-actions donation-row-actions"></div></td>`;
+    tr.innerHTML = `<td data-label="Người gửi"><div class="story-cell donation-person"><span><i class="fa-solid fa-user"></i></span><div><strong></strong><small></small></div></div></td><td data-label="Truyện"><strong></strong></td><td data-label="Giá trị"><b>${money.format(item.amount_vnd)}</b><small class="cell-sub">${number.format(item.stone_count)} Cá/LT</small></td><td data-label="Vote"><b>${number.format(item.status === 'applied' ? item.applied_votes : item.suggested_votes)}</b><small class="cell-sub">${item.status === 'applied' ? 'đã cộng' : 'đề xuất'}</small></td><td data-label="Trạng thái"><span class="status-pill" data-status="${item.status}">${donationLabel(item.status)}</span></td><td data-label="Thao tác"><div class="row-actions donation-row-actions"></div></td>`;
     $('.story-cell strong', tr).textContent = item.donor_name; $('.story-cell small', tr).textContent = ({ website: 'Website', youtube: 'YouTube / email', admin: 'Admin nhập' })[item.source_channel] || 'Website'; $$('td strong', tr)[1].textContent = item.story_title;
     const actions = $('.row-actions', tr);
     function action(iconName, title, handler, className = '') { const button = document.createElement('button'); button.type = 'button'; button.title = title; button.setAttribute('aria-label', title); button.className = className; button.innerHTML = `<i class="fa-solid fa-${iconName}"></i>`; button.addEventListener('click', handler); actions.append(button); }
@@ -436,9 +455,12 @@ function renderDonations() {
     if (['confirmed','waiting_votes'].includes(item.status)) action('heart-circle-plus', 'Cộng vote', () => applyDonationVotes(item));
     if (!['applied','rejected'].includes(item.status)) action('xmark', 'Từ chối', () => updateDonation(item.id, 'reject'));
     if (item.status === 'applied' && item.email_status === 'failed') action('envelope-circle-check', 'Gửi lại email', () => updateDonation(item.id, 'retry_email'));
+    tr.tabIndex = 0;
+    tr.addEventListener('click', (event) => { if (!event.target.closest('button,a,input,select')) openDonationDetail(item.id); });
+    tr.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.target.closest('button,a,input,select')) openDonationDetail(item.id); });
     host.append(tr);
   });
-  if (!host.children.length) host.innerHTML = '<tr><td colspan="6"><div class="empty">Không có donate phù hợp.</div></td></tr>';
+  if (!host.children.length) host.innerHTML = '<tr class="empty-row"><td colspan="6"><div class="empty">Không có donate phù hợp.</div></td></tr>';
 }
 
 function donationDetailRow(iconName, label, value) {
@@ -606,8 +628,21 @@ function fillStorySelects() {
   }));
 }
 
-function openDialog(dialog) { if (dialog?.showModal) dialog.showModal(); }
-function closeDialog(dialog) { if (dialog?.open) dialog.close(); }
+function openDialog(dialog) {
+  if (!dialog || dialog.open) return;
+  returnFocus.set(dialog, document.activeElement);
+  if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
+  window.requestAnimationFrame(() => $('input:not([type="hidden"]),button,select,textarea', dialog)?.focus({ preventScroll: true }));
+}
+function closeDialog(dialog) {
+  if (!dialog) return;
+  if (dialog.open && dialog.close) dialog.close(); else dialog.removeAttribute('open');
+}
+
+function restoreDialogFocus(dialog) {
+  const target = returnFocus.get(dialog); returnFocus.delete(dialog);
+  if (target?.isConnected) window.requestAnimationFrame(() => target.focus({ preventScroll: true }));
+}
 
 async function addCompleted(event) {
   event.preventDefault(); const form = event.currentTarget; const data = Object.fromEntries(new FormData(form));
@@ -646,7 +681,7 @@ function bindEvents() {
   $$('[data-go-view]').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.goView)));
   $('#sidebarToggle').addEventListener('click', () => setSidebar(!$('.sidebar').classList.contains('open')));
   $('#sidebarBackdrop').addEventListener('click', () => setSidebar(false));
-  window.addEventListener('resize', () => { if (window.innerWidth > 760) setSidebar(false); });
+  window.addEventListener('resize', () => { if (window.innerWidth > 1024) setSidebar(false); });
   $('#refreshButton').addEventListener('click', async () => { try { await loadAll(); toast('Đã tải dữ liệu mới.'); } catch (error) { toast(error.message, 'error'); } });
   let storySearchTimer = null;
   ['storySearch','storyVersionFilter','storySourceFilter','storySort'].forEach((id) => $(`#${id}`).addEventListener(id === 'storySearch' ? 'input' : 'change', () => {
@@ -669,10 +704,16 @@ function bindEvents() {
   $('#externalDonationForm').elements.story_display.addEventListener('input', (event) => event.currentTarget.setCustomValidity(''));
   $('#newAnnouncement').addEventListener('click', () => openAnnouncementDialog()); $('#announcementForm').addEventListener('submit', saveAnnouncement);
   $$('[data-close-dialog]').forEach((button) => button.addEventListener('click', () => closeDialog(button.closest('dialog'))));
+  $$('.admin-dialog').forEach((dialog) => {
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) closeDialog(dialog); });
+    dialog.addEventListener('cancel', (event) => { event.preventDefault(); closeDialog(dialog); });
+    dialog.addEventListener('close', () => restoreDialogFocus(dialog));
+  });
   $('#settingsForm').addEventListener('submit', saveSettings);
   $('#settingsForm').addEventListener('input', () => markSettingsDirty(true));
   $('#settingsForm').addEventListener('change', () => markSettingsDirty(true));
   $('#addSocialLink').addEventListener('click', () => { $('#socialLinkRows').append(socialRow()); markSettingsDirty(true); });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && $('#storyDrawer').classList.contains('open')) closeDrawer(); });
 }
 
 function ensureCompatibleMarkup() {

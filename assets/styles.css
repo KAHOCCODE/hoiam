@@ -85,3 +85,72 @@ body{font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rend
   .settings-save-bar{bottom:8px;align-items:stretch;flex-direction:column}.settings-save-bar .btn{width:100%}.announcement-item{grid-template-columns:34px minmax(0,1fr)}.announcement-item .actions{grid-column:1/-1;justify-content:flex-end}.announcement-item small{white-space:normal}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* V06.1.22 — responsive thực dụng cho desktop, tablet và điện thoại */
+.responsive-data-table tbody tr:focus-visible{outline:3px solid rgba(73,154,213,.3);outline-offset:-3px}
+.responsive-data-table tbody tr:not(.empty-row){cursor:pointer}
+.dialog-card{max-height:calc(100dvh - 40px)}
+.drawer-panel{height:100dvh}
+body.drawer-open{overflow:hidden}
+.square-btn.loading i{animation:admin-spin .8s linear infinite}
+@keyframes admin-spin{to{transform:rotate(360deg)}}
+
+@media(max-width:1024px){
+  .mobile-only{display:grid!important}
+  .admin-app{grid-template-columns:1fr}
+  .sidebar{position:fixed;inset:0 auto 0 0;z-index:52;width:min(310px,88vw);height:100dvh;transform:translateX(-104%);transition:transform .24s ease;box-shadow:20px 0 60px rgba(0,0,0,.45)}
+  .sidebar.open{transform:none}
+  body.sidebar-open{overflow:hidden}
+  .sidebar-backdrop:not([hidden]){position:fixed;inset:0;z-index:51;display:block;border:0;background:rgba(2,6,10,.68);backdrop-filter:blur(2px)}
+  .topbar{padding:0 18px}
+  .content{padding:22px 18px}
+  .overview-snapshot{grid-template-columns:1fr}
+  .settings-grid{grid-template-columns:1fr}
+  .full-span{grid-column:auto}
+}
+
+@media(max-width:820px){
+  .topbar{height:58px;padding:0 12px;gap:9px}.topbar>div{min-width:0}.breadcrumb{display:block;max-width:calc(100vw - 118px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{padding:16px 10px calc(24px + env(safe-area-inset-bottom))}
+  .view-heading{margin-bottom:16px;gap:12px}.view-heading h1{font-size:1.55rem}.view-heading p{font-size:.78rem}.view-heading .btn{min-height:44px}
+  [data-section="settings"]>.view-heading>#saveSettingsButton{display:none}
+  .admin-card{padding:14px;border-radius:12px}
+  .overview-total-card{grid-template-columns:104px minmax(0,1fr);gap:14px;padding:16px}.overview-ring{width:104px}.overview-total-copy h2{font-size:.88rem}
+  .pipeline-card{padding:13px}.pipeline-list button{min-height:48px}.overview-actions>button{min-height:66px}
+  .dashboard-grid{grid-template-columns:1fr}.dashboard-grid>.admin-card,.dashboard-grid>.admin-card:last-child{grid-column:auto}
+  .popular-row{grid-template-columns:minmax(0,1fr) auto;gap:5px 10px}.popular-row span:last-child{grid-column:2}.popular-row strong{grid-row:1/3;align-self:center}
+  .mini-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.mini-stats span{min-width:0;display:grid;gap:2px}.mini-stats strong{margin:0}
+  .story-primary-toolbar,.table-toolbar,.donation-toolbar{grid-template-columns:1fr;padding:10px}.story-primary-toolbar .admin-search,.donation-toolbar .admin-search,.filter-toggle{grid-column:auto}.compact-control>span{display:block}
+  .story-advanced-filters{grid-template-columns:1fr;padding:10px}.story-table-meta{padding:9px 11px;align-items:flex-start;flex-direction:column}
+  .table-card{border:0;background:transparent;overflow:visible}.table-scroll{overflow:visible}
+  .responsive-data-table,.responsive-data-table tbody,.responsive-data-table tr,.responsive-data-table td{display:block;width:100%}
+  .responsive-data-table{white-space:normal;border-collapse:separate}.responsive-data-table thead{display:none}.responsive-data-table tbody{display:grid;gap:10px}
+  .responsive-data-table tbody tr{padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px;border:1px solid #263744;border-radius:13px;background:#111a22;box-shadow:0 8px 24px rgba(0,0,0,.12);content-visibility:auto;contain-intrinsic-size:180px}
+  .responsive-data-table tbody tr:hover{background:#13202a}
+  .responsive-data-table td{height:auto!important;min-width:0;padding:9px 0!important;border:0!important;border-bottom:1px solid #22303a!important;white-space:normal}
+  .responsive-data-table td::before{content:attr(data-label);margin-bottom:4px;display:block;color:#728696;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.055em}
+  .responsive-data-table td:first-child{grid-column:1/-1;padding-top:0!important}.responsive-data-table td:first-child::before{display:none}
+  .responsive-data-table td:nth-last-child(2){border-bottom:0!important}
+  .responsive-data-table td:last-child{grid-column:1/-1;padding-bottom:0!important;border:0!important}.responsive-data-table td:last-child::before{display:none}
+  .responsive-data-table .story-cell{align-items:flex-start}.responsive-data-table .story-cell>span{flex:0 0 auto}.responsive-data-table .story-cell strong{max-width:none;white-space:normal;line-height:1.45}
+  .responsive-data-table .source-state strong{max-width:100%;white-space:normal;overflow-wrap:anywhere}.responsive-data-table .story-interest{align-content:start}
+  .responsive-data-table .row-actions{justify-content:flex-end;gap:8px}.responsive-data-table .row-actions button{width:44px;height:44px}
+  .responsive-data-table .status-pill{min-width:0;justify-content:center}
+  .responsive-data-table tr.empty-row{display:block;padding:4px}.responsive-data-table tr.empty-row td{display:block;padding:0!important;border:0!important}.responsive-data-table tr.empty-row td::before{display:none}
+  .donation-data-table td:nth-child(2){grid-column:1/-1}.donation-data-table td:nth-child(5){border-bottom:0!important}
+  .source-columns{gap:10px}.source-item{grid-template-columns:1fr}.source-item .actions{justify-content:flex-end;flex-wrap:wrap}.source-item .small-btn{min-height:40px}
+  .announcement-item{grid-template-columns:34px minmax(0,1fr)}.announcement-item .actions{grid-column:1/-1;justify-content:flex-end;flex-wrap:wrap}.announcement-item .small-btn{min-height:40px}.announcement-item small{white-space:normal}
+  .drawer{grid-template-columns:1fr}.drawer-overlay{display:none}.drawer-panel{width:100vw;border-left:0}.drawer-panel header{padding:14px}.drawer-body{padding:12px}.drawer-panel footer{padding:10px calc(10px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));flex-wrap:wrap;background:#10171e}.drawer-panel footer span{display:none}.drawer-panel footer .btn{min-height:44px;flex:1}.drawer-panel footer .btn-danger,.drawer-panel footer .btn-success{flex-basis:100%}
+  .admin-dialog{padding:10px 6px 0;place-items:end center}.dialog-card{width:100%;max-height:calc(100dvh - 10px);border-radius:18px 18px 0 0}.dialog-card header{padding:14px}.dialog-card>.admin-form,.donation-detail-body{padding:14px}.dialog-card footer{position:sticky;bottom:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#10171e}.dialog-card footer .btn{min-height:44px}
+  .admin-form.two-col,.two-col,.donation-detail-grid{grid-template-columns:1fr}.field input,.field select,.field textarea,.password-field{min-height:44px;font-size:16px}
+  .settings-save-bar{bottom:8px;padding:10px;align-items:stretch;flex-direction:column}.settings-save-bar .btn{width:100%;min-height:44px}
+  .social-row-fields{grid-template-columns:1fr}.social-row button{width:44px;height:44px;justify-self:end}
+}
+
+@media(max-width:420px){
+  .overview-total-card{grid-template-columns:1fr;text-align:center}.overview-ring{margin:auto}.overview-total-copy p{margin-inline:auto}
+  .mini-stats{grid-template-columns:1fr}.rank-item{grid-template-columns:26px minmax(0,1fr)}.rank-item>b{grid-column:2;justify-self:start}
+  .responsive-data-table tbody tr{grid-template-columns:1fr}.responsive-data-table td,.responsive-data-table td:nth-child(2){grid-column:1/-1}.responsive-data-table td:nth-last-child(2){border-bottom:1px solid #22303a!important}
+  .responsive-data-table .row-actions{justify-content:flex-start}
+  .dialog-card footer{display:grid;grid-template-columns:1fr}.dialog-card footer .btn{width:100%}
+}

@@ -24,6 +24,8 @@ const required = [
   'sitemap.xml',
   'supabase.sql',
   'api/index.js',
+  'api/_routes/bootstrap.js',
+  'api/_routes/admin/bootstrap.js',
 ];
 
 for (const relative of required) {
@@ -136,7 +138,7 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
-assert.match(adminHtml, /name="admin-ui-version" content="06121"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /name="admin-ui-version" content="06122"/, 'Admin markup needs an explicit UI version');
 assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
@@ -146,6 +148,8 @@ assert.match(adminHtml, /id="overviewRing"/, 'Admin overview needs a visual prog
 assert.match(adminHtml, /id="storyContentSection"/, 'Story editor needs grouped display fields');
 assert.match(adminHtml, /id="storySourceSection"/, 'Story editor needs grouped source controls');
 assert.match(adminHtml, /id="donationDetailDialog"/, 'Admin donations need a detail dialog');
+assert.match(adminHtml, /responsive-data-table story-data-table/, 'Admin story rows need a mobile card layout');
+assert.match(adminHtml, /responsive-data-table donation-data-table/, 'Admin donation rows need a mobile card layout');
 assert.match(adminHtml, /id="externalDonationStoryList"/, 'External donations need searchable story choices');
 assert.match(adminHtml, /name="page_scope"/, 'Announcements need an editable page scope');
 assert.match(adminHtml, /id="settingsSaveState"/, 'Long settings need a visible save state');
@@ -170,13 +174,18 @@ assert.match(adminCss, /\.data-table td\{font-size:\.79rem\}/, 'Admin table text
 assert.match(adminCss, /\.overview-snapshot\s*\{/, 'Admin overview needs a visual snapshot layout');
 assert.match(adminCss, /\.story-primary-toolbar\s*\{/, 'Admin story manager needs a focused primary toolbar');
 assert.match(adminCss, /\.drawer-form-section\s*\{/, 'Admin story editor needs progressive sections');
+assert.match(adminCss, /@media\(max-width:1024px\)/, 'Admin sidebar must collapse on tablets');
+assert.match(adminCss, /@media\(max-width:820px\)/, 'Admin tables must become cards on small tablets');
+assert.match(adminCss, /\.responsive-data-table tbody tr\{/, 'Admin tables need touch-friendly mobile cards');
 assert.equal(
   fs.readFileSync(path.join(root, 'ads.txt'), 'utf8').trim(),
   'google.com, pub-6051983418402912, DIRECT, f08c47fec0942fa0',
   'ads.txt publisher record must stay exact'
 );
-assert.match(appJs, /api\('\/api\/stories',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Story requests must bypass stale browser caches');
+assert.match(appJs, /api\('\/api\/bootstrap',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Initial public data must use one fresh bootstrap request');
 assert.match(appJs, /api\('\/api\/settings',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Settings requests must bypass stale browser caches');
+assert.match(appJs, /function hydratePublicCache\(/, 'Public pages need immediate cached rendering');
+assert.match(appJs, /storiesFromCache/, 'Cached stories need an explicit stale-data state');
 assert.match(appJs, /story\.status === status/, 'Library views must filter each story status separately');
 assert.match(appJs, /story-card-mark/, 'Library cards need one consistent visual marker');
 assert.doesNotMatch(publicStoriesApi, /s-maxage|stale-while-revalidate/i, 'Story API must not cache changing vote totals');
@@ -216,6 +225,9 @@ assert.match(adminJs, /function ensureCompatibleMarkup\(/, 'Admin must detect mi
 assert.match(adminJs, /function reloadStories\(/, 'Story mutations need a focused data refresh');
 assert.match(adminJs, /function openAnnouncementDialog\(/, 'Existing announcements need an edit flow');
 assert.match(adminJs, /Khôi phục truyện/, 'Trash needs an explicit restore action');
+assert.match(adminJs, /request\('\/admin\/bootstrap'\)/, 'Admin startup must use one bootstrap request');
+assert.match(adminJs, /window\.innerWidth <= 1024/, 'Admin navigation must switch to a drawer on tablets');
+assert.match(adminJs, /restoreDialogFocus\(dialog\)/, 'Admin dialogs need to restore keyboard focus');
 assert.match(vercelConfigText, /"source": "\/admin\.html"[\s\S]*?private, no-store, no-cache, must-revalidate/, 'Admin HTML must bypass stale caches');
 assert.doesNotMatch(vercelConfigText, /stale-while-revalidate/, 'Changing interface assets must not be served stale');
 assert.match(appJs, /detail\.addEventListener\('toggle'/, 'Guide sections need synchronized active states');

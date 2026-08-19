@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0b18">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="admin-ui-version" content="06121">
+  <meta name="admin-ui-version" content="06122">
   <meta http-equiv="Cache-Control" content="no-store">
   <title>Hồi Âm — Admin</title>
   <link rel="icon" href="/favicon.ico">
@@ -14,9 +14,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css">
-  <link rel="stylesheet" href="/assets/styles.css?v=06121">
+  <link rel="stylesheet" href="/assets/styles.css?v=06122">
   <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
-  <script src="/assets/admin.js?v=06121" defer></script>
+  <script src="/assets/admin.js?v=06122" defer></script>
 </head>
 <body>
   <div class="admin-cosmos" aria-hidden="true"></div>
@@ -105,14 +105,14 @@
               <button id="resetStoryFilters" class="reset-filter" type="button"><i class="fa-solid fa-rotate-left"></i> Đặt lại</button>
             </div>
             <div class="story-table-meta"><span id="storyFilterSummary">Đang hiển thị mọi loại bản và nguồn</span><strong><b id="storyResultCount">0</b> truyện</strong></div>
-            <div class="table-scroll"><table class="data-table story-data-table"><thead><tr><th scope="col">Truyện</th><th scope="col">Nguồn</th><th scope="col">Mức quan tâm</th><th scope="col">Trạng thái</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="storyTable"><tr><td colspan="5">Đang tải…</td></tr></tbody></table></div>
+            <div class="table-scroll"><table class="data-table responsive-data-table story-data-table"><thead><tr><th scope="col">Truyện</th><th scope="col">Nguồn</th><th scope="col">Mức quan tâm</th><th scope="col">Trạng thái</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="storyTable"><tr class="empty-row"><td colspan="5">Đang tải…</td></tr></tbody></table></div>
           </section>
         </section>
 
         <section class="admin-view" data-section="donations">
           <header class="view-heading"><div><span class="eyebrow">Cá &amp; Linh Thạch</span><h1>Donate</h1><p>Kiểm tra giao dịch trước khi cộng vote.</p></div><button id="openExternalDonation" class="btn btn-primary" type="button"><i class="fa-solid fa-plus"></i> Thêm giao dịch ngoài</button></header>
           <div class="mini-stats"><span>Chờ kiểm tra <strong id="donationPendingCount">0</strong></span><span>Tổng ghi nhận <strong id="donationTotalAmount">0đ</strong></span><span>Cá/Linh Thạch <strong id="donationTotalStones">0</strong></span><span>Vote đã cộng <strong id="donationAppliedVotes">0</strong></span></div>
-          <section class="admin-card table-card"><div class="table-toolbar donation-toolbar"><label class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input id="donationSearch" type="search" placeholder="Tên người gửi, truyện hoặc mã giao dịch…"></label><select id="donationFilter" aria-label="Lọc donate"><option value="all">Mọi trạng thái</option><option value="pending">Chờ kiểm tra</option><option value="confirmed">Đã xác nhận</option><option value="waiting_votes">Chờ cộng vote</option><option value="applied">Đã cộng vote</option><option value="rejected">Từ chối</option></select><select id="donationSourceFilter" aria-label="Lọc nơi donate"><option value="all">Mọi kênh</option><option value="website">Website</option><option value="youtube">YouTube / email</option><option value="admin">Admin nhập</option></select><select id="donationSort" aria-label="Sắp xếp donate"><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="amount-desc">Số tiền cao → thấp</option><option value="amount-asc">Số tiền thấp → cao</option></select></div><div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Người gửi</th><th scope="col">Truyện</th><th scope="col">Giá trị</th><th scope="col">Vote</th><th scope="col">Trạng thái</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="donationTable"></tbody></table></div></section>
+          <section class="admin-card table-card"><div class="table-toolbar donation-toolbar"><label class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input id="donationSearch" type="search" placeholder="Tên người gửi, truyện hoặc mã giao dịch…"></label><select id="donationFilter" aria-label="Lọc donate"><option value="all">Mọi trạng thái</option><option value="pending">Chờ kiểm tra</option><option value="confirmed">Đã xác nhận</option><option value="waiting_votes">Chờ cộng vote</option><option value="applied">Đã cộng vote</option><option value="rejected">Từ chối</option></select><select id="donationSourceFilter" aria-label="Lọc nơi donate"><option value="all">Mọi kênh</option><option value="website">Website</option><option value="youtube">YouTube / email</option><option value="admin">Admin nhập</option></select><select id="donationSort" aria-label="Sắp xếp donate"><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="amount-desc">Số tiền cao → thấp</option><option value="amount-asc">Số tiền thấp → cao</option></select></div><div class="table-scroll"><table class="data-table responsive-data-table donation-data-table"><thead><tr><th scope="col">Người gửi</th><th scope="col">Truyện</th><th scope="col">Giá trị</th><th scope="col">Vote</th><th scope="col">Trạng thái</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="donationTable"></tbody></table></div></section>
         </section>
 
         <section class="admin-view" data-section="sources">
@@ -140,7 +140,7 @@
     </div>
   </div>
 
-  <aside id="storyDrawer" class="drawer" aria-label="Chỉnh sửa truyện">
+  <aside id="storyDrawer" class="drawer" aria-label="Chỉnh sửa truyện" aria-hidden="true">
     <div class="drawer-overlay" data-close-drawer></div>
     <form id="storyEditForm" class="drawer-panel" aria-label="Chỉnh sửa truyện">
       <header aria-label="Đầu ngăn chỉnh sửa"><div><span class="eyebrow">Chỉnh sửa truyện</span><h2 id="drawerStoryTitle">Truyện</h2></div><button class="square-btn" data-close-drawer type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header>
