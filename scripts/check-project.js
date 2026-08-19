@@ -85,6 +85,8 @@ assert.match(homeHtml, /id="donationStorySearch"/, 'Donation story picker needs 
 assert.match(homeHtml, /id="donationStoryPicker"/, 'Donation needs one combined searchable story picker');
 assert.match(homeHtml, /data-library-view="proposed"/, 'Library needs a proposed-story view');
 assert.match(homeHtml, /data-library-view="selected"/, 'Library needs a separate selected-story view');
+assert.match(homeHtml, /id="libraryViewTitle"/, 'Library needs a clear title for the active story group');
+assert.match(homeHtml, /class="filter-select"/, 'Library filters need consistent icon labels');
 assert.match(homeHtml, /name="story_select" type="hidden"/, 'Donation story value needs one hidden form field');
 assert.doesNotMatch(homeHtml, /<select[^>]+name="story_select"/, 'Donation must not show a second native story selector');
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
@@ -121,6 +123,7 @@ assert.equal(
 assert.match(appJs, /api\('\/api\/stories',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Story requests must bypass stale browser caches');
 assert.match(appJs, /api\('\/api\/settings',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Settings requests must bypass stale browser caches');
 assert.match(appJs, /story\.status === status/, 'Library views must filter each story status separately');
+assert.match(appJs, /story-card-mark/, 'Library cards need one consistent visual marker');
 assert.doesNotMatch(publicStoriesApi, /s-maxage|stale-while-revalidate/i, 'Story API must not cache changing vote totals');
 assert.doesNotMatch(publicSettingsApi, /s-maxage|stale-while-revalidate/i, 'Settings API must not cache cross-page changes');
 assert.match(apiUtils, /setHeader\('Cache-Control',\s*'no-store'\)/, 'Dynamic API responses must disable caching');

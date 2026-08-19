@@ -238,23 +238,26 @@ function storyCard(story) {
   const selected = story.status === 'đã chọn';
   const card = element('article', `story-card${selected ? ' selected-story' : ' proposed-story'}`);
   card.tabIndex = 0;
+  const mark = element('span', 'story-card-mark');
+  mark.append(icon(selected ? 'bookmark' : 'book-open'));
+  const body = element('div', 'story-card-body');
   const head = element('div', 'story-card-head');
-  const badges = element('div', 'badge-row');
-  badges.append(badge(story.version, story.version.toLowerCase()));
-  head.append(badges);
+  const identity = element('div', 'story-identity');
+  identity.append(badge(story.version, story.version.toLowerCase()));
+  const source = element('span', 'story-source');
+  source.append(icon('link'), element('span', '', sourceDomain(story)));
+  identity.append(source); head.append(identity);
   if (selected) {
     const stage = element('span', 'selection-label');
     stage.append(icon('bookmark'), document.createTextNode(' Đã chọn'));
     head.append(stage);
   } else head.append(voteButton(story, true));
   const title = element('h3', '', story.title);
-  const meta = element('p', 'story-source');
-  meta.append(icon('link'), element('span', '', sourceDomain(story)));
   const note = element('p', 'story-note', story.note || 'Chưa có ghi chú.');
   const footer = element('div', 'story-card-footer');
   if (selected) {
     const progress = element('span', 'selection-progress');
-    progress.append(icon('pen-nib'), document.createTextNode(' Đang chuẩn bị'));
+    progress.append(icon('heart'), document.createTextNode(` ${number.format(story.votes)} lượt chọn`));
     footer.append(progress);
   }
   const view = element('button', 'text-button', 'Xem chi tiết');
@@ -262,13 +265,13 @@ function storyCard(story) {
   view.append(icon('arrow-right'));
   view.addEventListener('click', () => showStory(story.id));
   footer.append(view);
-  card.append(head, title, meta, note);
+  body.append(head, title, note);
   if (story.sourceWarningPublic && story.sourceStatus === 'confirmed') {
     const warning = element('div', 'source-alert');
     warning.append(icon('triangle-exclamation'), element('span', '', deadlineText(story) || 'Nguồn đang cần thay thế'));
-    card.append(warning);
+    body.append(warning);
   }
-  card.append(footer);
+  body.append(footer); card.append(mark, body);
   card.addEventListener('click', (event) => {
     if (!event.target.closest('button,a')) showStory(story.id);
   });
@@ -378,37 +381,42 @@ function libraryStories() {
 
 function renderSourceOptions(stories = state.stories) {
   const select = $('#sourceFilter');
-  if (!select || select.dataset.ready) return;
+  if (!select) return;
+  const current = select.value || 'all';
   const domains = [...new Set(stories.map(sourceDomain).filter((item) => item !== 'Không rõ nguồn'))].sort();
+  select.replaceChildren();
+  const all = element('option', '', 'Mọi nguồn'); all.value = 'all'; select.append(all);
   domains.forEach((domain) => {
     const option = element('option', '', domain);
     option.value = domain;
     select.append(option);
   });
-  select.dataset.ready = '1';
+  select.value = domains.includes(current) ? current : 'all';
 }
 
 function renderLibrary() {
   const host = $('#storyGrid');
   if (!host) return;
-  renderSourceOptions();
+  const viewStatus = state.libraryView === 'selected' ? 'đã chọn' : 'đề xuất';
+  renderSourceOptions(state.stories.filter((story) => story.status === viewStatus));
   const list = libraryStories();
   const proposedCount = state.stories.filter((story) => story.status === 'đề xuất').length;
   const selectedCount = state.stories.filter((story) => story.status === 'đã chọn').length;
   const isSelected = state.libraryView === 'selected';
   $('#proposedStoryCount').textContent = number.format(proposedCount);
   $('#selectedStoryCount').textContent = number.format(selectedCount);
-  $('#resultCount').textContent = `${number.format(list.length)} ${isSelected ? 'đã chọn' : 'đề xuất'}`;
-  const note = $('#libraryViewNote span');
-  if (note) note.textContent = isSelected
-    ? 'Những truyện admin đã nhận để chuẩn bị biên tập và lên sóng.'
-    : 'Chọn truyện bạn muốn kênh thực hiện tiếp theo.';
+  const count = $('#resultCount');
+  if (count) count.replaceChildren(icon('layer-group'), document.createTextNode(` ${number.format(list.length)} ${isSelected ? 'đã chọn' : 'đề xuất'}`));
+  const title = $('#libraryViewTitle');
+  if (title) title.textContent = isSelected ? 'Truyện đã được chọn' : 'Truyện được đề xuất';
   $$('[data-library-view]').forEach((button) => {
     const active = button.dataset.libraryView === state.libraryView;
     button.classList.toggle('is-active', active);
     button.setAttribute('aria-selected', String(active));
   });
-  host.replaceChildren(...(list.length ? list.slice(0, state.visibleLimit).map(storyCard) : [empty('Không tìm thấy truyện', 'Hãy thử thay đổi bộ lọc.') ]));
+  const emptyTitle = isSelected ? 'Chưa có truyện đã chọn' : 'Không tìm thấy truyện';
+  const emptyMessage = isSelected ? 'Khi admin chọn truyện, danh sách sẽ xuất hiện tại đây.' : 'Hãy thử thay đổi bộ lọc.';
+  host.replaceChildren(...(list.length ? list.slice(0, state.visibleLimit).map(storyCard) : [empty(emptyTitle, emptyMessage)]));
   const more = $('#loadMoreButton');
   if (more) more.hidden = list.length <= state.visibleLimit;
 }
@@ -1096,7 +1104,7 @@ async function loadStories() {
     ['#topStories', '#airingStories', '#storyGrid', '#completedGrid'].forEach((selector) => {
       const host = $(selector); if (host) host.replaceChildren(empty('Không tải được dữ liệu', 'Kiểm tra kết nối Supabase rồi thử lại.'));
     });
-    const count = $('#resultCount'); if (count) count.textContent = 'Không thể tải';
+    const count = $('#resultCount'); if (count) count.replaceChildren(icon('triangle-exclamation'), document.createTextNode(' Không thể tải'));
     notify(error.message, 'danger');
   }
 }
