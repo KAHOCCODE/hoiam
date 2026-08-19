@@ -1,5 +1,10 @@
-const ADMIN_UI_VERSION = '06120';
-const state = { stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null };
+const ADMIN_UI_VERSION = '06121';
+const state = {
+  stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null,
+  activeView: sessionStorage.getItem('hoiam_admin_view') || 'overview',
+  storyStatus: sessionStorage.getItem('hoiam_admin_story_status') || 'all',
+  activeAnnouncement: null,
+};
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 const money = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
@@ -103,8 +108,40 @@ async function loadAll() {
   state.announcements = results[3].status === 'fulfilled' ? results[3].value.announcements || [] : [];
   state.settings = results[4].status === 'fulfilled' ? results[4].value.settings : null;
   renderAll();
+  selectStoryStatus(state.storyStatus, false);
+  switchView(['overview','stories','donations','sources','announcements','settings'].includes(state.activeView) ? state.activeView : 'overview');
   const failed = results.slice(1).filter((item) => item.status === 'rejected');
   if (failed.length) toast('Một số mục cần chạy supabase.sql V06 trước.', 'warning');
+}
+
+async function reloadStories() {
+  const payload = await request('/admin/stories');
+  state.stories = (payload.stories || []).map(normalizeStory);
+  renderStorySourceOptions(); renderDashboard(); renderStories(); renderSources(); fillStorySelects();
+}
+
+async function reloadDonations() {
+  const payload = await request('/admin/donations');
+  state.donations = (payload.donations || []).map(normalizeDonation);
+  renderDashboard(); renderDonations();
+}
+
+async function reloadReplacements() {
+  const payload = await request('/admin/source-replacements');
+  state.replacements = payload.replacements || [];
+  renderDashboard(); renderSources();
+}
+
+async function reloadAnnouncements() {
+  const payload = await request('/admin/announcements');
+  state.announcements = payload.announcements || [];
+  renderAnnouncements();
+}
+
+async function reloadSettings() {
+  const payload = await request('/admin/settings');
+  state.settings = payload.settings;
+  renderSettings();
 }
 
 async function trySession() {
@@ -125,7 +162,20 @@ async function logout() {
   setAuthenticated(false);
 }
 
+function setSidebar(open) {
+  const sidebar = $('.sidebar'); const toggle = $('#sidebarToggle'); const backdrop = $('#sidebarBackdrop');
+  if (!sidebar || !toggle || !backdrop) return;
+  const active = Boolean(open && window.innerWidth <= 760);
+  sidebar.classList.toggle('open', active);
+  toggle.setAttribute('aria-expanded', String(active));
+  toggle.setAttribute('aria-label', active ? 'Đóng thanh điều hướng' : 'Mở thanh điều hướng');
+  backdrop.hidden = !active;
+  document.body.classList.toggle('sidebar-open', active);
+}
+
 function switchView(name) {
+  state.activeView = name;
+  sessionStorage.setItem('hoiam_admin_view', name);
   $$('.admin-view').forEach((view) => view.classList.toggle('active', view.dataset.section === name));
   $$('#adminNav [data-view]').forEach((button) => {
     const active = button.dataset.view === name;
@@ -138,12 +188,14 @@ function switchView(name) {
   $('[data-view="stories"]', storyNavGroup)?.setAttribute('aria-expanded', String(name === 'stories'));
   const label = ({ overview: 'Tổng quan', stories: 'Truyện', donations: 'Donate', sources: 'Nguồn truyện', announcements: 'Thông báo', settings: 'Cài đặt' })[name];
   $('#currentViewLabel').textContent = name === 'stories' ? `Kho truyện / ${statusLabel($('#storyStatusFilter').value === 'all' ? 'Tất cả' : $('#storyStatusFilter').value)}` : label || name;
-  $('.sidebar').classList.remove('open');
+  setSidebar(false);
 }
 
 function selectStoryStatus(status, openView = true) {
   const allowed = ['all', 'đề xuất', 'đã chọn', 'đang lên sóng', 'đã hoàn thành', 'trash'];
   const value = allowed.includes(status) ? status : 'all';
+  state.storyStatus = value;
+  sessionStorage.setItem('hoiam_admin_story_status', value);
   $('#storyStatusFilter').value = value;
   $$('[data-story-status]').forEach((button) => {
     const active = button.dataset.storyStatus === value;
@@ -167,7 +219,7 @@ function selectStoryStatus(status, openView = true) {
 }
 
 function renderAll() {
-  renderDashboard(); renderStories(); renderDonations(); renderSources(); renderAnnouncements(); renderSettings(); fillStorySelects();
+  renderStorySourceOptions(); renderDashboard(); renderStories(); renderDonations(); renderSources(); renderAnnouncements(); renderSettings(); fillStorySelects();
 }
 
 function renderDashboard() {
@@ -254,7 +306,6 @@ function renderStorySourceOptions() {
 }
 
 function renderStories() {
-  renderStorySourceOptions();
   const host = $('#storyTable'); host.replaceChildren();
   const stories = storyFilters();
   $('#storyResultCount').textContent = number.format(stories.length);
@@ -296,6 +347,10 @@ function openStoryDrawer(id) {
   $('#storyContentSection').open = false;
   $('#storySourceSection').open = story.source_status !== 'normal' || Boolean(story.source_deadline || story.source_warning_public);
   $('#drawerStoryTitle').textContent = story.title; $('#sourceCheckResult').className = 'inline-result hidden';
+  const trashButton = $('#trashStoryButton');
+  trashButton.dataset.action = story.deletedat ? 'restore' : 'trash';
+  trashButton.className = `btn ${story.deletedat ? 'btn-success' : 'btn-danger'}`;
+  trashButton.innerHTML = story.deletedat ? '<i class="fa-solid fa-trash-arrow-up"></i> Khôi phục truyện' : '<i class="fa-solid fa-trash"></i> Chuyển vào thùng rác';
   $('#storyDrawer').classList.add('open');
 }
 
@@ -318,14 +373,22 @@ async function saveStory(event) {
     source_warning_public: form.elements.source_warning_public.checked,
     visible: form.elements.visible.checked, deletedat: null,
   };
-  try { await request(`/admin/stories/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }); closeDrawer(); await loadAll(); toast('Đã lưu truyện.'); }
+  try { await request(`/admin/stories/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }); closeDrawer(); await reloadStories(); toast('Đã lưu truyện.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
 async function trashStory() {
   const id = Number($('#storyEditForm').elements.id.value); if (!id) return;
+  if ($('#trashStoryButton').dataset.action === 'restore') {
+    if (!await confirmAction('Khôi phục truyện?', 'Truyện sẽ xuất hiện lại trong kho theo trạng thái đã lưu.', 'Khôi phục', 'question')) return;
+    try {
+      await request(`/admin/stories/${id}`, { method: 'PATCH', body: JSON.stringify({ deletedat: null, visible: true }) });
+      closeDrawer(); await reloadStories(); toast('Đã khôi phục truyện.');
+    } catch (error) { toast(error.message, 'error'); }
+    return;
+  }
   if (!await confirmAction('Chuyển vào thùng rác?', 'Truyện sẽ bị ẩn nhưng dữ liệu vẫn được giữ.', 'Chuyển vào thùng rác')) return;
-  try { await request(`/admin/stories/${id}`, { method: 'DELETE', body: '{}' }); closeDrawer(); await loadAll(); toast('Đã chuyển vào thùng rác.'); }
+  try { await request(`/admin/stories/${id}`, { method: 'DELETE', body: '{}' }); closeDrawer(); await reloadStories(); toast('Đã chuyển vào thùng rác.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
@@ -337,10 +400,7 @@ async function checkSource() {
     const payload = await request('/admin/check-source', { method: 'POST', body: JSON.stringify({ url }) });
     result.className = `inline-result ${payload.reachable ? 'ok' : 'warn'}`;
     result.textContent = `${payload.status ? `HTTP ${payload.status} · ` : ''}${payload.note}`;
-    if (!payload.reachable && $('#storyEditForm').elements.source_status.value === 'normal') {
-      $('#storyEditForm').elements.source_status.value = 'suspected';
-      $('#storySourceSection').open = true;
-    }
+    if (!payload.reachable) result.textContent += ' · Bạn quyết định trạng thái nguồn trước khi lưu.';
   } catch (error) { result.className = 'inline-result warn'; result.textContent = error.message; }
 }
 
@@ -419,7 +479,7 @@ function openDonationDetail(id) {
 async function updateDonation(id, action, extra = {}) {
   const labels = { confirm: 'xác nhận giao dịch', reject: 'từ chối giao dịch', retry_email: 'gửi lại email' };
   if (action !== 'retry_email' && !await confirmAction('Xác nhận thao tác?', `Bạn sắp ${labels[action]}.`, 'Tiếp tục')) return;
-  try { const result = await request(`/admin/donations/${id}`, { method: 'PATCH', body: JSON.stringify({ action, ...extra }) }); await loadAll(); if (result.email?.error) toast(`Vote đã giữ, nhưng email lỗi: ${result.email.error}`, 'warning'); else toast('Đã cập nhật donate.'); }
+  try { const result = await request(`/admin/donations/${id}`, { method: 'PATCH', body: JSON.stringify({ action, ...extra }) }); await reloadDonations(); if (result.email?.error) toast(`Vote đã giữ, nhưng email lỗi: ${result.email.error}`, 'warning'); else toast('Đã cập nhật donate.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
@@ -431,7 +491,7 @@ async function applyDonationVotes(item) {
   }
   try {
     const result = await request(`/admin/donations/${item.id}`, { method: 'PATCH', body: JSON.stringify({ action: 'apply_votes', applied_votes: votes }) });
-    await loadAll();
+    await Promise.all([reloadStories(), reloadDonations()]);
     if (result.result?.already_applied) toast('Giao dịch đã được cộng trước đó, không cộng lần hai.', 'info');
     else if (result.email?.error) toast(`Đã cộng ${votes} vote; email lỗi và có thể gửi lại.`, 'warning');
     else toast(`Đã cộng ${votes} vote.`);
@@ -450,7 +510,7 @@ function renderSources() {
 
 async function reviewReplacement(id, action) {
   if (!await confirmAction(action === 'approve' ? 'Dùng nguồn mới?' : 'Từ chối nguồn?', action === 'approve' ? 'Link truyện sẽ được thay và cảnh báo được tắt.' : 'Nguồn hiện tại của truyện không thay đổi.', action === 'approve' ? 'Duyệt nguồn' : 'Từ chối')) return;
-  try { await request(`/admin/source-replacements/${id}`, { method: 'PATCH', body: JSON.stringify({ action }) }); await loadAll(); toast('Đã xử lý nguồn thay thế.'); }
+  try { await request(`/admin/source-replacements/${id}`, { method: 'PATCH', body: JSON.stringify({ action }) }); await Promise.all([reloadStories(), reloadReplacements()]); toast('Đã xử lý nguồn thay thế.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
@@ -460,8 +520,8 @@ function renderAnnouncements() {
   if (!host.children.length) host.innerHTML = '<div class="empty">Chưa có thông báo.</div>';
 }
 
-async function editAnnouncement(id, payload) { try { await request(`/admin/announcements/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }); await loadAll(); toast('Đã cập nhật thông báo.'); } catch (error) { toast(error.message, 'error'); } }
-async function deleteAnnouncement(id) { if (!await confirmAction('Xóa thông báo?', 'Thông báo sẽ biến mất khỏi website.', 'Xóa')) return; try { await request(`/admin/announcements/${id}`, { method: 'DELETE', body: '{}' }); await loadAll(); toast('Đã xóa thông báo.'); } catch (error) { toast(error.message, 'error'); } }
+async function editAnnouncement(id, payload) { try { await request(`/admin/announcements/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }); await reloadAnnouncements(); toast('Đã cập nhật thông báo.'); } catch (error) { toast(error.message, 'error'); } }
+async function deleteAnnouncement(id) { if (!await confirmAction('Xóa thông báo?', 'Thông báo sẽ biến mất khỏi website.', 'Xóa')) return; try { await request(`/admin/announcements/${id}`, { method: 'DELETE', body: '{}' }); await reloadAnnouncements(); toast('Đã xóa thông báo.'); } catch (error) { toast(error.message, 'error'); } }
 
 function socialRow(item = {}) {
   const row = document.createElement('div'); row.className = 'social-row';
@@ -480,6 +540,16 @@ function renderSettings() {
   form.elements.donationNote.value = donation.note || '';
   const host = $('#socialLinkRows'); host.replaceChildren(...(settings.socialLinks || []).map(socialRow));
   if (!host.children.length) host.append(socialRow());
+  markSettingsDirty(false);
+}
+
+function markSettingsDirty(dirty = true) {
+  const stateNode = $('#settingsSaveState'); const button = $('#saveSettingsButton');
+  if (stateNode) {
+    stateNode.classList.toggle('dirty', dirty);
+    stateNode.innerHTML = dirty ? '<i class="fa-solid fa-pen"></i> Có thay đổi chưa lưu' : '<i class="fa-solid fa-circle-check"></i> Mọi thay đổi đã được lưu';
+  }
+  if (button) button.classList.toggle('save-pending', dirty);
 }
 
 async function saveSettings(event) {
@@ -499,13 +569,16 @@ async function saveSettings(event) {
       note: form.elements.donationNote.value, unitLabel: 'Cá/Linh Thạch',
     },
   };
-  try { await request('/admin/settings', { method: 'PATCH', body: JSON.stringify({ settings }) }); await loadAll(); toast('Đã lưu cài đặt website.'); }
+  try { await request('/admin/settings', { method: 'PATCH', body: JSON.stringify({ settings }) }); await reloadSettings(); markSettingsDirty(false); toast('Đã lưu cài đặt website.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
 function fillStorySelects() {
-  const selects = $$('#externalDonationForm [name="story_id"]');
-  selects.forEach((select) => { select.replaceChildren(); state.stories.filter((story) => !story.deletedat).forEach((story) => { const option = document.createElement('option'); option.value = story.id; option.textContent = story.title; select.append(option); }); });
+  const list = $('#externalDonationStoryList');
+  if (!list) return;
+  list.replaceChildren(...state.stories.filter((story) => !story.deletedat).map((story) => {
+    const option = document.createElement('option'); option.value = `${story.id} · ${story.title}`; return option;
+  }));
 }
 
 function openDialog(dialog) { if (dialog?.showModal) dialog.showModal(); }
@@ -513,34 +586,44 @@ function closeDialog(dialog) { if (dialog?.open) dialog.close(); }
 
 async function addCompleted(event) {
   event.preventDefault(); const form = event.currentTarget; const data = Object.fromEntries(new FormData(form));
-  try { await request('/admin/stories', { method: 'POST', body: JSON.stringify(data) }); closeDialog($('#completedDialog')); form.reset(); await loadAll(); toast('Đã thêm truyện vào kho hoàn thành.'); }
+  try { await request('/admin/stories', { method: 'POST', body: JSON.stringify(data) }); closeDialog($('#completedDialog')); form.reset(); await reloadStories(); toast('Đã thêm truyện vào kho hoàn thành.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
 async function addExternalDonation(event) {
-  event.preventDefault(); const form = event.currentTarget; const data = Object.fromEntries(new FormData(form)); data.amount_vnd = Number(data.amount_vnd);
-  try { await request('/admin/donations', { method: 'POST', body: JSON.stringify(data) }); closeDialog($('#externalDonationDialog')); form.reset(); await loadAll(); toast('Đã thêm giao dịch ngoài website.'); }
+  event.preventDefault(); const form = event.currentTarget; const data = Object.fromEntries(new FormData(form));
+  const storyText = form.elements.story_display.value.trim();
+  const story = state.stories.find((item) => `${item.id} · ${item.title}` === storyText && !item.deletedat);
+  if (!story) { form.elements.story_display.setCustomValidity('Hãy chọn một truyện trong danh sách.'); form.elements.story_display.reportValidity(); return; }
+  form.elements.story_display.setCustomValidity(''); data.story_id = story.id; delete data.story_display; data.amount_vnd = Number(data.amount_vnd);
+  try { await request('/admin/donations', { method: 'POST', body: JSON.stringify(data) }); closeDialog($('#externalDonationDialog')); form.reset(); await reloadDonations(); toast('Đã thêm giao dịch ngoài website.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
 async function createAnnouncement(event) {
   event.preventDefault(); const form = event.currentTarget; const data = Object.fromEntries(new FormData(form)); data.dismissible = form.elements.dismissible.checked;
-  try { await request('/admin/announcements', { method: 'POST', body: JSON.stringify(data) }); closeDialog($('#announcementDialog')); form.reset(); form.elements.dismissible.checked = true; await loadAll(); toast('Đã đăng thông báo.'); }
+  try { await request('/admin/announcements', { method: 'POST', body: JSON.stringify(data) }); closeDialog($('#announcementDialog')); form.reset(); form.elements.dismissible.checked = true; await reloadAnnouncements(); toast('Đã đăng thông báo.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
 function bindEvents() {
   $('#loginForm').addEventListener('submit', login); $('#logoutButton').addEventListener('click', logout);
   $$('#adminNav [data-view]').forEach((button) => button.addEventListener('click', () => {
-    if (button.dataset.view === 'stories') selectStoryStatus('all');
+    if (button.dataset.view === 'stories') selectStoryStatus(state.storyStatus);
     else switchView(button.dataset.view);
   }));
   $$('[data-story-status]').forEach((button) => button.addEventListener('click', () => selectStoryStatus(button.dataset.storyStatus)));
   $$('[data-dashboard-status]').forEach((button) => button.addEventListener('click', () => selectStoryStatus(button.dataset.dashboardStatus)));
   $$('[data-go-view]').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.goView)));
-  $('#sidebarToggle').addEventListener('click', () => $('.sidebar').classList.toggle('open'));
+  $('#sidebarToggle').addEventListener('click', () => setSidebar(!$('.sidebar').classList.contains('open')));
+  $('#sidebarBackdrop').addEventListener('click', () => setSidebar(false));
+  window.addEventListener('resize', () => { if (window.innerWidth > 760) setSidebar(false); });
   $('#refreshButton').addEventListener('click', async () => { try { await loadAll(); toast('Đã tải dữ liệu mới.'); } catch (error) { toast(error.message, 'error'); } });
-  ['storySearch','storyVersionFilter','storySourceFilter','storySort'].forEach((id) => $(`#${id}`).addEventListener(id === 'storySearch' ? 'input' : 'change', renderStories));
+  let storySearchTimer = null;
+  ['storySearch','storyVersionFilter','storySourceFilter','storySort'].forEach((id) => $(`#${id}`).addEventListener(id === 'storySearch' ? 'input' : 'change', () => {
+    if (id !== 'storySearch') return renderStories();
+    window.clearTimeout(storySearchTimer); storySearchTimer = window.setTimeout(renderStories, 120);
+  }));
   $('#storyFilterToggle').addEventListener('click', () => {
     const panel = $('#storyAdvancedFilters'); const open = panel.hidden;
     panel.hidden = !open; $('#storyFilterToggle').setAttribute('aria-expanded', String(open));
@@ -554,9 +637,13 @@ function bindEvents() {
   $$('[data-open-completed]').forEach((button) => button.addEventListener('click', () => openDialog($('#completedDialog'))));
   $('#completedForm').addEventListener('submit', addCompleted);
   $('#openExternalDonation').addEventListener('click', () => openDialog($('#externalDonationDialog'))); $('#externalDonationForm').addEventListener('submit', addExternalDonation);
+  $('#externalDonationForm').elements.story_display.addEventListener('input', (event) => event.currentTarget.setCustomValidity(''));
   $('#newAnnouncement').addEventListener('click', () => openDialog($('#announcementDialog'))); $('#announcementForm').addEventListener('submit', createAnnouncement);
   $$('[data-close-dialog]').forEach((button) => button.addEventListener('click', () => closeDialog(button.closest('dialog'))));
-  $('#settingsForm').addEventListener('submit', saveSettings); $('#addSocialLink').addEventListener('click', () => $('#socialLinkRows').append(socialRow()));
+  $('#settingsForm').addEventListener('submit', saveSettings);
+  $('#settingsForm').addEventListener('input', () => markSettingsDirty(true));
+  $('#settingsForm').addEventListener('change', () => markSettingsDirty(true));
+  $('#addSocialLink').addEventListener('click', () => { $('#socialLinkRows').append(socialRow()); markSettingsDirty(true); });
 }
 
 function ensureCompatibleMarkup() {

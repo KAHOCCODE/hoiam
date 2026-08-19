@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0b18">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="admin-ui-version" content="06120">
+  <meta name="admin-ui-version" content="06121">
   <meta http-equiv="Cache-Control" content="no-store">
   <title>Hồi Âm — Admin</title>
   <link rel="icon" href="/favicon.ico">
@@ -14,9 +14,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css">
-  <link rel="stylesheet" href="/assets/styles.css?v=06120">
+  <link rel="stylesheet" href="/assets/styles.css?v=06121">
   <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
-  <script src="/assets/admin.js?v=06120" defer></script>
+  <script src="/assets/admin.js?v=06121" defer></script>
 </head>
 <body>
   <div class="admin-cosmos" aria-hidden="true"></div>
@@ -31,7 +31,7 @@
   </main>
 
   <div id="adminApp" class="admin-app hidden">
-    <aside class="sidebar" aria-label="Điều hướng quản trị">
+    <aside id="adminSidebar" class="sidebar" aria-label="Điều hướng quản trị">
       <a class="side-brand" href="/"><span><i class="fa-solid fa-headphones-simple"></i></span><div><strong>Hồi Âm</strong><small>ADMIN V06</small></div></a>
       <nav id="adminNav" class="side-nav" aria-label="Khu vực quản trị">
         <button class="active" data-view="overview" type="button"><i class="fa-solid fa-chart-pie"></i><span>Tổng quan</span></button>
@@ -54,9 +54,10 @@
       </nav>
       <div class="side-bottom"><a href="/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i><span>Xem website</span></a><button id="logoutButton" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Đăng xuất</span></button></div>
     </aside>
+    <button id="sidebarBackdrop" class="sidebar-backdrop" type="button" aria-label="Đóng thanh điều hướng" hidden></button>
 
     <div class="workspace">
-      <header class="topbar" aria-label="Thanh công cụ quản trị"><button id="sidebarToggle" class="square-btn mobile-only" type="button" aria-label="Mở thanh điều hướng"><i class="fa-solid fa-bars-staggered"></i></button><div><span class="breadcrumb">Hồi Âm / <b id="currentViewLabel">Tổng quan</b></span></div><div class="topbar-actions"><button id="refreshButton" class="square-btn" type="button" aria-label="Tải lại dữ liệu" title="Tải lại dữ liệu"><i class="fa-solid fa-rotate"></i></button></div></header>
+      <header class="topbar" aria-label="Thanh công cụ quản trị"><button id="sidebarToggle" class="square-btn mobile-only" type="button" aria-label="Mở thanh điều hướng" aria-expanded="false" aria-controls="adminSidebar"><i class="fa-solid fa-bars-staggered"></i></button><div><span class="breadcrumb">Hồi Âm / <b id="currentViewLabel">Tổng quan</b></span></div><div class="topbar-actions"><button id="refreshButton" class="square-btn" type="button" aria-label="Tải lại dữ liệu" title="Tải lại dữ liệu"><i class="fa-solid fa-rotate"></i></button></div></header>
 
       <div class="content">
         <section class="admin-view active" data-section="overview">
@@ -85,7 +86,7 @@
           <div class="dashboard-grid">
             <section class="admin-card span-2"><div class="card-head"><div><h2>Top 3 đề xuất</h2><p>Xếp theo tổng vote hiện tại</p></div><button class="link-btn" data-dashboard-status="đề xuất" type="button">Xem đề xuất</button></div><div id="dashboardTop" class="rank-list"></div></section>
             <section class="admin-card"><div class="card-head"><div><h2>Nguồn truyện</h2><p>Phân bổ theo website</p></div></div><div id="sourceStats" class="source-bars"></div></section>
-            <section class="admin-card span-2"><div class="card-head"><div><h2>Được quan tâm</h2><p>Lượt mở và nhấn YouTube</p></div></div><div id="popularStories" class="compact-table"></div></section>
+            <section class="admin-card span-2"><div class="card-head"><div><h2>Tổng tương tác ghi nhận</h2><p>Tổng lượt mở chi tiết và nhấn YouTube từ khi bật thống kê</p></div></div><div id="popularStories" class="compact-table"></div></section>
           </div>
         </section>
 
@@ -132,6 +133,7 @@
             <section class="admin-card"><div class="card-head"><div><h2>Ngân hàng &amp; VietQR</h2><p>Tự điền tài khoản, số tiền và nội dung</p></div><label class="switch"><input name="donationEnabled" type="checkbox" aria-label="Bật nhận donate"><span></span></label></div><div class="admin-form two-col"><label class="field"><span>Ngân hàng</span><input name="bankName" type="text" placeholder="Ví dụ: Vietcombank"></label><label class="field"><span>Mã VietQR / BIN</span><input name="bankId" type="text" maxlength="20" placeholder="VCB hoặc 970436"><small>Dùng mã ngắn hoặc BIN của ngân hàng.</small></label><label class="field"><span>Chủ tài khoản</span><input name="accountName" type="text"></label><label class="field"><span>Số tài khoản</span><input name="accountNumber" type="text" maxlength="19"></label><label class="field span-2"><span>Ảnh QR dự phòng</span><input name="qrUrl" type="url" placeholder="Không bắt buộc"><small>Chỉ dùng khi chưa nhập mã VietQR hoặc ảnh VietQR động không tải được.</small></label><label class="field span-2"><span>Mẫu nội dung</span><input name="transferTemplate" type="text" placeholder="{story} - {name}"><small>Dùng {story} và {name} để tự điền.</small></label><label class="field span-2"><span>Lời nhắn</span><textarea name="donationNote" rows="3"></textarea></label></div></section>
             <section class="admin-card"><div class="card-head"><div><h2>Email kết quả</h2><p>Gửi cho người donate sau khi cộng vote</p></div></div><div class="mail-card"><span><i class="fa-solid fa-envelope"></i></span><div><strong>hoiamdammy@gmail.com</strong><small>Email dùng để gửi lời xác nhận đến người ủng hộ.</small></div></div></section>
             <section class="admin-card full-span"><div class="card-head"><div><h2>Website &amp; mạng xã hội</h2><p>Tên và mô tả hấp dẫn sẽ được trình bày thành từng điểm đến ở trang About Me</p></div><button id="addSocialLink" class="small-btn" type="button"><i class="fa-solid fa-plus"></i> Thêm liên kết</button></div><div id="socialLinkRows" class="social-editor"></div></section>
+            <div class="settings-save-bar"><span id="settingsSaveState"><i class="fa-solid fa-circle-check"></i> Mọi thay đổi đã được lưu</span><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Lưu cài đặt</button></div>
           </form>
         </section>
       </div>
@@ -169,7 +171,7 @@
 
   <dialog id="completedDialog" class="admin-dialog"><form id="completedForm" class="dialog-card" aria-label="Thêm truyện đã hoàn thành"><header aria-label="Đầu form truyện hoàn thành"><div><span class="eyebrow">Kho hoàn thành</span><h2>Thêm truyện cũ</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="admin-form"><label class="field"><span>Tên truyện *</span><input name="title" type="text" required></label><div class="two-col"><label class="field"><span>Loại bản</span><select name="version"><option>Convert</option><option>Edit</option></select></label><label class="field"><span>Ngày hoàn thành</span><input name="completedat" type="date"></label></div><label class="field"><span>Link nguồn</span><input name="linkstory" type="url"></label><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="3"></textarea></label></div><footer aria-label="Thao tác form truyện hoàn thành"><button class="btn btn-ghost" data-close-dialog type="button">Hủy</button><button class="btn btn-primary" type="submit">Thêm vào kho</button></footer></form></dialog>
 
-  <dialog id="externalDonationDialog" class="admin-dialog"><form id="externalDonationForm" class="dialog-card" aria-label="Thêm giao dịch ngoài website"><header aria-label="Đầu form donate ngoài"><div><span class="eyebrow">Giao dịch ngoài web</span><h2>Thêm donate</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="admin-form"><label class="field"><span>Truyện *</span><select name="story_id" required></select></label><div class="two-col"><label class="field"><span>Người gửi *</span><input name="donor_name" type="text" required></label><label class="field"><span>Số tiền *</span><input name="amount_vnd" type="number" min="1000" step="1000" required></label></div><label class="field"><span>Email nhận kết quả</span><input name="donor_email" type="email"></label><label class="field"><span>Mã giao dịch</span><input name="transaction_ref" type="text"></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="3"></textarea></label></div><footer aria-label="Thao tác form donate ngoài"><button class="btn btn-ghost" data-close-dialog type="button">Hủy</button><button class="btn btn-primary" type="submit">Lưu giao dịch</button></footer></form></dialog>
+  <dialog id="externalDonationDialog" class="admin-dialog"><form id="externalDonationForm" class="dialog-card" aria-label="Thêm giao dịch ngoài website"><header aria-label="Đầu form donate ngoài"><div><span class="eyebrow">Giao dịch ngoài web</span><h2>Thêm donate</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="admin-form"><label class="field"><span>Truyện *</span><input name="story_display" type="search" list="externalDonationStoryList" autocomplete="off" required placeholder="Nhập tên để tìm truyện…"><datalist id="externalDonationStoryList"></datalist><small>Nhập vài chữ rồi chọn đúng truyện trong danh sách.</small></label><div class="two-col"><label class="field"><span>Người gửi *</span><input name="donor_name" type="text" required></label><label class="field"><span>Số tiền *</span><input name="amount_vnd" type="number" min="1000" step="1000" required></label></div><label class="field"><span>Email nhận kết quả</span><input name="donor_email" type="email"></label><label class="field"><span>Mã giao dịch</span><input name="transaction_ref" type="text"></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="3"></textarea></label></div><footer aria-label="Thao tác form donate ngoài"><button class="btn btn-ghost" data-close-dialog type="button">Hủy</button><button class="btn btn-primary" type="submit">Lưu giao dịch</button></footer></form></dialog>
 
   <dialog id="donationDetailDialog" class="admin-dialog"><article class="dialog-card donation-detail-card" aria-label="Chi tiết donate"><header><div><span class="eyebrow">Chi tiết giao dịch</span><h2 id="donationDetailTitle">Donate</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div id="donationDetailBody" class="donation-detail-body"></div><footer id="donationDetailActions" class="donation-detail-actions"></footer></article></dialog>
 

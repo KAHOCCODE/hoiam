@@ -72,3 +72,15 @@ body{font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rend
 .field>span,.field>label{font-size:.76rem}.field input,.field select,.field textarea,.password-field{font-size:.81rem}.field small{font-size:.69rem}.mail-card strong{font-size:.82rem}.mail-card small{font-size:.7rem}.social-row input{font-size:.75rem}
 .drawer-panel h2,.dialog-card h2{font-size:1.24rem}.drawer-section-title strong,.drawer-form-section summary strong{font-size:.81rem}.drawer-section-title small,.drawer-form-section summary small{font-size:.69rem}.drawer-visibility b{font-size:.75rem}.drawer-visibility small{font-size:.67rem}.inline-result,.subsection-head small{font-size:.69rem}.subsection-head strong{font-size:.76rem}.empty{font-size:.75rem}
 @media(max-width:760px){.sidebar{width:min(286px,88vw)}.side-nav-group.active .side-subnav{margin-left:4px}.view-heading h1{font-size:1.7rem}.data-table th{font-size:.67rem}.data-table td{font-size:.77rem}}
+
+/* V06.1.21 — thao tác quản trị nhanh và rõ trạng thái */
+.sidebar-backdrop{display:none}
+.settings-save-bar{position:sticky;z-index:12;bottom:14px;grid-column:1/-1;margin-top:2px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #30414e;border-radius:12px;background:rgba(15,23,30,.94);box-shadow:0 16px 42px rgba(0,0,0,.32);backdrop-filter:blur(14px)}
+.settings-save-bar span{display:flex;align-items:center;gap:8px;color:#79cda4;font-size:.74rem}.settings-save-bar span.dirty{color:#e1ba70}.settings-save-bar .btn{min-width:150px}.save-pending{box-shadow:0 0 0 3px rgba(75,157,215,.14),0 8px 22px rgba(31,101,161,.2)}
+@media(max-width:760px){
+  body.sidebar-open{overflow:hidden}
+  .sidebar{z-index:52}
+  .sidebar-backdrop:not([hidden]){position:fixed;inset:0;z-index:51;display:block;border:0;background:rgba(2,6,10,.68);backdrop-filter:blur(2px)}
+  .settings-save-bar{bottom:8px;align-items:stretch;flex-direction:column}.settings-save-bar .btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
