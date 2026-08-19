@@ -74,6 +74,8 @@ const termsHtml = fs.readFileSync(path.join(root, 'terms.html'), 'utf8');
 const sitemapText = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const siteCss = fs.readFileSync(path.join(root, 'assets/site.css'), 'utf8');
 const appJs = fs.readFileSync(path.join(root, 'assets/app.js'), 'utf8');
+const adminCss = fs.readFileSync(path.join(root, 'assets/styles.css'), 'utf8');
+const adminJs = fs.readFileSync(path.join(root, 'assets/admin.js'), 'utf8');
 const settingsLib = fs.readFileSync(path.join(root, 'api/_routes/_lib/settings.js'), 'utf8');
 const publicStoriesApi = fs.readFileSync(path.join(root, 'api/_routes/stories/index.js'), 'utf8');
 const publicSettingsApi = fs.readFileSync(path.join(root, 'api/_routes/settings/index.js'), 'utf8');
@@ -127,6 +129,12 @@ assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
+assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
+assert.match(adminHtml, /id="storyAdvancedFilters"[^>]+hidden/, 'Secondary story filters need to stay collapsed by default');
+assert.match(adminHtml, /id="storyResultCount"/, 'Admin story manager needs a visible result count');
+assert.match(adminHtml, /id="overviewRing"/, 'Admin overview needs a visual progress summary');
+assert.match(adminHtml, /id="storyContentSection"/, 'Story editor needs grouped display fields');
+assert.match(adminHtml, /id="storySourceSection"/, 'Story editor needs grouped source controls');
 assert.match(adminHtml, /id="donationDetailDialog"/, 'Admin donations need a detail dialog');
 assert.match(adminHtml, /name="bankId"/, 'Admin settings need a VietQR bank identifier');
 assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidden mobile menu must not cover content');
@@ -140,6 +148,10 @@ assert.match(siteCss, /\.direct-source-link\s*\{/, 'Direct source actions need a
 assert.match(siteCss, /\.guide-layout\s*\{[^}]*grid-template-columns:/i, 'Guide page needs a responsive content layout');
 assert.match(siteCss, /\.guide-index\s*\{[^}]*position:\s*sticky/i, 'Guide index needs to remain visible on desktop');
 assert.match(siteCss, /\.guide-final-cta\s*\{/, 'Guide page needs a clear final action');
+assert.match(adminCss, /\.side-subnav\s*\{/, 'Admin story states need a second-level navigation');
+assert.match(adminCss, /\.overview-snapshot\s*\{/, 'Admin overview needs a visual snapshot layout');
+assert.match(adminCss, /\.story-primary-toolbar\s*\{/, 'Admin story manager needs a focused primary toolbar');
+assert.match(adminCss, /\.drawer-form-section\s*\{/, 'Admin story editor needs progressive sections');
 assert.equal(
   fs.readFileSync(path.join(root, 'ads.txt'), 'utf8').trim(),
   'google.com, pub-6051983418402912, DIRECT, f08c47fec0942fa0',
@@ -178,6 +190,9 @@ assert.match(appJs, /link\.target = '_blank'/, 'Direct source actions need to op
 assert.match(appJs, /function setMobileMenu\(open\)/, 'Mobile menu needs one consistent state controller');
 assert.match(appJs, /window\.addEventListener\('scroll', requestSync/, 'Section navigation needs to follow scrolling');
 assert.match(appJs, /function setupGuidePage\(\)/, 'Guide page needs focused interaction behavior');
+assert.match(adminJs, /function selectStoryStatus\(/, 'Admin story state navigation needs one controller');
+assert.match(adminJs, /storyFilterToggle/, 'Admin secondary filters need an explicit toggle');
+assert.match(adminJs, /statReplacementPending/, 'Admin overview needs pending replacement data');
 assert.match(appJs, /detail\.addEventListener\('toggle'/, 'Guide sections need synchronized active states');
 assert.match(appJs, /\['ArrowLeft', 'ArrowRight'\]/, 'Library tabs need keyboard navigation');
 assert.match(appJs, /dataset\.locked = String\(locked\)/, 'Story card donations must lock the selected story');

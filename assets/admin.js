@@ -126,10 +126,31 @@ async function logout() {
 
 function switchView(name) {
   $$('.admin-view').forEach((view) => view.classList.toggle('active', view.dataset.section === name));
-  $$('#adminNav button').forEach((button) => button.classList.toggle('active', button.dataset.view === name));
+  $$('#adminNav [data-view]').forEach((button) => button.classList.toggle('active', button.dataset.view === name));
+  $('[data-nav-group="stories"]')?.classList.toggle('active', name === 'stories');
   const label = ({ overview: 'Tổng quan', stories: 'Truyện', donations: 'Donate', sources: 'Nguồn truyện', announcements: 'Thông báo', settings: 'Cài đặt' })[name];
-  $('#currentViewLabel').textContent = label || name;
+  $('#currentViewLabel').textContent = name === 'stories' ? `Kho truyện / ${statusLabel($('#storyStatusFilter').value === 'all' ? 'Tất cả' : $('#storyStatusFilter').value)}` : label || name;
   $('.sidebar').classList.remove('open');
+}
+
+function selectStoryStatus(status, openView = true) {
+  const allowed = ['all', 'đề xuất', 'đã chọn', 'đang lên sóng', 'đã hoàn thành', 'trash'];
+  const value = allowed.includes(status) ? status : 'all';
+  $('#storyStatusFilter').value = value;
+  $$('[data-story-status]').forEach((button) => button.classList.toggle('active', button.dataset.storyStatus === value));
+  const scopes = {
+    all: ['Tất cả truyện', 'Toàn bộ truyện đang hoạt động trong hệ thống.'],
+    'đề xuất': ['Truyện đề xuất', 'Danh sách cộng đồng gửi và đang chờ bạn lựa chọn.'],
+    'đã chọn': ['Truyện đã chọn', 'Những truyện đang được chuẩn bị và biên tập.'],
+    'đang lên sóng': ['Đang lên sóng', 'Những truyện đang được đăng trên YouTube.'],
+    'đã hoàn thành': ['Truyện hoàn thành', 'Kho truyện đã được đăng trọn bộ trên kênh.'],
+    trash: ['Thùng rác', 'Các truyện đã ẩn khỏi website nhưng chưa bị xóa cứng.'],
+  };
+  const [title, description] = scopes[value];
+  $('#storyScopeTitle').textContent = title;
+  $('#storyScopeDescription').textContent = description;
+  if (openView) switchView('stories');
+  renderStories();
 }
 
 function renderAll() {
@@ -138,15 +159,37 @@ function renderAll() {
 
 function renderDashboard() {
   const active = state.stories.filter((story) => !story.deletedat);
-  $('#statProposed').textContent = number.format(active.filter((story) => story.status === 'đề xuất').length);
-  $('#statSelected').textContent = number.format(active.filter((story) => story.status === 'đã chọn').length);
-  $('#statAiring').textContent = number.format(active.filter((story) => story.status === 'đang lên sóng').length);
+  const statusCounts = {
+    proposed: active.filter((story) => story.status === 'đề xuất').length,
+    selected: active.filter((story) => story.status === 'đã chọn').length,
+    airing: active.filter((story) => story.status === 'đang lên sóng').length,
+    completed: active.filter((story) => story.status === 'đã hoàn thành').length,
+  };
+  $('#statTotal').textContent = number.format(active.length);
+  $('#statCompleted').textContent = number.format(statusCounts.completed);
+  $('#statProposed').textContent = number.format(statusCounts.proposed);
+  $('#statSelected').textContent = number.format(statusCounts.selected);
+  $('#statAiring').textContent = number.format(statusCounts.airing);
+  $('#pipelineCompleted').textContent = number.format(statusCounts.completed);
+  $('#overviewRing').style.setProperty('--completion', `${active.length ? statusCounts.completed / active.length * 360 : 0}deg`);
+  [['pipelineProposed', statusCounts.proposed], ['pipelineSelected', statusCounts.selected], ['pipelineAiring', statusCounts.airing], ['pipelineCompletedBar', statusCounts.completed]].forEach(([id, count]) => {
+    $(`#${id}`).style.width = `${count ? Math.max(7, count / Math.max(1, active.length) * 100) : 0}%`;
+  });
   const pendingDonations = state.donations.filter((item) => item.status === 'pending').length;
   $('#statDonationPending').textContent = number.format(pendingDonations);
   $('#navStoryCount').textContent = active.length;
+  $('#storyNavAllCount').textContent = active.length;
+  $('#storyNavProposedCount').textContent = statusCounts.proposed;
+  $('#storyNavSelectedCount').textContent = statusCounts.selected;
+  $('#storyNavAiringCount').textContent = statusCounts.airing;
+  $('#storyNavCompletedCount').textContent = statusCounts.completed;
+  $('#storyNavTrashCount').textContent = state.stories.filter((story) => story.deletedat).length;
   $('#navDonationCount').textContent = pendingDonations;
   const sourceProblems = active.filter((story) => ['suspected', 'confirmed'].includes(story.source_status)).length;
-  $('#navSourceCount').textContent = sourceProblems + state.replacements.filter((item) => item.status === 'pending').length;
+  const pendingReplacements = state.replacements.filter((item) => item.status === 'pending').length;
+  $('#navSourceCount').textContent = sourceProblems + pendingReplacements;
+  $('#statSourceProblems').textContent = number.format(sourceProblems);
+  $('#statReplacementPending').textContent = number.format(pendingReplacements);
 
   const topHost = $('#dashboardTop'); topHost.replaceChildren();
   active.filter((story) => story.status === 'đề xuất').sort((a, b) => b.votes - a.votes).slice(0, 3).forEach((story, index) => {
@@ -156,14 +199,6 @@ function renderDashboard() {
     row.addEventListener('click', () => openStoryDrawer(story.id)); topHost.append(row);
   });
   if (!topHost.children.length) topHost.innerHTML = '<div class="empty">Chưa có truyện đề xuất.</div>';
-
-  const attention = $('#attentionList'); attention.replaceChildren();
-  const attentionItems = [
-    { icon: 'fish-fins', title: `${pendingDonations} donate chờ kiểm tra`, sub: 'Mở mục Donate', view: 'donations' },
-    { icon: 'triangle-exclamation', title: `${sourceProblems} nguồn cần chú ý`, sub: 'Chỉ công khai khi bạn bật', view: 'sources' },
-    { icon: 'link', title: `${state.replacements.filter((item) => item.status === 'pending').length} nguồn thay thế`, sub: 'Cộng đồng gửi', view: 'sources' },
-  ];
-  attentionItems.forEach((item) => { const row = document.createElement('button'); row.type = 'button'; row.className = 'attention-item'; row.innerHTML = `<span><i class="fa-solid fa-${item.icon}"></i></span><div><strong></strong><small></small></div>`; $('strong', row).textContent = item.title; $('small', row).textContent = item.sub; row.addEventListener('click', () => switchView(item.view)); attention.append(row); });
 
   const counts = new Map(); active.forEach((story) => { const source = sourceDomain(story.linkstory); counts.set(source, (counts.get(source) || 0) + 1); });
   const sourceHost = $('#sourceStats'); sourceHost.replaceChildren();
@@ -208,16 +243,29 @@ function renderStorySourceOptions() {
 function renderStories() {
   renderStorySourceOptions();
   const host = $('#storyTable'); host.replaceChildren();
-  storyFilters().forEach((story) => {
+  const stories = storyFilters();
+  $('#storyResultCount').textContent = number.format(stories.length);
+  const activeFilters = [];
+  if ($('#storyVersionFilter').value !== 'all') activeFilters.push($('#storyVersionFilter').value);
+  if ($('#storySourceFilter').value !== 'all') activeFilters.push($('#storySourceFilter').selectedOptions[0]?.textContent || 'Nguồn');
+  $('#storyFilterSummary').textContent = activeFilters.length ? `Đang lọc: ${activeFilters.join(' · ')}` : 'Không có bộ lọc phụ';
+  $('#storyFilterCount').textContent = activeFilters.length;
+  $('#storyFilterCount').hidden = !activeFilters.length;
+  stories.forEach((story) => {
     const tr = document.createElement('tr');
     const status = story.deletedat ? 'trash' : story.status;
-    tr.innerHTML = `<td><div class="story-cell"><span><i class="fa-solid fa-book"></i></span><div><strong></strong><small></small></div></div></td><td><div class="source-state"><strong></strong><small></small></div></td><td><span class="status-pill" data-status="${status}">${statusLabel(status)}</span></td><td><b>${number.format(story.votes)}</b></td><td><span>${number.format(story.views)} mở · ${number.format(story.youtube_clicks)} YT</span></td><td><div class="row-actions"><button type="button" title="Sửa"><i class="fa-solid fa-pen"></i></button></div></td>`;
-    $('.story-cell strong', tr).textContent = story.title; $('.story-cell small', tr).textContent = `${story.version} · #${story.id}`;
+    tr.innerHTML = `<td><div class="story-cell"><span><i class="fa-solid fa-book"></i></span><div><strong></strong><small><b class="story-version"></b><i></i></small></div></div></td><td><div class="source-state"><strong></strong><small></small></div></td><td><div class="story-interest"><strong><i class="fa-solid fa-heart"></i> ${number.format(story.votes)}</strong><small>${number.format(story.views)} mở · ${number.format(story.youtube_clicks)} YouTube</small></div></td><td><span class="status-pill" data-status="${status}">${statusLabel(status)}</span></td><td><div class="row-actions"><button type="button" title="Mở chỉnh sửa" aria-label="Mở chỉnh sửa truyện"><i class="fa-solid fa-pen"></i></button></div></td>`;
+    $('.story-cell strong', tr).textContent = story.title;
+    $('.story-version', tr).textContent = story.version;
+    $('.story-version', tr).dataset.version = story.version.toLowerCase();
+    $('.story-cell small i', tr).textContent = `#${story.id}`;
     $('.source-state strong', tr).textContent = sourceDomain(story.linkstory); $('.source-state small', tr).textContent = sourceLabel(story.source_status);
     if (['suspected', 'confirmed'].includes(story.source_status)) $('.source-state', tr).classList.add('problem');
-    $('button', tr).addEventListener('click', () => openStoryDrawer(story.id)); host.append(tr);
+    $('button', tr).addEventListener('click', () => openStoryDrawer(story.id));
+    tr.addEventListener('dblclick', () => openStoryDrawer(story.id));
+    host.append(tr);
   });
-  if (!host.children.length) host.innerHTML = '<tr><td colspan="6"><div class="empty">Không có truyện phù hợp.</div></td></tr>';
+  if (!host.children.length) host.innerHTML = '<tr><td colspan="5"><div class="empty">Không có truyện phù hợp.</div></td></tr>';
 }
 
 function localDateTime(value) {
@@ -232,6 +280,8 @@ function openStoryDrawer(id) {
   form.elements.source_deadline.value = localDateTime(story.source_deadline);
   form.elements.source_warning_public.checked = story.source_warning_public;
   form.elements.visible.checked = story.visible && !story.deletedat;
+  $('#storyContentSection').open = false;
+  $('#storySourceSection').open = story.source_status !== 'normal' || Boolean(story.source_deadline || story.source_warning_public);
   $('#drawerStoryTitle').textContent = story.title; $('#sourceCheckResult').className = 'inline-result hidden';
   $('#storyDrawer').classList.add('open');
 }
@@ -276,6 +326,7 @@ async function checkSource() {
     result.textContent = `${payload.status ? `HTTP ${payload.status} · ` : ''}${payload.note}`;
     if (!payload.reachable && $('#storyEditForm').elements.source_status.value === 'normal') {
       $('#storyEditForm').elements.source_status.value = 'suspected';
+      $('#storySourceSection').open = true;
     }
   } catch (error) { result.className = 'inline-result warn'; result.textContent = error.message; }
 }
@@ -467,11 +518,23 @@ async function createAnnouncement(event) {
 
 function bindEvents() {
   $('#loginForm').addEventListener('submit', login); $('#logoutButton').addEventListener('click', logout);
-  $$('#adminNav button').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.view)));
+  $$('#adminNav [data-view]').forEach((button) => button.addEventListener('click', () => {
+    if (button.dataset.view === 'stories') selectStoryStatus('all');
+    else switchView(button.dataset.view);
+  }));
+  $$('[data-story-status]').forEach((button) => button.addEventListener('click', () => selectStoryStatus(button.dataset.storyStatus)));
+  $$('[data-dashboard-status]').forEach((button) => button.addEventListener('click', () => selectStoryStatus(button.dataset.dashboardStatus)));
   $$('[data-go-view]').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.goView)));
   $('#sidebarToggle').addEventListener('click', () => $('.sidebar').classList.toggle('open'));
   $('#refreshButton').addEventListener('click', async () => { try { await loadAll(); toast('Đã tải dữ liệu mới.'); } catch (error) { toast(error.message, 'error'); } });
-  ['storySearch','storyStatusFilter','storyVersionFilter','storySourceFilter','storySort'].forEach((id) => $(`#${id}`).addEventListener(id === 'storySearch' ? 'input' : 'change', renderStories));
+  ['storySearch','storyVersionFilter','storySourceFilter','storySort'].forEach((id) => $(`#${id}`).addEventListener(id === 'storySearch' ? 'input' : 'change', renderStories));
+  $('#storyFilterToggle').addEventListener('click', () => {
+    const panel = $('#storyAdvancedFilters'); const open = panel.hidden;
+    panel.hidden = !open; $('#storyFilterToggle').setAttribute('aria-expanded', String(open));
+  });
+  $('#resetStoryFilters').addEventListener('click', () => {
+    $('#storyVersionFilter').value = 'all'; $('#storySourceFilter').value = 'all'; renderStories();
+  });
   ['donationSearch','donationFilter','donationSourceFilter','donationSort'].forEach((id) => $(`#${id}`).addEventListener(id === 'donationSearch' ? 'input' : 'change', renderDonations));
   $$('[data-close-drawer]').forEach((node) => node.addEventListener('click', closeDrawer));
   $('#storyEditForm').addEventListener('submit', saveStory); $('#trashStoryButton').addEventListener('click', trashStory); $('#checkSourceButton').addEventListener('click', checkSource);

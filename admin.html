@@ -33,7 +33,17 @@
       <a class="side-brand" href="/"><span><i class="fa-solid fa-headphones-simple"></i></span><div><strong>Hồi Âm</strong><small>ADMIN V06</small></div></a>
       <nav id="adminNav" class="side-nav" aria-label="Khu vực quản trị">
         <button class="active" data-view="overview" type="button"><i class="fa-solid fa-chart-pie"></i><span>Tổng quan</span></button>
-        <button data-view="stories" type="button"><i class="fa-solid fa-book-open"></i><span>Truyện</span><b id="navStoryCount">0</b></button>
+        <div class="side-nav-group" data-nav-group="stories">
+          <button data-view="stories" type="button"><i class="fa-solid fa-book-open"></i><span>Kho truyện</span><b id="navStoryCount">0</b></button>
+          <div class="side-subnav" role="group" aria-label="Trạng thái truyện">
+            <button class="active" data-story-status="all" type="button"><span>Tất cả</span><b id="storyNavAllCount">0</b></button>
+            <button data-story-status="đề xuất" type="button"><span>Đề xuất</span><b id="storyNavProposedCount">0</b></button>
+            <button data-story-status="đã chọn" type="button"><span>Đã chọn</span><b id="storyNavSelectedCount">0</b></button>
+            <button data-story-status="đang lên sóng" type="button"><span>Đang lên sóng</span><b id="storyNavAiringCount">0</b></button>
+            <button data-story-status="đã hoàn thành" type="button"><span>Hoàn thành</span><b id="storyNavCompletedCount">0</b></button>
+            <button data-story-status="trash" type="button"><span>Thùng rác</span><b id="storyNavTrashCount">0</b></button>
+          </div>
+        </div>
         <button data-view="donations" type="button"><i class="fa-solid fa-fish-fins"></i><span>Donate</span><b id="navDonationCount">0</b></button>
         <button data-view="sources" type="button"><i class="fa-solid fa-link"></i><span>Nguồn truyện</span><b id="navSourceCount">0</b></button>
         <button data-view="announcements" type="button"><i class="fa-solid fa-bell"></i><span>Thông báo</span></button>
@@ -47,24 +57,51 @@
 
       <div class="content">
         <section class="admin-view active" data-section="overview">
-          <header class="view-heading"><div><span class="eyebrow">Dashboard</span><h1>Toàn cảnh hôm nay</h1><p>Một nơi để nắm toàn bộ tiến độ của kênh.</p></div><button class="btn btn-primary" data-open-completed type="button"><i class="fa-solid fa-plus"></i> Thêm truyện cũ</button></header>
-          <div class="kpi-grid">
-            <article class="kpi"><span class="kpi-icon violet"><i class="fa-solid fa-inbox"></i></span><div><small>Đề xuất</small><strong id="statProposed">0</strong><em>đang chờ chọn</em></div></article>
-            <article class="kpi"><span class="kpi-icon gold"><i class="fa-solid fa-pen-nib"></i></span><div><small>Đã chọn</small><strong id="statSelected">0</strong><em>đang edit</em></div></article>
-            <article class="kpi"><span class="kpi-icon pink"><i class="fa-solid fa-tower-broadcast"></i></span><div><small>Lên sóng</small><strong id="statAiring">0</strong><em>trên YouTube</em></div></article>
-            <article class="kpi"><span class="kpi-icon cyan"><i class="fa-solid fa-fish-fins"></i></span><div><small>Donate chờ</small><strong id="statDonationPending">0</strong><em>cần kiểm tra</em></div></article>
+          <header class="view-heading"><div><span class="eyebrow">Dashboard</span><h1>Toàn cảnh hôm nay</h1><p>Tiến độ kho truyện và những việc đang chờ bạn xử lý.</p></div><button class="btn btn-primary" data-open-completed type="button"><i class="fa-solid fa-plus"></i> Thêm truyện cũ</button></header>
+          <div class="overview-snapshot">
+            <article class="overview-total-card admin-card">
+              <div id="overviewRing" class="overview-ring"><span><strong id="statTotal">0</strong><small>Tổng truyện</small></span></div>
+              <div class="overview-total-copy"><span class="eyebrow">Tiến độ kho</span><h2>Mọi trạng thái trong một vòng nhìn</h2><p><strong id="statCompleted">0</strong> truyện đã hoàn thành trên kênh.</p></div>
+            </article>
+            <section class="pipeline-card admin-card" aria-label="Tiến độ truyện">
+              <div class="card-head"><div><h2>Luồng nội dung</h2><p>Từ đề xuất đến hoàn thành</p></div></div>
+              <div class="pipeline-list">
+                <button data-dashboard-status="đề xuất" type="button"><i class="fa-solid fa-inbox"></i><span><b>Đề xuất</b><small>Đang chờ chọn</small></span><strong id="statProposed">0</strong><em><i id="pipelineProposed"></i></em></button>
+                <button data-dashboard-status="đã chọn" type="button"><i class="fa-solid fa-pen-nib"></i><span><b>Đã chọn</b><small>Đang chuẩn bị</small></span><strong id="statSelected">0</strong><em><i id="pipelineSelected"></i></em></button>
+                <button data-dashboard-status="đang lên sóng" type="button"><i class="fa-solid fa-tower-broadcast"></i><span><b>Đang lên sóng</b><small>Đang đăng YouTube</small></span><strong id="statAiring">0</strong><em><i id="pipelineAiring"></i></em></button>
+                <button data-dashboard-status="đã hoàn thành" type="button"><i class="fa-solid fa-circle-check"></i><span><b>Hoàn thành</b><small>Đã đăng trọn bộ</small></span><strong id="pipelineCompleted">0</strong><em><i id="pipelineCompletedBar"></i></em></button>
+              </div>
+            </section>
+          </div>
+          <div class="overview-actions" aria-label="Việc cần xử lý">
+            <button data-go-view="donations" type="button"><span class="action-icon donate"><i class="fa-solid fa-fish-fins"></i></span><span><small>Donate chờ</small><strong id="statDonationPending">0</strong></span><i class="fa-solid fa-arrow-right"></i></button>
+            <button data-go-view="sources" type="button"><span class="action-icon warning"><i class="fa-solid fa-triangle-exclamation"></i></span><span><small>Nguồn cần chú ý</small><strong id="statSourceProblems">0</strong></span><i class="fa-solid fa-arrow-right"></i></button>
+            <button data-go-view="sources" type="button"><span class="action-icon link"><i class="fa-solid fa-link"></i></span><span><small>Nguồn mới chờ duyệt</small><strong id="statReplacementPending">0</strong></span><i class="fa-solid fa-arrow-right"></i></button>
           </div>
           <div class="dashboard-grid">
-            <section class="admin-card span-2"><div class="card-head"><div><h2>Top 3 đề xuất</h2><p>Xếp theo tổng vote hiện tại</p></div><button class="link-btn" data-go-view="stories" type="button">Xem tất cả</button></div><div id="dashboardTop" class="rank-list"></div></section>
-            <section class="admin-card"><div class="card-head"><div><h2>Cần xử lý</h2><p>Nguồn và donate</p></div></div><div id="attentionList" class="attention-list"></div></section>
+            <section class="admin-card span-2"><div class="card-head"><div><h2>Top 3 đề xuất</h2><p>Xếp theo tổng vote hiện tại</p></div><button class="link-btn" data-dashboard-status="đề xuất" type="button">Xem đề xuất</button></div><div id="dashboardTop" class="rank-list"></div></section>
             <section class="admin-card"><div class="card-head"><div><h2>Nguồn truyện</h2><p>Phân bổ theo website</p></div></div><div id="sourceStats" class="source-bars"></div></section>
             <section class="admin-card span-2"><div class="card-head"><div><h2>Được quan tâm</h2><p>Lượt mở và nhấn YouTube</p></div></div><div id="popularStories" class="compact-table"></div></section>
           </div>
         </section>
 
         <section class="admin-view" data-section="stories">
-          <header class="view-heading"><div><span class="eyebrow">Thư viện</span><h1>Quản lý truyện</h1><p>Lọc nhanh, sửa bằng ngăn kéo và không xóa cứng dữ liệu.</p></div><button class="btn btn-primary" data-open-completed type="button"><i class="fa-solid fa-plus"></i> Thêm đã hoàn thành</button></header>
-          <section class="admin-card table-card"><div class="table-toolbar story-toolbar"><label class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input id="storySearch" type="search" placeholder="Tìm tên hoặc nguồn…"></label><select id="storyStatusFilter" aria-label="Lọc trạng thái"><option value="all">Mọi trạng thái</option><option value="đề xuất">Đề xuất</option><option value="đã chọn">Đã chọn</option><option value="đang lên sóng">Đang lên sóng</option><option value="đã hoàn thành">Đã hoàn thành</option><option value="trash">Thùng rác</option></select><select id="storyVersionFilter" aria-label="Lọc loại bản"><option value="all">Convert &amp; Edit</option><option value="Convert">Convert</option><option value="Edit">Edit</option></select><select id="storySourceFilter" aria-label="Lọc nguồn"><option value="all">Mọi nguồn</option><option value="problem">Nguồn cần xử lý</option></select><select id="storySort" aria-label="Sắp xếp truyện"><option value="votes-desc">Vote cao → thấp</option><option value="votes-asc">Vote thấp → cao</option><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="title">Tên A → Z</option></select></div><div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Truyện</th><th scope="col">Nguồn</th><th scope="col">Trạng thái</th><th scope="col">Vote</th><th scope="col">Hoạt động</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="storyTable"><tr><td colspan="6">Đang tải…</td></tr></tbody></table></div></section>
+          <header class="view-heading story-heading"><div><span class="eyebrow">Kho truyện</span><h1 id="storyScopeTitle">Tất cả truyện</h1><p id="storyScopeDescription">Toàn bộ truyện đang hoạt động trong hệ thống.</p></div><button class="btn btn-primary" data-open-completed type="button"><i class="fa-solid fa-plus"></i> Thêm đã hoàn thành</button></header>
+          <input id="storyStatusFilter" type="hidden" value="all">
+          <section class="admin-card table-card story-manager">
+            <div class="story-primary-toolbar">
+              <label class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input id="storySearch" type="search" placeholder="Tìm tên truyện hoặc website nguồn…"></label>
+              <label class="compact-control"><span>Sắp xếp</span><select id="storySort" aria-label="Sắp xếp truyện"><option value="votes-desc">Vote cao → thấp</option><option value="votes-asc">Vote thấp → cao</option><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="title">Tên A → Z</option></select></label>
+              <button id="storyFilterToggle" class="filter-toggle" type="button" aria-expanded="false" aria-controls="storyAdvancedFilters"><i class="fa-solid fa-sliders"></i><span>Bộ lọc thêm</span><b id="storyFilterCount" hidden>0</b></button>
+            </div>
+            <div id="storyAdvancedFilters" class="story-advanced-filters" hidden>
+              <label><span>Loại bản</span><select id="storyVersionFilter" aria-label="Lọc loại bản"><option value="all">Convert &amp; Edit</option><option value="Convert">Convert</option><option value="Edit">Edit</option></select></label>
+              <label><span>Nguồn truyện</span><select id="storySourceFilter" aria-label="Lọc nguồn"><option value="all">Mọi nguồn</option><option value="problem">Nguồn cần xử lý</option></select></label>
+              <button id="resetStoryFilters" class="reset-filter" type="button"><i class="fa-solid fa-rotate-left"></i> Đặt lại</button>
+            </div>
+            <div class="story-table-meta"><span id="storyFilterSummary">Không có bộ lọc phụ</span><strong><b id="storyResultCount">0</b> truyện</strong></div>
+            <div class="table-scroll"><table class="data-table story-data-table"><thead><tr><th scope="col">Truyện</th><th scope="col">Nguồn</th><th scope="col">Mức quan tâm</th><th scope="col">Trạng thái</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="storyTable"><tr><td colspan="5">Đang tải…</td></tr></tbody></table></div>
+          </section>
         </section>
 
         <section class="admin-view" data-section="donations">
@@ -97,7 +134,34 @@
     </div>
   </div>
 
-  <aside id="storyDrawer" class="drawer" aria-label="Chỉnh sửa truyện"><div class="drawer-overlay" data-close-drawer></div><form id="storyEditForm" class="drawer-panel" aria-label="Chỉnh sửa truyện"><header aria-label="Đầu ngăn chỉnh sửa"><div><span class="eyebrow">Chỉnh sửa truyện</span><h2 id="drawerStoryTitle">Truyện</h2></div><button class="square-btn" data-close-drawer type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="drawer-body"><input name="id" type="hidden"><div class="admin-form"><label class="field"><span>Tên truyện</span><input name="title" type="text" required></label><div class="two-col"><label class="field"><span>Loại bản</span><select name="version"><option>Convert</option><option>Edit</option></select></label><label class="field"><span>Vote</span><input name="votes" type="number" min="0"></label></div><div class="field"><label for="editLinkStory">Link nguồn</label><div class="input-action"><input id="editLinkStory" name="linkstory" type="url"><button id="checkSourceButton" type="button" aria-label="Kiểm tra nguồn"><i class="fa-solid fa-satellite-dish"></i></button></div></div><div id="sourceCheckResult" class="inline-result hidden"></div><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><label class="field"><span>Trạng thái</span><select name="status"><option value="đề xuất">Đề xuất</option><option value="đã chọn">Đã chọn</option><option value="đang lên sóng">Đang lên sóng</option><option value="đã hoàn thành">Đã hoàn thành</option></select></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="4"></textarea></label><div class="subsection"><div class="subsection-head"><strong>Kiểm soát nguồn</strong><small>Không tự công khai</small></div><label class="field"><span>Trạng thái nguồn</span><select name="source_status"><option value="normal">Bình thường</option><option value="suspected">Nghi ngờ</option><option value="confirmed">Admin xác nhận lỗi</option><option value="replaced">Đã thay thế</option></select></label><label class="field"><span>Lý do</span><textarea name="source_reason" rows="3"></textarea></label><label class="field"><span>Hạn tìm nguồn</span><input name="source_deadline" type="datetime-local"></label><label class="check-row"><input name="source_warning_public" type="checkbox"><span>Công khai cảnh báo và đếm ngược</span></label></div><label class="check-row"><input name="visible" type="checkbox"><span>Hiển thị ngoài website</span></label></div></div><footer aria-label="Thao tác chỉnh sửa"><button id="trashStoryButton" class="btn btn-danger" type="button"><i class="fa-solid fa-trash"></i> Chuyển vào thùng rác</button><span></span><button class="btn btn-ghost" data-close-drawer type="button">Hủy</button><button class="btn btn-primary" type="submit">Lưu</button></footer></form></aside>
+  <aside id="storyDrawer" class="drawer" aria-label="Chỉnh sửa truyện">
+    <div class="drawer-overlay" data-close-drawer></div>
+    <form id="storyEditForm" class="drawer-panel" aria-label="Chỉnh sửa truyện">
+      <header aria-label="Đầu ngăn chỉnh sửa"><div><span class="eyebrow">Chỉnh sửa truyện</span><h2 id="drawerStoryTitle">Truyện</h2></div><button class="square-btn" data-close-drawer type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header>
+      <div class="drawer-body">
+        <input name="id" type="hidden">
+        <section class="drawer-core-section" aria-labelledby="drawerCoreTitle">
+          <div class="drawer-section-title"><span><i class="fa-solid fa-book"></i></span><div><strong id="drawerCoreTitle">Thông tin chính</strong><small>Các trường thường dùng khi cập nhật truyện</small></div></div>
+          <div class="admin-form">
+            <label class="field"><span>Tên truyện</span><input name="title" type="text" required></label>
+            <div class="two-col"><label class="field"><span>Loại bản</span><select name="version"><option>Convert</option><option>Edit</option></select></label><label class="field"><span>Trạng thái</span><select name="status"><option value="đề xuất">Đề xuất</option><option value="đã chọn">Đã chọn</option><option value="đang lên sóng">Đang lên sóng</option><option value="đã hoàn thành">Đã hoàn thành</option></select></label></div>
+            <div class="two-col"><label class="field"><span>Vote</span><input name="votes" type="number" min="0"></label><label class="drawer-visibility"><input name="visible" type="checkbox"><span><i class="fa-solid fa-eye"></i><b>Hiển thị website</b><small>Bật để người dùng nhìn thấy</small></span></label></div>
+            <div class="field"><label for="editLinkStory">Link nguồn</label><div class="input-action"><input id="editLinkStory" name="linkstory" type="url"><button id="checkSourceButton" type="button" aria-label="Kiểm tra nguồn" title="Kiểm tra nguồn"><i class="fa-solid fa-satellite-dish"></i></button></div></div>
+            <div id="sourceCheckResult" class="inline-result hidden"></div>
+          </div>
+        </section>
+        <details id="storyContentSection" class="drawer-form-section">
+          <summary><span><i class="fa-solid fa-photo-film"></i></span><span><strong>Nội dung hiển thị</strong><small>YouTube, ảnh bìa và ghi chú</small></span><i class="fa-solid fa-chevron-down"></i></summary>
+          <div class="drawer-section-content admin-form"><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="4"></textarea></label></div>
+        </details>
+        <details id="storySourceSection" class="drawer-form-section">
+          <summary><span class="source-section-icon"><i class="fa-solid fa-link"></i></span><span><strong>Kiểm soát nguồn</strong><small>Cảnh báo và hạn tìm nguồn thay thế</small></span><i class="fa-solid fa-chevron-down"></i></summary>
+          <div class="drawer-section-content admin-form"><label class="field"><span>Trạng thái nguồn</span><select name="source_status"><option value="normal">Bình thường</option><option value="suspected">Nghi ngờ</option><option value="confirmed">Admin xác nhận lỗi</option><option value="replaced">Đã thay thế</option></select></label><label class="field"><span>Lý do</span><textarea name="source_reason" rows="3"></textarea></label><label class="field"><span>Hạn tìm nguồn</span><input name="source_deadline" type="datetime-local"></label><label class="check-row source-public-check"><input name="source_warning_public" type="checkbox"><span>Công khai cảnh báo và đếm ngược</span></label></div>
+        </details>
+      </div>
+      <footer aria-label="Thao tác chỉnh sửa"><button id="trashStoryButton" class="btn btn-danger" type="button"><i class="fa-solid fa-trash"></i> Chuyển vào thùng rác</button><span></span><button class="btn btn-ghost" data-close-drawer type="button">Hủy</button><button class="btn btn-primary" type="submit">Lưu</button></footer>
+    </form>
+  </aside>
 
   <dialog id="completedDialog" class="admin-dialog"><form id="completedForm" class="dialog-card" aria-label="Thêm truyện đã hoàn thành"><header aria-label="Đầu form truyện hoàn thành"><div><span class="eyebrow">Kho hoàn thành</span><h2>Thêm truyện cũ</h2></div><button class="square-btn" data-close-dialog type="button" aria-label="Đóng"><i class="fa-solid fa-xmark"></i></button></header><div class="admin-form"><label class="field"><span>Tên truyện *</span><input name="title" type="text" required></label><div class="two-col"><label class="field"><span>Loại bản</span><select name="version"><option>Convert</option><option>Edit</option></select></label><label class="field"><span>Ngày hoàn thành</span><input name="completedat" type="date"></label></div><label class="field"><span>Link nguồn</span><input name="linkstory" type="url"></label><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><label class="field"><span>Ghi chú</span><textarea name="note" rows="3"></textarea></label></div><footer aria-label="Thao tác form truyện hoàn thành"><button class="btn btn-ghost" data-close-dialog type="button">Hủy</button><button class="btn btn-primary" type="submit">Thêm vào kho</button></footer></form></dialog>
 
