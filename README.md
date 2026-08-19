@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.15
+# Hồi Âm Đam Mỹ V06.1.16
 
-Phiên bản V06.1.15 nâng cấp toàn bộ modal công khai theo bố cục hiện đại, dễ đọc và vừa màn hình hơn; đồng thời cải thiện modal chi tiết truyện, đề xuất, Tặng Cá, nguồn thay thế và điều hướng bàn phím. Dữ liệu Supabase hiện có không thay đổi.
+Phiên bản V06.1.16 thêm nút mở nguồn trực tiếp trên các thẻ truyện, tinh gọn trang Đã hoàn thành và đồng bộ chuyển động của menu, tab cùng thao tác bàn phím. Dữ liệu Supabase hiện có không thay đổi.
 
 ## Thống kê truy cập
 
