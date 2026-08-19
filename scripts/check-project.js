@@ -107,6 +107,14 @@ for (const guideId of ['guide-suggest', 'guide-vote', 'guide-donate', 'guide-sou
   assert.match(guideHtml, new RegExp(`data-guide-target="${guideId}"`), `Guide navigation needs ${guideId}`);
 }
 assert.match(guideHtml, /class="guide-rate"/, 'Guide page needs the donation conversion summary');
+const aboutHtml = fs.readFileSync(path.join(root, 'about.html'), 'utf8');
+assert.match(aboutHtml, /class="about-hero"/, 'About page needs a distinctive channel introduction');
+assert.match(aboutHtml, /id="aboutChannels"/, 'About page needs a discoverable destination section');
+assert.match(aboutHtml, /id="aboutStructuredData"[^>]+application\/ld\+json/, 'About page needs editable structured data');
+assert.match(siteCss, /\.about-link-card\.featured\s*\{/, 'The primary channel needs a prominent destination card');
+assert.match(appJs, /aboutLinkPresentation/, 'About links need useful context and fallback descriptions');
+assert.match(adminJs, /name="description"[^>]+maxlength="180"/, 'Admin links need an editable short description');
+assert.match(settingsLib, /description:\s*safeText\(link\.description/, 'Link descriptions must be sanitized');
 assert.match(homeHtml, /name="story_select" type="hidden"/, 'Donation story value needs one hidden form field');
 assert.doesNotMatch(homeHtml, /<select[^>]+name="story_select"/, 'Donation must not show a second native story selector');
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
@@ -128,7 +136,7 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
-assert.match(adminHtml, /name="admin-ui-version" content="06119"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /name="admin-ui-version" content="06120"/, 'Admin markup needs an explicit UI version');
 assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
