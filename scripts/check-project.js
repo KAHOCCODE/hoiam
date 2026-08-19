@@ -67,6 +67,7 @@ for (const name of htmlFiles) {
 
 const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const completedHtml = fs.readFileSync(path.join(root, 'completed.html'), 'utf8');
+const guideHtml = fs.readFileSync(path.join(root, 'guide.html'), 'utf8');
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const privacyHtml = fs.readFileSync(path.join(root, 'privacy.html'), 'utf8');
 const termsHtml = fs.readFileSync(path.join(root, 'terms.html'), 'utf8');
@@ -96,6 +97,14 @@ assert.match(homeHtml, /data-modal-initial-focus/, 'Forms need an intentional in
 assert.match(completedHtml, /id="completedGrid"/, 'Completed page needs its story list');
 assert.doesNotMatch(completedHtml, /id="(?:searchInput|versionFilter|sourceFilter|sortSelect)"/, 'Completed page must stay free of unnecessary filters');
 assert.match(completedHtml, /id="storyDialog"[^>]+aria-labelledby="storyDialogTitle"/, 'Completed story modal needs the same accessible title');
+assert.match(guideHtml, /"@type": "HowTo"/, 'Guide page needs HowTo structured data');
+assert.match(guideHtml, /class="guide-hero"/, 'Guide page needs a focused introduction');
+assert.match(guideHtml, /class="guide-index"/, 'Guide page needs an action index');
+for (const guideId of ['guide-suggest', 'guide-vote', 'guide-donate', 'guide-source']) {
+  assert.match(guideHtml, new RegExp(`id="${guideId}"`), `Guide page needs ${guideId}`);
+  assert.match(guideHtml, new RegExp(`data-guide-target="${guideId}"`), `Guide navigation needs ${guideId}`);
+}
+assert.match(guideHtml, /class="guide-rate"/, 'Guide page needs the donation conversion summary');
 assert.match(homeHtml, /name="story_select" type="hidden"/, 'Donation story value needs one hidden form field');
 assert.doesNotMatch(homeHtml, /<select[^>]+name="story_select"/, 'Donation must not show a second native story selector');
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
@@ -128,6 +137,9 @@ assert.match(siteCss, /\.story-dialog-content\s*\{[^}]*grid-template-columns:/i,
 assert.match(siteCss, /max-height:\s*calc\(100dvh/i, 'Modals must fit the mobile viewport');
 assert.match(siteCss, /\.mobile-nav\.is-open\s*\{[^}]*opacity:\s*1/i, 'Mobile navigation needs a visible animated state');
 assert.match(siteCss, /\.direct-source-link\s*\{/, 'Direct source actions need a consistent visual style');
+assert.match(siteCss, /\.guide-layout\s*\{[^}]*grid-template-columns:/i, 'Guide page needs a responsive content layout');
+assert.match(siteCss, /\.guide-index\s*\{[^}]*position:\s*sticky/i, 'Guide index needs to remain visible on desktop');
+assert.match(siteCss, /\.guide-final-cta\s*\{/, 'Guide page needs a clear final action');
 assert.equal(
   fs.readFileSync(path.join(root, 'ads.txt'), 'utf8').trim(),
   'google.com, pub-6051983418402912, DIRECT, f08c47fec0942fa0',
@@ -165,6 +177,8 @@ assert.match(appJs, /function directSourceLink\(/, 'Story cards need a reusable 
 assert.match(appJs, /link\.target = '_blank'/, 'Direct source actions need to open separately');
 assert.match(appJs, /function setMobileMenu\(open\)/, 'Mobile menu needs one consistent state controller');
 assert.match(appJs, /window\.addEventListener\('scroll', requestSync/, 'Section navigation needs to follow scrolling');
+assert.match(appJs, /function setupGuidePage\(\)/, 'Guide page needs focused interaction behavior');
+assert.match(appJs, /detail\.addEventListener\('toggle'/, 'Guide sections need synchronized active states');
 assert.match(appJs, /\['ArrowLeft', 'ArrowRight'\]/, 'Library tabs need keyboard navigation');
 assert.match(appJs, /dataset\.locked = String\(locked\)/, 'Story card donations must lock the selected story');
 assert.match(appJs, /hoiam_bank_trip_started/, 'Donation flow must remember a trip to the bank app');

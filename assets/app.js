@@ -1128,6 +1128,46 @@ function setupNavigation() {
   window.requestAnimationFrame(sync);
 }
 
+function setupGuidePage() {
+  if (page !== 'guide') return;
+  const steps = $$('.guide-step');
+  const links = $$('[data-guide-target]');
+  if (!steps.length) return;
+
+  const activate = (id) => links.forEach((link) => {
+    const active = link.dataset.guideTarget === id;
+    link.classList.toggle('is-active', active);
+    if (active) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+  const openStep = (id) => {
+    const target = document.getElementById(id);
+    if (!target?.matches('.guide-step')) return null;
+    steps.forEach((step) => { step.open = step === target; });
+    activate(id);
+    return target;
+  };
+
+  links.forEach((link) => link.addEventListener('click', (event) => {
+    const target = openStep(link.dataset.guideTarget);
+    if (!target) return;
+    event.preventDefault();
+    history.replaceState(null, '', `#${target.id}`);
+    target.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  }));
+  steps.forEach((detail) => detail.addEventListener('toggle', () => {
+    if (!detail.open) return;
+    steps.forEach((other) => { if (other !== detail) other.open = false; });
+    activate(detail.id);
+  }));
+
+  const initial = location.hash.slice(1);
+  openStep(initial) || openStep(steps.find((step) => step.open)?.id || steps[0].id);
+}
+
 let mobileMenuTimer = 0;
 function setMobileMenu(open) {
   const menu = $('#menuButton'); const nav = $('#mobileNav');
@@ -1265,6 +1305,7 @@ function bindEvents() {
 
 bindEvents();
 setupNavigation();
+setupGuidePage();
 Promise.all([loadSettings(), ['guide', 'about', 'privacy', 'terms'].includes(page) ? Promise.resolve() : loadStories()])
   .then(() => {
     if (restoreDonationDraft()) {

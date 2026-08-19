@@ -26,6 +26,19 @@
     />
     <meta name="twitter:card" content="summary_large_image" />
     <title>Hướng dẫn đề xuất truyện &amp; vote — Hồi Âm Đam Mỹ</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "Cách sử dụng website Hồi Âm Đam Mỹ",
+        "description": "Hướng dẫn đề xuất truyện, vote, tặng Cá và gửi nguồn thay thế.",
+        "step": [
+          { "@type": "HowToStep", "name": "Tìm truyện", "text": "Tìm truyện trong Kho truyện và mở nguồn trực tiếp để kiểm tra." },
+          { "@type": "HowToStep", "name": "Vote hoặc đề xuất", "text": "Vote cho truyện yêu thích hoặc gửi truyện FULL chưa có trong danh sách." },
+          { "@type": "HowToStep", "name": "Theo dõi trạng thái", "text": "Theo dõi truyện từ Đề xuất, Đã chọn, Đang lên sóng đến Hoàn thành." }
+        ]
+      }
+    </script>
     <link rel="icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -47,6 +60,7 @@
     ></script>
   </head>
   <body data-page="guide">
+    <a class="skip-link" href="#mainContent">Đi đến nội dung</a>
     <div class="galaxy" aria-hidden="true"></div>
     <header class="site-header">
       <div class="shell nav-row">
@@ -75,6 +89,7 @@
           id="menuButton"
           type="button"
           aria-label="Mở menu"
+          aria-expanded="false"
         >
           <i class="fa-solid fa-bars-staggered"></i>
         </button>
@@ -97,112 +112,127 @@
       </nav>
     </header>
     <div id="announcementHost" class="announcement-host shell"></div>
-    <main class="page-main shell">
-      <header class="page-heading">
-        <span class="eyebrow"
-          ><i class="fa-solid fa-compass"></i> Bắt đầu thật dễ</span
-        >
-        <h1>Hướng dẫn</h1>
-        <p>Chọn nội dung bạn cần, mỗi mục chỉ mất một phút để xem.</p>
+    <main id="mainContent" class="page-main guide-page shell">
+      <header class="guide-hero">
+        <div class="guide-hero-copy">
+          <span class="eyebrow"><i class="fa-solid fa-compass"></i> Dùng web thật dễ</span>
+          <h1>Bạn muốn làm gì?</h1>
+          <p>Tìm đúng mục, xem vài bước ngắn rồi thao tác ngay trên website.</p>
+          <nav class="guide-quick-links" aria-label="Chọn hướng dẫn">
+            <a href="#guide-suggest" data-guide-target="guide-suggest"><i class="fa-solid fa-wand-magic-sparkles"></i> Đề xuất truyện</a>
+            <a href="#guide-vote" data-guide-target="guide-vote"><i class="fa-solid fa-heart"></i> Tìm và vote</a>
+            <a href="#guide-donate" data-guide-target="guide-donate"><i class="fa-solid fa-fish-fins"></i> Tặng Cá</a>
+            <a href="#guide-source" data-guide-target="guide-source"><i class="fa-solid fa-link"></i> Gửi nguồn mới</a>
+          </nav>
+        </div>
+        <aside class="guide-start-card" aria-label="Bắt đầu nhanh">
+          <span class="guide-start-icon"><i class="fa-solid fa-rocket"></i></span>
+          <div><span class="eyebrow">Bắt đầu nhanh</span><strong>Chỉ cần nhớ 3 điều</strong></div>
+          <ol>
+            <li><b>01</b><span>Tìm truyện trong Kho truyện.</span></li>
+            <li><b>02</b><span>Mở nguồn hoặc vote ngay trên thẻ.</span></li>
+            <li><b>03</b><span>Chưa có truyện? Gửi đề xuất mới.</span></li>
+          </ol>
+        </aside>
       </header>
-      <div class="guide-stack">
-        <details class="guide-step" open>
-          <summary>
-            <span class="guide-icon icon-violet"
-              ><i class="fa-solid fa-wand-magic-sparkles"></i></span
-            ><span
-              ><strong>Gửi một truyện đề xuất</strong
-              ><small>Truyện FULL, nguồn đọc và loại bản</small></span
-            ><i class="fa-solid fa-chevron-down guide-chevron"></i>
-          </summary>
-          <div class="guide-content">
-            <p>
-              Hãy chọn truyện đã <strong>FULL</strong>, dán link nguồn và kiểm
-              tra tên truyện trước khi gửi. Form chọn sẵn
-              <strong>Convert</strong>; bạn có thể đổi sang Edit.
-            </p>
-            <p>
-              Nếu nguồn cần nạp VIP, hãy ghi thêm nguồn đọc thay thế phù hợp để
-              admin dễ kiểm tra.
-            </p>
-          </div>
-        </details>
-        <details class="guide-step">
-          <summary>
-            <span class="guide-icon icon-pink"
-              ><i class="fa-solid fa-heart"></i></span
-            ><span
-              ><strong>Vote cho truyện bạn thích</strong
-              ><small>Vote hoặc bỏ vote chỉ với một chạm</small></span
-            ><i class="fa-solid fa-chevron-down guide-chevron"></i>
-          </summary>
-          <div class="guide-content">
-            <p>
-              Nút <strong>Vote</strong> sẽ đổi thành
-              <strong>Đã vote</strong> ngay sau khi ghi nhận. Bạn có thể chạm
-              lại để bỏ vote khi truyện vẫn còn ở mục Đề xuất.
-            </p>
-            <div class="status-guide">
-              <span
-                ><i class="fa-solid fa-inbox"></i><b>Đề xuất</b> đang chờ bình
-                chọn</span
-              ><span
-                ><i class="fa-solid fa-pen-nib"></i><b>Đã chọn</b> đang được
-                chuẩn bị</span
-              ><span
-                ><i class="fa-solid fa-tower-broadcast"></i
-                ><b>Đang lên sóng</b> đã có trên YouTube</span
-              ><span
-                ><i class="fa-solid fa-circle-check"></i><b>Hoàn thành</b> đã
-                đăng trọn bộ</span
-              >
+
+      <div class="guide-layout">
+        <aside class="guide-index" aria-label="Mục lục hướng dẫn">
+          <span class="guide-index-label">Đi đến mục</span>
+          <nav>
+            <a class="is-active" href="#guide-suggest" data-guide-target="guide-suggest"><b>01</b><span>Đề xuất truyện</span><i class="fa-solid fa-arrow-right"></i></a>
+            <a href="#guide-vote" data-guide-target="guide-vote"><b>02</b><span>Tìm và vote</span><i class="fa-solid fa-arrow-right"></i></a>
+            <a href="#guide-donate" data-guide-target="guide-donate"><b>03</b><span>Tặng Cá</span><i class="fa-solid fa-arrow-right"></i></a>
+            <a href="#guide-source" data-guide-target="guide-source"><b>04</b><span>Nguồn thay thế</span><i class="fa-solid fa-arrow-right"></i></a>
+          </nav>
+          <div class="guide-index-note"><i class="fa-solid fa-circle-check"></i><span>Ưu tiên truyện đã FULL và nguồn đọc không cần nạp VIP.</span></div>
+        </aside>
+
+        <div class="guide-stack">
+          <details id="guide-suggest" class="guide-step" open>
+            <summary>
+              <span class="guide-number">01</span>
+              <span class="guide-icon icon-violet"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+              <span class="guide-summary-copy"><strong>Đề xuất một truyện mới</strong><small>Chuẩn bị tên truyện và link nguồn</small></span>
+              <i class="fa-solid fa-chevron-down guide-chevron"></i>
+            </summary>
+            <div class="guide-content">
+              <div class="guide-checklist">
+                <div><b>1</b><span><strong>Chọn truyện đã FULL</strong><small>Truyện chưa hoàn thành sẽ chưa phù hợp để kênh chuẩn bị trọn bộ.</small></span></div>
+                <div><b>2</b><span><strong>Dán link nguồn có thể đọc</strong><small>Kiểm tra đường dẫn và tên truyện trước khi gửi.</small></span></div>
+                <div><b>3</b><span><strong>Chọn loại bản</strong><small>Form mặc định là Convert; đổi sang Edit nếu bản đã được biên tập.</small></span></div>
+              </div>
+              <aside class="guide-callout tone-gold"><i class="fa-solid fa-gem"></i><p>Nguồn yêu cầu nạp VIP chỉ được xem xét khi có nguồn đọc thay thế phù hợp.</p></aside>
             </div>
-          </div>
-        </details>
-        <details class="guide-step">
-          <summary>
-            <span class="guide-icon icon-cyan"
-              ><i class="fa-solid fa-fish-fins"></i></span
-            ><span
-              ><strong>Tặng Cá hoặc báo đã donate</strong
-              ><small>1 Cá = 1 Linh Thạch = 1.000đ</small></span
-            ><i class="fa-solid fa-chevron-down guide-chevron"></i>
-          </summary>
-          <div class="guide-content">
-            <p>
-              Chọn truyện, nhập tên rồi dùng đúng nội dung chuyển khoản được tạo
-              sẵn. Nếu bạn đã donate qua YouTube hoặc email, chọn
-              <strong>Đã tặng Cá?</strong> để báo lại.
-            </p>
-            <p>
-              Email nhận kết quả là tùy chọn. Admin sẽ kiểm tra giao dịch trước
-              khi cộng vote.
-            </p>
-          </div>
-        </details>
-        <details class="guide-step">
-          <summary>
-            <span class="guide-icon icon-gold"
-              ><i class="fa-solid fa-link"></i></span
-            ><span
-              ><strong>Khi nguồn truyện cần thay thế</strong
-              ><small>Gửi link mới để admin xem xét</small></span
-            ><i class="fa-solid fa-chevron-down guide-chevron"></i>
-          </summary>
-          <div class="guide-content">
-            <p>
-              Nếu một truyện hiện cảnh báo nguồn, bạn có thể mở chi tiết và gửi
-              link thay thế. Chỉ những cảnh báo đã được admin xác nhận mới xuất
-              hiện trên website.
-            </p>
-          </div>
-        </details>
+          </details>
+
+          <details id="guide-vote" class="guide-step">
+            <summary>
+              <span class="guide-number">02</span>
+              <span class="guide-icon icon-pink"><i class="fa-solid fa-heart"></i></span>
+              <span class="guide-summary-copy"><strong>Tìm truyện và vote</strong><small>Mở nguồn trực tiếp, vote hoặc bỏ vote</small></span>
+              <i class="fa-solid fa-chevron-down guide-chevron"></i>
+            </summary>
+            <div class="guide-content">
+              <div class="guide-checklist compact">
+                <div><b>1</b><span><strong>Tìm trong Kho truyện</strong><small>Dùng ô tìm kiếm và bộ lọc để thu hẹp danh sách.</small></span></div>
+                <div><b>2</b><span><strong>Kiểm tra nguồn</strong><small>Bấm Mở nguồn trên thẻ truyện, không cần mở cửa sổ chi tiết.</small></span></div>
+                <div><b>3</b><span><strong>Vote truyện bạn thích</strong><small>Nút sẽ đổi thành Đã vote; bấm lại nếu muốn bỏ vote.</small></span></div>
+              </div>
+              <div class="status-guide" aria-label="Các trạng thái truyện">
+                <span class="status-proposed"><i class="fa-solid fa-inbox"></i><b>Đề xuất</b><small>Đang chờ bình chọn</small></span>
+                <span class="status-selected"><i class="fa-solid fa-bookmark"></i><b>Đã chọn</b><small>Admin đang chuẩn bị</small></span>
+                <span class="status-airing"><i class="fa-solid fa-tower-broadcast"></i><b>Đang lên sóng</b><small>Đang đăng trên YouTube</small></span>
+                <span class="status-completed"><i class="fa-solid fa-circle-check"></i><b>Hoàn thành</b><small>Đã đăng trọn bộ</small></span>
+              </div>
+            </div>
+          </details>
+
+          <details id="guide-donate" class="guide-step">
+            <summary>
+              <span class="guide-number">03</span>
+              <span class="guide-icon icon-cyan"><i class="fa-solid fa-fish-fins"></i></span>
+              <span class="guide-summary-copy"><strong>Tặng Cá cho truyện</strong><small>Chuyển khoản và báo admin đối chiếu</small></span>
+              <i class="fa-solid fa-chevron-down guide-chevron"></i>
+            </summary>
+            <div class="guide-content">
+              <div class="guide-rate" aria-label="Tỷ lệ quy đổi">
+                <span><i class="fa-solid fa-fish-fins"></i><b>1 Cá</b></span><i class="fa-solid fa-equals"></i>
+                <span><i class="fa-solid fa-gem"></i><b>1 Linh Thạch</b></span><i class="fa-solid fa-equals"></i>
+                <span><i class="fa-solid fa-coins"></i><b>1.000đ</b></span>
+              </div>
+              <div class="guide-checklist compact">
+                <div><b>1</b><span><strong>Chọn truyện, nhập tên và số tiền</strong><small>Website sẽ tạo mã QR cùng nội dung chuyển khoản.</small></span></div>
+                <div><b>2</b><span><strong>Chuyển khoản</strong><small>Quét QR hoặc mở ứng dụng ngân hàng trên điện thoại.</small></span></div>
+                <div><b>3</b><span><strong>Bấm “Tôi đã tặng Cá”</strong><small>Admin kiểm tra giao dịch trước khi cộng vote.</small></span></div>
+              </div>
+              <aside class="guide-callout tone-cyan"><i class="fa-solid fa-envelope"></i><p>Email nhận kết quả không bắt buộc. Nếu đã donate qua YouTube hoặc email, dùng mục <strong>Đã tặng Cá?</strong> trên trang chủ.</p></aside>
+            </div>
+          </details>
+
+          <details id="guide-source" class="guide-step">
+            <summary>
+              <span class="guide-number">04</span>
+              <span class="guide-icon icon-gold"><i class="fa-solid fa-link"></i></span>
+              <span class="guide-summary-copy"><strong>Gửi nguồn thay thế</strong><small>Hỗ trợ khi nguồn hiện tại không còn phù hợp</small></span>
+              <i class="fa-solid fa-chevron-down guide-chevron"></i>
+            </summary>
+            <div class="guide-content">
+              <div class="guide-checklist compact two-items">
+                <div><b>1</b><span><strong>Mở truyện có cảnh báo nguồn</strong><small>Cảnh báo chỉ xuất hiện sau khi admin xác nhận.</small></span></div>
+                <div><b>2</b><span><strong>Gửi đường dẫn mới</strong><small>Điền nguồn có thể đọc và ghi chú ngắn nếu cần.</small></span></div>
+              </div>
+              <aside class="guide-callout"><i class="fa-solid fa-shield-heart"></i><p>Admin sẽ kiểm tra trước khi thay nguồn; đường dẫn bạn gửi không tự động hiển thị công khai.</p></aside>
+            </div>
+          </details>
+        </div>
       </div>
-      <div class="center page-cta">
-        <a class="button button-primary" href="/#library"
-          ><i class="fa-solid fa-book-open-reader"></i> Vào kho truyện</a
-        >
-      </div>
+
+      <section class="guide-final-cta">
+        <span><i class="fa-solid fa-book-open-reader"></i></span>
+        <div><strong>Sẵn sàng khám phá?</strong><p>Tìm truyện, mở nguồn hoặc gửi đề xuất đầu tiên.</p></div>
+        <a class="button button-primary" href="/#library"><i class="fa-solid fa-arrow-right"></i> Vào kho truyện</a>
+      </section>
     </main>
     <footer class="footer">
       <div class="shell footer-row">
