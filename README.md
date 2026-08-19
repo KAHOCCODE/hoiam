@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.13
+# Hồi Âm Đam Mỹ V06.1.14
 
-Phiên bản V06.1.13 tách riêng truyện đề xuất và truyện đã chọn trong Kho truyện, đồng thời giảm mật độ và tiết chế màu sắc giao diện. Dữ liệu Supabase hiện có không thay đổi.
+Phiên bản V06.1.14 thiết kế lại Kho truyện theo bố cục danh mục tinh gọn, giảm các lớp khung và màu thừa, đồng thời làm rõ tìm kiếm, bộ lọc, vote và nhóm truyện đã chọn. Dữ liệu Supabase hiện có không thay đổi.
 
 ## Thống kê truy cập
 
