@@ -138,7 +138,7 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
-assert.match(adminHtml, /name="admin-ui-version" content="06122"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /name="admin-ui-version" content="06123"/, 'Admin markup needs an explicit UI version');
 assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
@@ -153,6 +153,10 @@ assert.match(adminHtml, /responsive-data-table donation-data-table/, 'Admin dona
 assert.match(adminHtml, /id="externalDonationStoryList"/, 'External donations need searchable story choices');
 assert.match(adminHtml, /name="page_scope"/, 'Announcements need an editable page scope');
 assert.match(adminHtml, /id="settingsSaveState"/, 'Long settings need a visible save state');
+assert.match(adminHtml, /id="sidebarClose"/, 'Tablet navigation needs an explicit close button');
+for (const previewId of ['storyThumbnailPreview', 'completedThumbnailPreview', 'settingsLogoPreview', 'settingsQrPreview']) {
+  assert.match(adminHtml, new RegExp(`id="${previewId}"`), `Admin image URL needs preview host ${previewId}`);
+}
 assert.match(adminHtml, /name="bankId"/, 'Admin settings need a VietQR bank identifier');
 assert.match(siteCss, /\.mobile-nav\[hidden\]\s*\{[^}]*display:\s*none/i, 'Hidden mobile menu must not cover content');
 assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs its own background');
@@ -177,6 +181,9 @@ assert.match(adminCss, /\.drawer-form-section\s*\{/, 'Admin story editor needs p
 assert.match(adminCss, /@media\(max-width:1024px\)/, 'Admin sidebar must collapse on tablets');
 assert.match(adminCss, /@media\(max-width:820px\)/, 'Admin tables must become cards on small tablets');
 assert.match(adminCss, /\.responsive-data-table tbody tr\{/, 'Admin tables need touch-friendly mobile cards');
+assert.match(adminCss, /width:min\(1180px,calc\(100vw - 48px\)\)/, 'Story editing needs a wide workspace on desktop');
+assert.match(adminCss, /\.drawer-body\{min-height:0[^}]*overflow-y:auto[^}]*touch-action:pan-y/, 'Story editor content must remain scrollable on touch devices');
+assert.match(adminCss, /\.image-url-preview\{/, 'Image URL fields need a consistent preview');
 assert.equal(
   fs.readFileSync(path.join(root, 'ads.txt'), 'utf8').trim(),
   'google.com, pub-6051983418402912, DIRECT, f08c47fec0942fa0',
@@ -228,6 +235,11 @@ assert.match(adminJs, /Khôi phục truyện/, 'Trash needs an explicit restore 
 assert.match(adminJs, /request\('\/admin\/bootstrap'\)/, 'Admin startup must use one bootstrap request');
 assert.match(adminJs, /window\.innerWidth <= 1024/, 'Admin navigation must switch to a drawer on tablets');
 assert.match(adminJs, /restoreDialogFocus\(dialog\)/, 'Admin dialogs need to restore keyboard focus');
+assert.match(adminJs, /const imagePreviews = \[/, 'Admin must initialize image URL previews');
+assert.match(adminJs, /\$\('#sidebarClose'\)\.addEventListener/, 'Mobile and tablet navigation needs an explicit close action');
+assert.match(adminJs, /\$\('#storyContentSection'\)\.open = true/, 'Common story display fields should open immediately');
+const switchViewBlock = adminJs.slice(adminJs.indexOf('function switchView('), adminJs.indexOf('function selectStoryStatus('));
+assert.doesNotMatch(switchViewBlock, /setSidebar\(false\)/, 'Selecting an Admin section must not close mobile navigation automatically');
 assert.match(vercelConfigText, /"source": "\/admin\.html"[\s\S]*?private, no-store, no-cache, must-revalidate/, 'Admin HTML must bypass stale caches');
 assert.doesNotMatch(vercelConfigText, /stale-while-revalidate/, 'Changing interface assets must not be served stale');
 assert.match(appJs, /detail\.addEventListener\('toggle'/, 'Guide sections need synchronized active states');
