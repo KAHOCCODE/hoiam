@@ -138,7 +138,7 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
-assert.match(adminHtml, /name="admin-ui-version" content="06123"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /name="admin-ui-version" content="06124"/, 'Admin markup needs an explicit UI version');
 assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
@@ -184,6 +184,8 @@ assert.match(adminCss, /\.responsive-data-table tbody tr\{/, 'Admin tables need 
 assert.match(adminCss, /width:min\(1180px,calc\(100vw - 48px\)\)/, 'Story editing needs a wide workspace on desktop');
 assert.match(adminCss, /\.drawer-body\{min-height:0[^}]*overflow-y:auto[^}]*touch-action:pan-y/, 'Story editor content must remain scrollable on touch devices');
 assert.match(adminCss, /\.image-url-preview\{/, 'Image URL fields need a consistent preview');
+assert.match(adminCss, /\.story-data-table,\.donation-data-table,\.responsive-data-table\{width:100%!important;min-width:0!important;max-width:100%!important\}/, 'Mobile Admin tables must override legacy minimum widths');
+assert.match(adminCss, /\.responsive-data-table \.story-cell>div[^}]*min-width:0/, 'Long mobile story titles must be allowed to shrink');
 assert.equal(
   fs.readFileSync(path.join(root, 'ads.txt'), 'utf8').trim(),
   'google.com, pub-6051983418402912, DIRECT, f08c47fec0942fa0',

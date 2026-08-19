@@ -1,4 +1,4 @@
-const ADMIN_UI_VERSION = '06123';
+const ADMIN_UI_VERSION = '06124';
 const state = {
   stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null,
   activeView: sessionStorage.getItem('hoiam_admin_view') || 'overview',
