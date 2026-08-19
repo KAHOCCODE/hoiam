@@ -1,4 +1,4 @@
-const ADMIN_UI_VERSION = '06124';
+const ADMIN_UI_VERSION = '06125';
 const state = {
   stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null,
   activeView: sessionStorage.getItem('hoiam_admin_view') || 'overview',
@@ -407,6 +407,7 @@ function openStoryDrawer(id) {
   trashButton.innerHTML = story.deletedat ? '<i class="fa-solid fa-trash-arrow-up"></i> Khôi phục truyện' : '<i class="fa-solid fa-trash"></i> Chuyển vào thùng rác';
   refreshImagePreviews('#storyThumbnailPreview');
   const drawer = $('#storyDrawer'); returnFocus.set(drawer, document.activeElement);
+  const drawerBody = $('.drawer-body', drawer); if (drawerBody) drawerBody.scrollTop = 0;
   drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false'); document.body.classList.add('drawer-open');
   window.requestAnimationFrame(() => $('[data-close-drawer]', drawer)?.focus({ preventScroll: true }));
 }
