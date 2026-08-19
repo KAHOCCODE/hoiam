@@ -151,6 +151,7 @@ assert.match(siteCss, /\.guide-layout\s*\{[^}]*grid-template-columns:/i, 'Guide 
 assert.match(siteCss, /\.guide-index\s*\{[^}]*position:\s*sticky/i, 'Guide index needs to remain visible on desktop');
 assert.match(siteCss, /\.guide-final-cta\s*\{/, 'Guide page needs a clear final action');
 assert.match(adminCss, /\.side-subnav\s*\{/, 'Admin story states need a second-level navigation');
+assert.match(adminCss, /\.side-nav-group\.active \.side-subnav\s*\{/, 'Admin story submenu should only expand in its own section');
 assert.match(adminCss, /\.overview-snapshot\s*\{/, 'Admin overview needs a visual snapshot layout');
 assert.match(adminCss, /\.story-primary-toolbar\s*\{/, 'Admin story manager needs a focused primary toolbar');
 assert.match(adminCss, /\.drawer-form-section\s*\{/, 'Admin story editor needs progressive sections');
@@ -193,6 +194,7 @@ assert.match(appJs, /function setMobileMenu\(open\)/, 'Mobile menu needs one con
 assert.match(appJs, /window\.addEventListener\('scroll', requestSync/, 'Section navigation needs to follow scrolling');
 assert.match(appJs, /function setupGuidePage\(\)/, 'Guide page needs focused interaction behavior');
 assert.match(adminJs, /function selectStoryStatus\(/, 'Admin story state navigation needs one controller');
+assert.match(adminJs, /setAttribute\('aria-current', 'location'\)/, 'Admin story submenu needs an accessible active state');
 assert.match(adminJs, /storyFilterToggle/, 'Admin secondary filters need an explicit toggle');
 assert.match(adminJs, /statReplacementPending/, 'Admin overview needs pending replacement data');
 assert.match(adminJs, /function ensureCompatibleMarkup\(/, 'Admin must detect mixed HTML and JavaScript versions');

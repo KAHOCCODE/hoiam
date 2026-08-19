@@ -127,7 +127,12 @@ async function logout() {
 
 function switchView(name) {
   $$('.admin-view').forEach((view) => view.classList.toggle('active', view.dataset.section === name));
-  $$('#adminNav [data-view]').forEach((button) => button.classList.toggle('active', button.dataset.view === name));
+  $$('#adminNav [data-view]').forEach((button) => {
+    const active = button.dataset.view === name;
+    button.classList.toggle('active', active);
+    if (active) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  });
   $('[data-nav-group="stories"]')?.classList.toggle('active', name === 'stories');
   const label = ({ overview: 'Tổng quan', stories: 'Truyện', donations: 'Donate', sources: 'Nguồn truyện', announcements: 'Thông báo', settings: 'Cài đặt' })[name];
   $('#currentViewLabel').textContent = name === 'stories' ? `Kho truyện / ${statusLabel($('#storyStatusFilter').value === 'all' ? 'Tất cả' : $('#storyStatusFilter').value)}` : label || name;
@@ -138,7 +143,12 @@ function selectStoryStatus(status, openView = true) {
   const allowed = ['all', 'đề xuất', 'đã chọn', 'đang lên sóng', 'đã hoàn thành', 'trash'];
   const value = allowed.includes(status) ? status : 'all';
   $('#storyStatusFilter').value = value;
-  $$('[data-story-status]').forEach((button) => button.classList.toggle('active', button.dataset.storyStatus === value));
+  $$('[data-story-status]').forEach((button) => {
+    const active = button.dataset.storyStatus === value;
+    button.classList.toggle('active', active);
+    if (active) button.setAttribute('aria-current', 'location');
+    else button.removeAttribute('aria-current');
+  });
   const scopes = {
     all: ['Tất cả truyện', 'Toàn bộ truyện đang hoạt động trong hệ thống.'],
     'đề xuất': ['Truyện đề xuất', 'Danh sách cộng đồng gửi và đang chờ bạn lựa chọn.'],
@@ -249,7 +259,7 @@ function renderStories() {
   const activeFilters = [];
   if ($('#storyVersionFilter').value !== 'all') activeFilters.push($('#storyVersionFilter').value);
   if ($('#storySourceFilter').value !== 'all') activeFilters.push($('#storySourceFilter').selectedOptions[0]?.textContent || 'Nguồn');
-  $('#storyFilterSummary').textContent = activeFilters.length ? `Đang lọc: ${activeFilters.join(' · ')}` : 'Không có bộ lọc phụ';
+  $('#storyFilterSummary').textContent = activeFilters.length ? `Đang lọc: ${activeFilters.join(' · ')}` : 'Đang hiển thị mọi loại bản và nguồn';
   $('#storyFilterCount').textContent = activeFilters.length;
   $('#storyFilterCount').hidden = !activeFilters.length;
   stories.forEach((story) => {
