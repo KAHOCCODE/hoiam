@@ -36,3 +36,5 @@ module.exports = async (req, res) => {
     return json(res, error.status || 500, { error: 'Không tải được kho truyện.' });
   }
 };
+
+module.exports.listPublicStories = listPublicStories;

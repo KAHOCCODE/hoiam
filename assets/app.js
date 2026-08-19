@@ -9,6 +9,7 @@ const state = {
   voteBusy: new Set(),
   bankApps: [],
   bankCodes: new Map(),
+  storiesFromCache: false,
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -72,6 +73,50 @@ function storageGet(key, session = false) {
 }
 function storageSet(key, value, session = false) {
   try { (session ? sessionStorage : localStorage).setItem(key, value); } catch { /* private mode */ }
+}
+
+const PUBLIC_CACHE_VERSION = '06122';
+const PUBLIC_CACHE_MAX_AGE = 6 * 60 * 60_000;
+
+function readPublicCache(name) {
+  try {
+    const cached = JSON.parse(localStorage.getItem(`hoiam_public_${PUBLIC_CACHE_VERSION}_${name}`) || 'null');
+    if (!cached?.savedAt || Date.now() - cached.savedAt > PUBLIC_CACHE_MAX_AGE) return null;
+    return cached.value;
+  } catch { return null; }
+}
+
+function writePublicCache(name, value) {
+  try { localStorage.setItem(`hoiam_public_${PUBLIC_CACHE_VERSION}_${name}`, JSON.stringify({ savedAt: Date.now(), value })); }
+  catch { /* bộ nhớ riêng tư hoặc đã đầy */ }
+}
+
+function storiesForCache() {
+  return state.stories.map((story) => ({
+    id: story.id, title: story.title, linkstory: story.linkstory, youtubelink: story.youtubelink,
+    thumbnail_url: story.thumbnail, version: story.version, note: story.note, votes: story.votes,
+    status: story.status, source_status: story.sourceStatus, source_reason: story.sourceReason,
+    source_deadline: story.sourceDeadline, source_warning_public: story.sourceWarningPublic,
+    createdat: story.createdAt, completedat: story.completedAt, views: story.views,
+    youtube_clicks: story.youtubeClicks,
+  }));
+}
+
+function cacheCurrentStories(force = false) {
+  if (force || state.stories.length) writePublicCache('stories', storiesForCache());
+}
+
+function hydratePublicCache() {
+  const cachedSettings = readPublicCache('settings');
+  if (cachedSettings) { state.settings = cachedSettings; applySettings(); }
+  if (!['guide', 'about', 'privacy', 'terms'].includes(page)) {
+    const cachedStories = readPublicCache('stories');
+    if (Array.isArray(cachedStories) && cachedStories.length) {
+      state.stories = cachedStories.map(normalizeStory).filter((item) => item.id && item.title);
+      state.storiesFromCache = true;
+      renderHome(); clearDonationStoryOptions();
+    }
+  }
 }
 
 async function api(path, options = {}) {
@@ -253,7 +298,7 @@ async function toggleVote(id) {
     notify(error.message, 'danger');
   } finally {
     state.voteBusy.delete(id);
-    renderHome();
+    renderHome(); cacheCurrentStories();
   }
 }
 
@@ -1333,9 +1378,10 @@ async function loadSettings() {
     const payload = await api('/api/settings', { cache: 'no-store' });
     state.settings = payload.settings;
     state.announcements = payload.announcements || [];
+    if (state.settings) writePublicCache('settings', state.settings);
     applySettings(); renderAnnouncements();
   } catch {
-    if (page === 'about') {
+    if (page === 'about' && !state.settings) {
       $('#aboutLinkCount')?.replaceChildren(document.createTextNode('Chưa tải được các điểm đến.'));
       $('#aboutLinks')?.replaceChildren(empty('Chưa tải được liên kết', 'Bạn có thể thử tải lại trang sau ít phút.'));
     }
@@ -1346,8 +1392,43 @@ async function loadStories() {
   try {
     const payload = await api('/api/stories', { cache: 'no-store' });
     state.stories = Array.isArray(payload.stories) ? payload.stories.map(normalizeStory).filter((item) => item.id && item.title) : [];
-    renderHome(); clearDonationStoryOptions();
+    state.storiesFromCache = false;
+    renderHome(); clearDonationStoryOptions(); cacheCurrentStories(true);
   } catch (error) {
+    if (state.storiesFromCache && state.stories.length) {
+      notify('Đang hiển thị dữ liệu đã lưu. Dữ liệu mới sẽ được thử tải lại sau.', 'warning');
+      return;
+    }
+    ['#topStories', '#airingStories', '#storyGrid', '#completedGrid'].forEach((selector) => {
+      const host = $(selector); if (host) host.replaceChildren(empty('Không tải được dữ liệu', 'Kiểm tra kết nối Supabase rồi thử lại.'));
+    });
+    const count = $('#resultCount'); if (count) count.replaceChildren(icon('triangle-exclamation'), document.createTextNode(' Không thể tải'));
+    notify(error.message, 'danger');
+  }
+}
+
+async function loadPublicData() {
+  try {
+    const payload = await api('/api/bootstrap', { cache: 'no-store' });
+    if (!payload.settings_unavailable) {
+      state.settings = payload.settings;
+      state.announcements = payload.announcements || [];
+      if (state.settings) writePublicCache('settings', state.settings);
+      applySettings(); renderAnnouncements();
+    }
+    if (!payload.stories_unavailable) {
+      state.stories = Array.isArray(payload.stories) ? payload.stories.map(normalizeStory).filter((item) => item.id && item.title) : [];
+      state.storiesFromCache = false;
+      renderHome(); clearDonationStoryOptions(); cacheCurrentStories(true);
+      return;
+    }
+    if (!state.stories.length) throw new Error('Không tải được kho truyện.');
+    notify('Đang hiển thị dữ liệu đã lưu. Dữ liệu mới sẽ được thử tải lại sau.', 'warning');
+  } catch (error) {
+    if (state.storiesFromCache && state.stories.length) {
+      notify('Đang hiển thị dữ liệu đã lưu. Dữ liệu mới sẽ được thử tải lại sau.', 'warning');
+      return;
+    }
     ['#topStories', '#airingStories', '#storyGrid', '#completedGrid'].forEach((selector) => {
       const host = $(selector); if (host) host.replaceChildren(empty('Không tải được dữ liệu', 'Kiểm tra kết nối Supabase rồi thử lại.'));
     });
@@ -1427,7 +1508,8 @@ function bindEvents() {
 bindEvents();
 setupNavigation();
 setupGuidePage();
-Promise.all([loadSettings(), ['guide', 'about', 'privacy', 'terms'].includes(page) ? Promise.resolve() : loadStories()])
+hydratePublicCache();
+Promise.all([['guide', 'about', 'privacy', 'terms'].includes(page) ? loadSettings() : loadPublicData()])
   .then(() => {
     if (restoreDonationDraft()) {
       try { sessionStorage.removeItem('hoiam_bank_trip_started'); } catch { /* ignored */ }

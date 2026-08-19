@@ -11,10 +11,12 @@ assert.equal(router.requestPath({ url: '/api/stories?sort=votes' }), 'stories');
 assert.equal(router.requestPath({ url: '/api/admin/stories/92' }), 'admin/stories/92');
 assert.equal(router.requestPath({ url: '/api', query: { path: 'stories/92/vote' } }), 'stories/92/vote');
 assert.ok(router.resolveRoute('stories'));
+assert.ok(router.resolveRoute('bootstrap'));
 assert.ok(router.resolveRoute('admin/settings'));
+assert.ok(router.resolveRoute('admin/bootstrap'));
 assert.equal(router.resolveRoute('stories/92/vote').id, '92');
 assert.equal(router.resolveRoute('stories/178/metrics').id, '178');
 assert.equal(router.resolveRoute('admin/donations/12').id, '12');
 assert.equal(router.resolveRoute('unknown'), null);
 
-console.log('API router compatibility check passed (19 routes, 1 Vercel Function).');
+console.log('API router compatibility check passed (21 routes, 1 Vercel Function).');

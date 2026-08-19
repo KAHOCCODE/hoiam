@@ -1,7 +1,9 @@
 const { json } = require('./_routes/_lib/utils');
 
 const exactRoutes = new Map([
+  ['bootstrap', require('./_routes/bootstrap')],
   ['admin/announcements', require('./_routes/admin/announcements/index')],
+  ['admin/bootstrap', require('./_routes/admin/bootstrap')],
   ['admin/check-source', require('./_routes/admin/check-source')],
   ['admin/donations', require('./_routes/admin/donations/index')],
   ['admin/login', require('./_routes/admin/login')],
