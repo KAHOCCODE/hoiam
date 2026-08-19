@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.18
+# Hồi Âm Đam Mỹ V06.1.19
 
-Phiên bản V06.1.18 tổ chức lại trang quản trị theo luồng thao tác: Kho truyện có menu trạng thái riêng, bộ lọc phụ được thu gọn, bảng truyện dễ đọc hơn, ngăn chỉnh sửa chia theo nhóm và Dashboard thể hiện trực quan tiến độ cùng việc cần xử lý. Dữ liệu Supabase hiện có không thay đổi.
+Phiên bản V06.1.19 sửa lỗi giao diện Admin bị trộn HTML và JavaScript khác phiên bản, bổ sung lớp tương thích với mã cũ, kiểm soát cache riêng và đồng bộ trạng thái menu để Dashboard không còn dừng ở lỗi `replaceChildren`. Dữ liệu Supabase hiện có không thay đổi.
 
 ## Thống kê truy cập
 
