@@ -344,7 +344,11 @@ function topCard(story, index) {
   const quickLinks = element('div', 'top-quick-links');
   const sourceLink = directSourceLink(story, 'Nguồn', true);
   if (sourceLink) quickLinks.append(sourceLink);
-  const detail = element('span', 'top-detail', 'Xem chi tiết '); detail.append(icon('arrow-right'));
+  const detail = element('button', 'top-detail', 'Xem chi tiết ');
+  detail.type = 'button';
+  detail.setAttribute('aria-label', `Xem chi tiết truyện ${story.title}`);
+  detail.append(icon('arrow-right'));
+  detail.addEventListener('click', () => showStory(story.id));
   quickLinks.append(detail); actions.append(quickLinks);
   content.append(meta, note, actions);
   card.append(visual, content);
@@ -396,7 +400,7 @@ function renderAiring() {
     }
     const sourceLink = directSourceLink(story, 'Nguồn', true);
     if (sourceLink) actions.append(sourceLink);
-    const detail = element('button', 'icon-button'); detail.type = 'button'; detail.append(icon('arrow-right')); detail.addEventListener('click', () => showStory(story.id));
+    const detail = element('button', 'icon-button'); detail.type = 'button'; detail.setAttribute('aria-label', `Xem chi tiết truyện ${story.title}`); detail.append(icon('arrow-right')); detail.addEventListener('click', () => showStory(story.id));
     actions.append(detail); copy.append(actions); card.append(visual, copy); return card;
   }));
 }
@@ -470,7 +474,7 @@ function renderCompleted() {
     .sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
   host.replaceChildren(...(list.length ? list.map((story) => {
     const card = element('article', 'completed-card');
-    const visual = element('button', 'completed-visual'); visual.type = 'button';
+    const visual = element('button', 'completed-visual'); visual.type = 'button'; visual.setAttribute('aria-label', `Xem chi tiết truyện ${story.title}`);
     const image = storyImage(story); if (image) visual.style.backgroundImage = `url("${image.replace(/"/g, '')}")`;
     visual.append(element('span', 'completed-badge', 'HOÀN THÀNH'), icon('circle-play'));
     visual.addEventListener('click', () => showStory(story.id));
@@ -562,7 +566,8 @@ function calculateDonation(amount) {
 }
 
 function donationStories() {
-  return state.stories.filter((story) => story.status !== 'đã hoàn thành');
+  return state.stories.filter((story) => story.status !== 'đã hoàn thành')
+    .sort((a, b) => b.votes - a.votes || a.title.localeCompare(b.title, 'vi'));
 }
 
 function donationStorySearchText(value) {
@@ -573,6 +578,11 @@ function closeDonationStoryPicker() {
   const menu = $('#donationStoryMenu'); const toggle = $('#donationStoryToggle');
   if (menu) menu.hidden = true;
   toggle?.setAttribute('aria-expanded', 'false');
+}
+
+function clearDonationStoryOptions() {
+  const host = $('#donationStoryOptions');
+  if (host) host.replaceChildren();
 }
 
 function setDonationStory(storyId, closePicker = true) {
@@ -598,7 +608,11 @@ function fillDonationStories(query = '', preferredId = null) {
   if (!form || !host) return;
   const current = String(preferredId === null ? (form.elements.story_select.value || '') : (preferredId || ''));
   const keyword = donationStorySearchText(query).trim();
-  const visible = donationStories().filter((story) => !keyword || donationStorySearchText(story.title).includes(keyword));
+  const matches = donationStories().filter((story) => !keyword || donationStorySearchText(story.title).includes(keyword));
+  const limit = keyword ? 60 : 40;
+  const visible = matches.slice(0, limit);
+  const selectedStory = state.stories.find((story) => String(story.id) === current);
+  if (selectedStory && !visible.some((story) => story.id === selectedStory.id)) visible.unshift(selectedStory);
   host.replaceChildren();
   visible.forEach((story) => {
     const button = element('button', 'donation-story-option');
@@ -615,6 +629,7 @@ function fillDonationStories(query = '', preferredId = null) {
     host.append(button);
   });
   if (!visible.length) host.append(element('p', 'donation-story-empty', 'Không tìm thấy truyện phù hợp.'));
+  else if (matches.length > limit) host.append(element('p', 'donation-story-more', `Đang hiện ${number.format(limit)}/${number.format(matches.length)} truyện. Nhập tên để tìm nhanh hơn.`));
   setDonationStory(current, false);
 }
 
@@ -847,7 +862,7 @@ function restoreDonationDraft() {
     Object.entries(draft.values || {}).forEach(([name, value]) => {
       if (form.elements[name]) form.elements[name].value = String(value || '');
     });
-    fillDonationStories('', form.elements.story_select.value);
+    setDonationStory(form.elements.story_select.value, false);
     $('#donationModeNote').textContent = 'Thông tin vẫn còn nguyên. Nếu đã chuyển khoản, bấm “Tôi đã tặng Cá” ở cuối form để báo admin nhé.';
     updateDonationPanel();
     const submitButton = $('#submitDonationButton');
@@ -973,6 +988,10 @@ function updateDonationPanel() {
     ? `${money.format(amount)} = ${number.format(calc.stones)} Cá/Linh Thạch · đề xuất ${number.format(calc.votes)} vote (${money.format(calc.price)}/vote)`
     : '1 Cá = 1 Linh Thạch = 1.000đ';
   host.replaceChildren();
+  const external = form.elements.source_channel.value === 'youtube';
+  host.hidden = external;
+  form.classList.toggle('external-mode', external);
+  if (external) return;
   const donation = state.settings?.donation;
   if (!donation?.enabled) return host.append(element('p', 'muted', 'Kênh đang tạm đóng nhận donate trên website.'));
   const content = story && name ? transferContent(story, name) : '';
@@ -999,7 +1018,8 @@ function openDonation(storyId = null, external = false) {
   if (storyToggle) storyToggle.disabled = locked;
   if ($('#donationStorySearch')) $('#donationStorySearch').value = '';
   closeDonationStoryPicker();
-  fillDonationStories('', story ? String(story.id) : '');
+  clearDonationStoryOptions();
+  setDonationStory(story ? String(story.id) : '', false);
   form.elements.source_channel.value = external ? 'youtube' : 'website';
   $('#donationStoryHint').textContent = locked ? 'Truyện đã được chọn từ nút Tặng Cá.' : 'Bấm để chọn hoặc tìm truyện.';
   $('#donationTitle').textContent = external ? 'Báo đã donate' : (locked ? 'Tặng Cá cho truyện này' : 'Tặng Cá cho truyện');
@@ -1009,6 +1029,9 @@ function openDonation(storyId = null, external = false) {
   $('#submitDonationButton').innerHTML = external
     ? '<i class="fa-solid fa-paper-plane"></i> Gửi admin kiểm tra'
     : '<i class="fa-solid fa-fish-fins"></i> Tôi đã tặng Cá';
+  const steps = $$('.donation-steps span');
+  if (steps[1]) steps[1].innerHTML = external ? '<b>2</b> Thông tin giao dịch' : '<b>2</b> Chuyển khoản';
+  if (steps[2]) steps[2].innerHTML = external ? '<b>3</b> Gửi admin' : '<b>3</b> Báo admin';
   updateDonationPanel(); openDialog(dialog);
 }
 
@@ -1287,8 +1310,7 @@ function animateLibraryView(previousView, nextView) {
 }
 
 function renderAnnouncements() {
-  const host = $('#announcementHost');
-  const relevant = state.announcements.filter((item) => item.page_scope === 'all' || item.page_scope === page);
+  const relevant = state.announcements.filter((item) => item.page_scope === 'all' || item.page_scope === page || (item.page_scope === 'library' && page === 'home'));
   relevant.forEach((item) => {
     if (storageGet(`announcement_${item.id}`, true)) return;
     if (item.display_mode === 'toast') return notify(`${item.title}: ${item.message}`, item.tone);
@@ -1296,11 +1318,12 @@ function renderAnnouncements() {
       window.Swal.fire({ icon: item.tone === 'danger' ? 'error' : item.tone, title: item.title, text: item.message, confirmButtonText: 'Đã hiểu', customClass: { popup: 'cosmic-swal' } });
       storageSet(`announcement_${item.id}`, '1', true); return;
     }
+    const host = item.page_scope === 'library' ? ($('#libraryAnnouncementHost') || $('#announcementHost')) : $('#announcementHost');
     if (!host) return;
     const banner = element('aside', `announcement tone-${item.tone}`);
     banner.append(icon(item.tone === 'warning' || item.tone === 'danger' ? 'triangle-exclamation' : 'bell'));
     const copy = element('div'); copy.append(element('strong', '', item.title), element('p', '', item.message)); banner.append(copy);
-    if (item.dismissible) { const close = element('button', 'announcement-close', '×'); close.type = 'button'; close.addEventListener('click', () => { storageSet(`announcement_${item.id}`, '1', true); banner.remove(); }); banner.append(close); }
+    if (item.dismissible) { const close = element('button', 'announcement-close', '×'); close.type = 'button'; close.setAttribute('aria-label', `Đóng thông báo ${item.title}`); close.addEventListener('click', () => { storageSet(`announcement_${item.id}`, '1', true); banner.remove(); }); banner.append(close); }
     host.append(banner);
   });
 }
@@ -1311,14 +1334,19 @@ async function loadSettings() {
     state.settings = payload.settings;
     state.announcements = payload.announcements || [];
     applySettings(); renderAnnouncements();
-  } catch { /* giao diện vẫn hoạt động với nội dung mặc định */ }
+  } catch {
+    if (page === 'about') {
+      $('#aboutLinkCount')?.replaceChildren(document.createTextNode('Chưa tải được các điểm đến.'));
+      $('#aboutLinks')?.replaceChildren(empty('Chưa tải được liên kết', 'Bạn có thể thử tải lại trang sau ít phút.'));
+    }
+  }
 }
 
 async function loadStories() {
   try {
     const payload = await api('/api/stories', { cache: 'no-store' });
     state.stories = Array.isArray(payload.stories) ? payload.stories.map(normalizeStory).filter((item) => item.id && item.title) : [];
-    renderHome(); fillDonationStories();
+    renderHome(); clearDonationStoryOptions();
   } catch (error) {
     ['#topStories', '#airingStories', '#storyGrid', '#completedGrid'].forEach((selector) => {
       const host = $(selector); if (host) host.replaceChildren(empty('Không tải được dữ liệu', 'Kiểm tra kết nối Supabase rồi thử lại.'));
@@ -1359,6 +1387,11 @@ function bindEvents() {
     state.visibleLimit = 12;
     renderLibrary();
     animateLibraryView(previousView, nextView);
+  }));
+  $$('[data-show-selected]').forEach((button) => button.addEventListener('click', () => {
+    const previousView = state.libraryView;
+    state.libraryView = 'selected'; state.visibleLimit = 12; renderLibrary(); animateLibraryView(previousView, 'selected');
+    $('#library')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   }));
   $$('[data-library-view]').forEach((button, index, tabs) => button.addEventListener('keydown', (event) => {
     if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
