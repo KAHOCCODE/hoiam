@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.23
+# Hồi Âm Đam Mỹ V06.1.24
 
-Phiên bản V06.1.23 mở rộng trình chỉnh sửa truyện thành workspace lớn, chia cột hợp lý trên máy tính và tự xếp lại trên tablet, điện thoại. Menu Admin chỉ đóng khi người quản trị chủ động đóng; URL bìa truyện, logo và QR đều có ảnh xem trước trực tiếp. Không cần thay đổi SQL.
+Phiên bản V06.1.24 sửa triệt để hiện tượng Admin mobile bị kéo dài ngang do bảng còn kế thừa chiều rộng tối thiểu cũ. Mọi vùng quản trị được giới hạn theo màn hình, tiêu đề và dữ liệu dài tự xuống dòng mà không làm lệch thanh công cụ. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 
