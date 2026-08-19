@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.21
+# Hồi Âm Đam Mỹ V06.1.22
 
-Phiên bản V06.1.21 tập trung vào tốc độ và độ trơn tru: danh sách truyện donate chỉ được dựng khi người dùng mở bộ chọn, chế độ báo giao dịch cũ bỏ bước ngân hàng thừa, điều hướng công khai nhất quán hơn. Admin chỉ tải lại mô-đun vừa thay đổi, có tìm truyện khi nhập donate ngoài, nhớ màn hình đang làm việc, khôi phục thùng rác, lưu cài đặt thuận tiện và chỉnh sửa thông báo theo từng trang. Không cần thay đổi SQL.
+Phiên bản V06.1.22 tập trung vào khả năng thích ứng và tốc độ tải: Admin chuyển sang menu dạng ngăn kéo từ tablet, bảng truyện và donate thành thẻ dễ đọc trên điện thoại, modal vừa màn hình và khôi phục đúng vị trí thao tác. Trang công khai hiển thị dữ liệu đã lưu ngay trong lúc đồng bộ bản mới; API công khai và Admin đều gộp các lượt tải ban đầu để giảm thời gian chờ. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 
