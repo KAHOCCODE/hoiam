@@ -1132,7 +1132,12 @@ function applySettings() {
     if (links) {
       links.replaceChildren();
       const items = [...(settings.socialLinks || [])];
-      if (settings.youtubeUrl) items.unshift({ label: 'Hồi Âm trên YouTube', url: settings.youtubeUrl, icon: 'fa-youtube', color: '#ff496f', visible: true });
+      if (settings.youtubeUrl) {
+        const youtubeKey = settings.youtubeUrl.replace(/\/$/, '').toLowerCase();
+        const configuredIndex = items.findIndex((item) => String(item.url || '').replace(/\/$/, '').toLowerCase() === youtubeKey);
+        const configured = configuredIndex >= 0 ? items.splice(configuredIndex, 1)[0] : {};
+        items.unshift({ label: 'Hồi Âm trên YouTube', icon: 'fa-youtube', color: '#ff496f', visible: true, ...configured, url: settings.youtubeUrl });
+      }
       if (settings.contactEmail) items.push({ label: 'Gửi lời nhắn cho Hồi Âm', url: `mailto:${settings.contactEmail}`, icon: 'fa-envelope', color: '#a78bfa', visible: true });
       const seen = new Set();
       const visibleItems = items.filter((item) => {
