@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.19
+# Hồi Âm Đam Mỹ V06.1.20
 
-Phiên bản V06.1.19 sửa lỗi giao diện Admin bị trộn HTML và JavaScript khác phiên bản, bổ sung lớp tương thích với mã cũ, kiểm soát cache riêng và đồng bộ trạng thái menu để Dashboard không còn dừng ở lỗi `replaceChildren`. Dữ liệu Supabase hiện có không thay đổi.
+Phiên bản V06.1.20 thiết kế lại About Me thành không gian giới thiệu và khám phá các kênh chính thức. YouTube, website, mạng xã hội và email được trình bày thành thẻ có màu nhận diện, mô tả, lời mời mở rõ ràng và dữ liệu SEO có cấu trúc. Admin có thêm mô tả ngắn cho từng liên kết; không cần thay đổi SQL.
 
 ## Thống kê truy cập
 
