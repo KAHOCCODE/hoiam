@@ -1,4 +1,4 @@
-const ADMIN_UI_VERSION = '06119';
+const ADMIN_UI_VERSION = '06120';
 const state = { stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null };
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -463,9 +463,9 @@ async function deleteAnnouncement(id) { if (!await confirmAction('Xóa thông b�
 
 function socialRow(item = {}) {
   const row = document.createElement('div'); row.className = 'social-row';
-  row.innerHTML = '<input name="label" placeholder="Tên hiển thị"><input name="url" type="url" placeholder="https://…"><input name="icon" placeholder="fa-link"><input name="color" type="color"><button type="button"><i class="fa-solid fa-trash"></i></button>';
-  row.elements = { label: $('[name="label"]', row), url: $('[name="url"]', row), icon: $('[name="icon"]', row), color: $('[name="color"]', row) };
-  row.elements.label.value = item.label || ''; row.elements.url.value = item.url || ''; row.elements.icon.value = item.icon || 'fa-link'; row.elements.color.value = /^#[0-9a-f]{6}$/i.test(item.color || '') ? item.color : '#a78bfa';
+  row.innerHTML = '<div class="social-row-fields"><input name="label" aria-label="Tên liên kết" placeholder="Tên hiển thị"><input name="url" type="url" aria-label="Đường dẫn" placeholder="https://…"><input name="icon" aria-label="Mã icon" placeholder="fa-link"><input name="color" type="color" aria-label="Màu nhận diện"><button type="button" aria-label="Xóa liên kết"><i class="fa-solid fa-trash"></i></button></div><input class="social-description" name="description" maxlength="180" aria-label="Mô tả liên kết" placeholder="Mô tả ngắn để người xem muốn khám phá liên kết này…">';
+  row.elements = { label: $('[name="label"]', row), url: $('[name="url"]', row), description: $('[name="description"]', row), icon: $('[name="icon"]', row), color: $('[name="color"]', row) };
+  row.elements.label.value = item.label || ''; row.elements.url.value = item.url || ''; row.elements.description.value = item.description || ''; row.elements.icon.value = item.icon || 'fa-link'; row.elements.color.value = /^#[0-9a-f]{6}$/i.test(item.color || '') ? item.color : '#a78bfa';
   $('button', row).addEventListener('click', () => row.remove()); return row;
 }
 
@@ -483,7 +483,7 @@ function renderSettings() {
 async function saveSettings(event) {
   event?.preventDefault();
   const form = $('#settingsForm');
-  const socialLinks = $$('.social-row', $('#socialLinkRows')).map((row, index) => ({ id: `link-${index + 1}`, label: row.elements.label.value, url: row.elements.url.value, icon: row.elements.icon.value, color: row.elements.color.value, visible: true })).filter((item) => item.label && item.url);
+  const socialLinks = $$('.social-row', $('#socialLinkRows')).map((row, index) => ({ id: `link-${index + 1}`, label: row.elements.label.value, url: row.elements.url.value, description: row.elements.description.value, icon: row.elements.icon.value, color: row.elements.color.value, visible: true })).filter((item) => item.label && item.url);
   const settings = {
     channelName: form.elements.channelName.value, tagline: form.elements.tagline.value,
     youtubeUrl: form.elements.youtubeUrl.value, logoUrl: form.elements.logoUrl.value,

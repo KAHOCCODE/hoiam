@@ -31,6 +31,7 @@ function sanitizeSettings(input = {}) {
       id: safeText(link.id || `link-${index + 1}`, { max: 50 }),
       label: safeText(link.label, { max: 80 }),
       url: safeUrl(link.url),
+      description: safeText(link.description, { max: 180 }),
       icon: safeText(link.icon, { max: 60, fallback: 'fa-link' }),
       color: /^#[0-9a-f]{6}$/i.test(link.color || '') ? link.color : '#a78bfa',
       visible: link.visible !== false,

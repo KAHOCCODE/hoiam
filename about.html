@@ -26,6 +26,19 @@
     />
     <meta name="twitter:card" content="summary_large_image" />
     <title>Về Hồi Âm Đam Mỹ — Thông tin kênh</title>
+    <script id="aboutStructuredData" type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "name": "Về Hồi Âm Đam Mỹ",
+        "url": "https://hoiam.vercel.app/about.html",
+        "mainEntity": {
+          "@type": "Organization",
+          "name": "Hồi Âm Đam Mỹ",
+          "url": "https://hoiam.vercel.app/"
+        }
+      }
+    </script>
     <link rel="icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,9 +48,9 @@
     />
     <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css" />
-    <link rel="stylesheet" href="/assets/site.css?v=06117" />
+    <link rel="stylesheet" href="/assets/site.css?v=06120" />
     <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
-    <script src="/assets/app.js?v=06117" defer></script>
+    <script src="/assets/app.js?v=06120" defer></script>
     <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
     <script defer src="/_vercel/insights/script.js"></script>
     <script
@@ -96,18 +109,59 @@
         >
       </nav>
     </header>
-    <main class="page-main shell">
-      <section class="about-panel panel">
-        <div id="aboutAvatar" class="about-avatar">
-          <i class="fa-solid fa-headphones-simple"></i>
+    <main class="page-main shell about-page">
+      <section class="about-hero" aria-labelledby="aboutTitle">
+        <div class="about-portrait" aria-hidden="true">
+          <span class="about-orbit about-orbit-one"></span>
+          <span class="about-orbit about-orbit-two"></span>
+          <span class="about-spark spark-one"><i class="fa-solid fa-book-open"></i></span>
+          <span class="about-spark spark-two"><i class="fa-solid fa-microphone-lines"></i></span>
+          <div id="aboutAvatar" class="about-avatar">
+            <i class="fa-solid fa-headphones-simple"></i>
+          </div>
+          <span class="about-portrait-label"><i class="fa-solid fa-wave-square"></i> Hồi Âm đang kết nối</span>
         </div>
-        <div>
-          <span class="eyebrow">About Me</span>
+        <div class="about-intro">
+          <span class="eyebrow"><i class="fa-solid fa-wand-magic-sparkles"></i> Gặp Hồi Âm</span>
           <h1 id="aboutTitle">Hồi Âm Đam Mỹ</h1>
+          <p class="about-tagline" data-channel-tagline>Nơi cộng đồng cùng chọn câu chuyện tiếp theo.</p>
           <div id="aboutBody" class="about-copy">
             <p>Thông tin kênh đang được cập nhật.</p>
           </div>
-          <div id="aboutLinks" class="social-links"></div>
+          <div class="about-actions">
+            <a id="aboutYoutubeAction" class="button button-primary" href="#" target="_blank" rel="noopener noreferrer" hidden>
+              <i class="fa-brands fa-youtube"></i> Ghé kênh YouTube
+            </a>
+            <a class="button button-ghost" href="#aboutChannels">
+              <i class="fa-solid fa-compass"></i> Khám phá các kênh
+            </a>
+          </div>
+          <div class="about-signals" aria-label="Hoạt động của Hồi Âm">
+            <span><i class="fa-solid fa-headphones"></i> Nghe truyện</span>
+            <span><i class="fa-solid fa-users"></i> Cùng đề xuất</span>
+            <span><i class="fa-solid fa-link"></i> Kết nối chính thức</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="aboutChannels" class="about-discovery section" aria-labelledby="aboutChannelsTitle">
+        <header class="about-discovery-head">
+          <div class="section-title">
+            <span class="section-icon icon-cyan"><i class="fa-solid fa-satellite"></i></span>
+            <div>
+              <span class="eyebrow">Chọn một điểm đến</span>
+              <h2 id="aboutChannelsTitle">Khám phá thế giới của Hồi Âm</h2>
+            </div>
+          </div>
+          <p>Mỗi liên kết là một không gian khác nhau để nghe truyện, theo dõi nội dung mới hoặc trò chuyện cùng Hồi Âm.</p>
+        </header>
+        <div class="about-channel-summary">
+          <span><i class="fa-solid fa-shield-halved"></i> Liên kết chính thức</span>
+          <strong id="aboutLinkCount">Đang tải các điểm đến…</strong>
+        </div>
+        <div id="aboutLinks" class="about-link-grid" aria-live="polite">
+          <div class="about-link-skeleton"></div>
+          <div class="about-link-skeleton"></div>
         </div>
       </section>
     </main>

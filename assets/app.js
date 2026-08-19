@@ -1068,6 +1068,51 @@ async function submitSuggestion(event) {
   finally { button.disabled = false; }
 }
 
+function aboutLinkPresentation(item) {
+  let hostname = '';
+  try { hostname = new URL(item.url).hostname.replace(/^www\./, ''); } catch { hostname = ''; }
+  const signature = `${hostname} ${item.icon || ''} ${item.label || ''}`.toLowerCase();
+  if (item.url.startsWith('mailto:')) return {
+    kind: 'Liên hệ', hostname: 'Gửi email trực tiếp', featured: false,
+    description: item.description || 'Gửi lời nhắn, góp ý hoặc trao đổi trực tiếp với Hồi Âm.',
+  };
+  if (signature.includes('youtube')) return {
+    kind: 'Kênh YouTube', hostname: hostname || 'youtube.com', featured: true,
+    description: item.description || 'Nghe các truyện đã lên sóng và theo dõi những nội dung mới nhất từ kênh.',
+  };
+  if (/(facebook|instagram|tiktok|discord|threads|twitter|x\.com)/.test(signature)) return {
+    kind: 'Mạng xã hội', hostname: hostname || 'Kết nối cộng đồng', featured: false,
+    description: item.description || 'Theo dõi Hồi Âm và gặp gỡ cộng đồng trên nền tảng này.',
+  };
+  return {
+    kind: 'Website', hostname: hostname || 'Trang chính thức', featured: false,
+    description: item.description || 'Khám phá thêm nội dung và những tiện ích khác trong hệ sinh thái Hồi Âm.',
+  };
+}
+
+function updateAboutStructuredData(settings, items) {
+  const host = $('#aboutStructuredData');
+  if (!host) return;
+  const sameAs = items
+    .map((item) => item.url)
+    .filter((url) => /^https?:\/\//i.test(url));
+  host.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    name: `Về ${settings.channelName}`,
+    description: settings.tagline,
+    url: 'https://hoiam.vercel.app/about.html',
+    mainEntity: {
+      '@type': 'Organization',
+      name: settings.channelName,
+      description: settings.tagline,
+      url: 'https://hoiam.vercel.app/',
+      ...(settings.logoUrl ? { logo: settings.logoUrl } : {}),
+      ...(sameAs.length ? { sameAs } : {}),
+    },
+  });
+}
+
 function applySettings() {
   const settings = state.settings;
   if (!settings) return;
@@ -1076,20 +1121,58 @@ function applySettings() {
   if (page === 'about') {
     $('#aboutTitle').textContent = settings.aboutTitle || settings.channelName;
     const body = $('#aboutBody'); body.replaceChildren();
-    String(settings.aboutBody || 'Thông tin kênh đang được cập nhật.').split(/\n+/).filter(Boolean).forEach((line) => body.append(element('p', '', line)));
+    const defaultAbout = 'Hồi Âm là nơi những câu chuyện được lắng nghe, chọn lựa và tiếp nối cùng cộng đồng.\nGhé qua từng điểm đến bên dưới để tìm không gian hợp với bạn.';
+    String(settings.aboutBody || defaultAbout).split(/\n+/).filter(Boolean).forEach((line) => body.append(element('p', '', line)));
+    document.title = `${settings.aboutTitle || settings.channelName} — Thông tin kênh`;
+    const pageDescription = document.querySelector('meta[name="description"]');
+    if (pageDescription) pageDescription.content = settings.tagline;
     const avatar = $('#aboutAvatar');
     if (settings.logoUrl && avatar) { avatar.replaceChildren(); const img = new Image(); img.src = settings.logoUrl; img.alt = settings.channelName; avatar.append(img); }
     const links = $('#aboutLinks');
     if (links) {
       links.replaceChildren();
       const items = [...(settings.socialLinks || [])];
-      if (settings.youtubeUrl) items.unshift({ label: 'YouTube', url: settings.youtubeUrl, icon: 'fa-youtube', color: '#ff496f', visible: true });
-      if (settings.contactEmail) items.push({ label: settings.contactEmail, url: `mailto:${settings.contactEmail}`, icon: 'fa-envelope', color: '#a78bfa', visible: true });
-      items.filter((item) => item.visible !== false).forEach((item) => {
-        const link = element('a', 'social-link'); link.href = item.url; link.target = item.url.startsWith('mailto:') ? '_self' : '_blank'; link.rel = 'noopener noreferrer'; link.style.setProperty('--link-color', item.color || '#a78bfa');
-        const brandIcon = /(?:youtube|facebook|instagram|tiktok|discord|x-twitter|threads)/.test(item.icon || '');
-        const iconNode = element('i', `${brandIcon ? 'fa-brands' : 'fa-solid'} ${item.icon || 'fa-link'}`); link.append(iconNode, element('span', '', item.label)); links.append(link);
+      if (settings.youtubeUrl) items.unshift({ label: 'Hồi Âm trên YouTube', url: settings.youtubeUrl, icon: 'fa-youtube', color: '#ff496f', visible: true });
+      if (settings.contactEmail) items.push({ label: 'Gửi lời nhắn cho Hồi Âm', url: `mailto:${settings.contactEmail}`, icon: 'fa-envelope', color: '#a78bfa', visible: true });
+      const seen = new Set();
+      const visibleItems = items.filter((item) => {
+        const key = String(item.url || '').trim().replace(/\/$/, '').toLowerCase();
+        if (item.visible === false || !key || seen.has(key)) return false;
+        seen.add(key); return true;
       });
+      visibleItems.forEach((item) => {
+        const presentation = aboutLinkPresentation(item);
+        const link = element('a', `about-link-card${presentation.featured ? ' featured' : ''}`);
+        link.href = item.url;
+        link.target = item.url.startsWith('mailto:') ? '_self' : '_blank';
+        link.rel = 'noopener noreferrer';
+        link.style.setProperty('--link-color', item.color || '#a78bfa');
+        link.setAttribute('aria-label', `${item.label} — ${presentation.kind}`);
+        const iconWrap = element('span', 'about-link-icon');
+        const brandIcon = /(?:youtube|facebook|instagram|tiktok|discord|x-twitter|threads)/.test(item.icon || '');
+        iconWrap.append(element('i', `${brandIcon ? 'fa-brands' : 'fa-solid'} ${item.icon || 'fa-link'}`));
+        const heading = element('div', 'about-link-heading');
+        heading.append(iconWrap, element('span', 'about-link-kind', presentation.kind));
+        const footer = element('span', 'about-link-footer');
+        footer.append(element('small', '', presentation.hostname));
+        const open = element('span', '', item.url.startsWith('mailto:') ? 'Viết email' : 'Mở ngay');
+        open.append(icon('arrow-up-right-from-square'));
+        footer.append(open);
+        link.append(
+          element('span', 'about-link-glow'),
+          heading,
+          element('h3', '', item.label),
+          element('p', '', presentation.description),
+          footer,
+        );
+        links.append(link);
+      });
+      if (!visibleItems.length) links.append(empty('Chưa có điểm đến', 'Các liên kết chính thức sẽ sớm xuất hiện tại đây.'));
+      const count = $('#aboutLinkCount');
+      if (count) count.textContent = visibleItems.length ? `${number.format(visibleItems.length)} điểm đến đang chờ bạn khám phá` : 'Các điểm đến đang được cập nhật';
+      const youtubeAction = $('#aboutYoutubeAction');
+      if (youtubeAction && settings.youtubeUrl) { youtubeAction.href = settings.youtubeUrl; youtubeAction.hidden = false; }
+      updateAboutStructuredData(settings, visibleItems);
     }
   }
 }
