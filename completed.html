@@ -105,32 +105,7 @@
         <h1>Truyện đã hoàn thành</h1>
         <p>Những câu chuyện đã được đăng đầy đủ trên kênh.</p>
       </header>
-      <section class="panel">
-        <div class="filters">
-          <label class="search-box"
-            ><i class="fa-solid fa-magnifying-glass"></i
-            ><input
-              id="searchInput"
-              type="search"
-              placeholder="Tìm tên truyện…" /></label
-          ><label
-            ><select id="versionFilter">
-              <option value="all">Convert &amp; Edit</option>
-              <option value="Convert">Convert</option>
-              <option value="Edit">Edit</option>
-            </select></label
-          ><label
-            ><select id="sourceFilter">
-              <option value="all">Mọi nguồn</option>
-            </select></label
-          ><label
-            ><select id="sortSelect">
-              <option value="newest">Hoàn thành mới nhất</option>
-              <option value="oldest">Cũ nhất</option>
-              <option value="title">Tên A → Z</option>
-            </select></label
-          >
-        </div>
+      <section class="completed-section" aria-label="Danh sách truyện đã hoàn thành">
         <div id="completedGrid" class="completed-grid" aria-live="polite"></div>
       </section>
     </main>
@@ -140,17 +115,17 @@
         ><div><a href="/"><i class="fa-solid fa-arrow-left"></i> Trang chủ</a><a href="/privacy.html">Quyền riêng tư</a><a href="/terms.html">Điều khoản</a></div>
       </div>
     </footer>
-    <dialog id="storyDialog" class="modal">
+    <dialog id="storyDialog" class="modal modal-story" aria-labelledby="storyDialogTitle">
       <article class="modal-card detail-card">
         <button
           class="modal-close"
           data-close-dialog
           type="button"
-          aria-label="Đóng"
+          aria-label="Đóng cửa sổ"
         >
-          ×
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
-        <div id="storyDialogContent"></div>
+        <div id="storyDialogContent" class="story-dialog-content"></div>
       </article>
     </dialog>
   </body>

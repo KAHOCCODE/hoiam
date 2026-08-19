@@ -66,6 +66,7 @@ for (const name of htmlFiles) {
 }
 
 const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const completedHtml = fs.readFileSync(path.join(root, 'completed.html'), 'utf8');
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const privacyHtml = fs.readFileSync(path.join(root, 'privacy.html'), 'utf8');
 const termsHtml = fs.readFileSync(path.join(root, 'terms.html'), 'utf8');
@@ -92,6 +93,9 @@ assert.match(homeHtml, /id="suggestionDialog"[^>]+aria-labelledby="suggestionDia
 assert.match(homeHtml, /id="donationDialog"[^>]+aria-labelledby="donationTitle"/, 'Donation modal needs an accessible title');
 assert.match(homeHtml, /id="replacementDialog"[^>]+aria-labelledby="replacementDialogTitle"/, 'Replacement modal needs an accessible title');
 assert.match(homeHtml, /data-modal-initial-focus/, 'Forms need an intentional initial focus target');
+assert.match(completedHtml, /id="completedGrid"/, 'Completed page needs its story list');
+assert.doesNotMatch(completedHtml, /id="(?:searchInput|versionFilter|sourceFilter|sortSelect)"/, 'Completed page must stay free of unnecessary filters');
+assert.match(completedHtml, /id="storyDialog"[^>]+aria-labelledby="storyDialogTitle"/, 'Completed story modal needs the same accessible title');
 assert.match(homeHtml, /name="story_select" type="hidden"/, 'Donation story value needs one hidden form field');
 assert.doesNotMatch(homeHtml, /<select[^>]+name="story_select"/, 'Donation must not show a second native story selector');
 assert.doesNotMatch(homeHtml, /cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i, 'Icons must work without the CDN');
@@ -122,6 +126,8 @@ assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its ow
 assert.match(siteCss, /\.donation-story-menu\s*\{[^}]*overflow:\s*auto/i, 'Story search must scroll naturally with its options');
 assert.match(siteCss, /\.story-dialog-content\s*\{[^}]*grid-template-columns:/i, 'Story modal needs a structured desktop layout');
 assert.match(siteCss, /max-height:\s*calc\(100dvh/i, 'Modals must fit the mobile viewport');
+assert.match(siteCss, /\.mobile-nav\.is-open\s*\{[^}]*opacity:\s*1/i, 'Mobile navigation needs a visible animated state');
+assert.match(siteCss, /\.direct-source-link\s*\{/, 'Direct source actions need a consistent visual style');
 assert.equal(
   fs.readFileSync(path.join(root, 'ads.txt'), 'utf8').trim(),
   'google.com, pub-6051983418402912, DIRECT, f08c47fec0942fa0',
@@ -155,6 +161,11 @@ assert.match(appJs, /app\.autofill \? 'Ưu tiên' : 'Mở app'/, 'Autofill bank 
 assert.match(appJs, /const dialogReturnFocus = new WeakMap\(\)/, 'Modals need to remember the opener');
 assert.match(appJs, /addEventListener\('cancel'/, 'Native dialog cancellation needs controlled cleanup');
 assert.match(appJs, /restoreDialogFocus\(dialog\)/, 'Closing a modal needs to restore keyboard focus');
+assert.match(appJs, /function directSourceLink\(/, 'Story cards need a reusable direct source action');
+assert.match(appJs, /link\.target = '_blank'/, 'Direct source actions need to open separately');
+assert.match(appJs, /function setMobileMenu\(open\)/, 'Mobile menu needs one consistent state controller');
+assert.match(appJs, /window\.addEventListener\('scroll', requestSync/, 'Section navigation needs to follow scrolling');
+assert.match(appJs, /\['ArrowLeft', 'ArrowRight'\]/, 'Library tabs need keyboard navigation');
 assert.match(appJs, /dataset\.locked = String\(locked\)/, 'Story card donations must lock the selected story');
 assert.match(appJs, /hoiam_bank_trip_started/, 'Donation flow must remember a trip to the bank app');
 assert.match(appJs, /addEventListener\('visibilitychange'/, 'Donation form must return when the bank app becomes hidden');

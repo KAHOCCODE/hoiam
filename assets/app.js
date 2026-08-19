@@ -154,6 +154,18 @@ function sourceDomain(story) {
   catch { return 'Không rõ nguồn'; }
 }
 
+function directSourceLink(story, label = 'Mở nguồn', compact = false) {
+  if (!story?.linkstory) return null;
+  const link = element('a', `direct-source-link${compact ? ' compact' : ''}`);
+  link.href = story.linkstory;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.setAttribute('aria-label', `${label} của truyện ${story.title}`);
+  link.append(icon('arrow-up-right-from-square'), document.createTextNode(` ${label}`));
+  link.addEventListener('click', (event) => event.stopPropagation());
+  return link;
+}
+
 function youtubeId(value) {
   try {
     const url = new URL(value);
@@ -281,11 +293,14 @@ function storyCard(story) {
     progress.append(icon('heart'), document.createTextNode(` ${number.format(story.votes)} lượt chọn`));
     footer.append(progress);
   }
+  const footerActions = element('div', 'story-card-actions');
+  const sourceLink = directSourceLink(story);
+  if (sourceLink) footerActions.append(sourceLink);
   const view = element('button', 'text-button', 'Xem chi tiết');
   view.type = 'button';
   view.append(icon('arrow-right'));
   view.addEventListener('click', () => showStory(story.id));
-  footer.append(view);
+  footerActions.append(view); footer.append(footerActions);
   body.append(head, title, note);
   if (story.sourceWarningPublic && story.sourceStatus === 'confirmed') {
     const warning = element('div', 'source-alert');
@@ -297,7 +312,7 @@ function storyCard(story) {
     if (!event.target.closest('button,a')) showStory(story.id);
   });
   card.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') showStory(story.id);
+    if (event.key === 'Enter' && !event.target.closest('button,a')) showStory(story.id);
   });
   return card;
 }
@@ -326,10 +341,14 @@ function topCard(story, index) {
   const note = element('p', 'top-note', story.note || 'Mở chi tiết để xem thông tin truyện.');
   const actions = element('div', 'top-actions');
   actions.append(voteButton(story, true));
-  const detail = element('span', 'top-detail', 'Xem chi tiết '); detail.append(icon('arrow-right')); actions.append(detail);
+  const quickLinks = element('div', 'top-quick-links');
+  const sourceLink = directSourceLink(story, 'Nguồn', true);
+  if (sourceLink) quickLinks.append(sourceLink);
+  const detail = element('span', 'top-detail', 'Xem chi tiết '); detail.append(icon('arrow-right'));
+  quickLinks.append(detail); actions.append(quickLinks);
   content.append(meta, note, actions);
   card.append(visual, content);
-  card.addEventListener('click', (event) => { if (!event.target.closest('button')) showStory(story.id); });
+  card.addEventListener('click', (event) => { if (!event.target.closest('button,a')) showStory(story.id); });
   return card;
 }
 
@@ -375,6 +394,8 @@ function renderAiring() {
       link.addEventListener('click', () => trackMetric(story.id, 'youtube'));
       actions.append(link);
     }
+    const sourceLink = directSourceLink(story, 'Nguồn', true);
+    if (sourceLink) actions.append(sourceLink);
     const detail = element('button', 'icon-button'); detail.type = 'button'; detail.append(icon('arrow-right')); detail.addEventListener('click', () => showStory(story.id));
     actions.append(detail); copy.append(actions); card.append(visual, copy); return card;
   }));
@@ -445,18 +466,8 @@ function renderLibrary() {
 function renderCompleted() {
   const host = $('#completedGrid');
   if (!host) return;
-  renderSourceOptions(state.stories.filter((item) => item.status === 'đã hoàn thành'));
-  const query = ($('#searchInput')?.value || '').trim().toLocaleLowerCase('vi');
-  const version = $('#versionFilter')?.value || 'all';
-  const source = $('#sourceFilter')?.value || 'all';
-  const sort = $('#sortSelect')?.value || 'newest';
   const list = state.stories.filter((story) => story.status === 'đã hoàn thành')
-    .filter((story) => !query || story.title.toLocaleLowerCase('vi').includes(query))
-    .filter((story) => version === 'all' || story.version === version)
-    .filter((story) => source === 'all' || sourceDomain(story) === source);
-  list.sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title, 'vi')
-    : sort === 'oldest' ? new Date(a.completedAt || a.createdAt) - new Date(b.completedAt || b.createdAt)
-      : new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+    .sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
   host.replaceChildren(...(list.length ? list.map((story) => {
     const card = element('article', 'completed-card');
     const visual = element('button', 'completed-visual'); visual.type = 'button';
@@ -465,12 +476,16 @@ function renderCompleted() {
     visual.addEventListener('click', () => showStory(story.id));
     const copy = element('div', 'completed-copy');
     copy.append(element('h2', '', story.title), element('p', '', `${story.version} · ${sourceDomain(story)}`));
+    const completedActions = element('div', 'completed-actions');
+    const sourceLink = directSourceLink(story);
+    if (sourceLink) completedActions.append(sourceLink);
     if (story.youtubelink) {
       const link = element('a', 'button button-primary compact', 'Nghe trên YouTube ');
       link.href = story.youtubelink; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.append(icon('arrow-up-right-from-square'));
       link.addEventListener('click', () => trackMetric(story.id, 'youtube'));
-      copy.append(link);
+      completedActions.append(link);
     }
+    if (completedActions.childElementCount) copy.append(completedActions);
     card.append(visual, copy); return card;
   }) : [empty('Kho hoàn thành đang trống', 'Admin có thể thêm lại các truyện cũ trong dashboard.') ]));
 }
@@ -1080,8 +1095,11 @@ function applySettings() {
 }
 
 function setActiveNavigation(className) {
-  $$('.desktop-nav a,.mobile-nav a').forEach((link) => {
-    if (link.classList.contains(className)) link.setAttribute('aria-current', 'page');
+  const links = $$('.desktop-nav a,.mobile-nav a');
+  if (links.some((link) => link.classList.contains(className) && link.hasAttribute('aria-current'))) return;
+  const sectionNav = ['nav-trending', 'nav-airing', 'nav-library'].includes(className);
+  links.forEach((link) => {
+    if (link.classList.contains(className)) link.setAttribute('aria-current', sectionNav ? 'location' : 'page');
     else link.removeAttribute('aria-current');
   });
 }
@@ -1094,15 +1112,50 @@ function setupNavigation() {
   const sections = ['trending', 'airing', 'library']
     .map((id) => document.getElementById(id)).filter(Boolean);
   const activate = (id) => setActiveNavigation(`nav-${id}`);
-  activate((location.hash || '#trending').slice(1));
-
   $$('[data-nav-section]').forEach((link) => link.addEventListener('click', () => activate(link.dataset.navSection)));
-  if (!('IntersectionObserver' in window)) return;
-  const observer = new IntersectionObserver((entries) => {
-    const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-    if (visible) activate(visible.target.id);
-  }, { rootMargin: '-18% 0px -58% 0px', threshold: [0, .15, .35, .6] });
-  sections.forEach((section) => observer.observe(section));
+  let navigationFrame = 0;
+  const sync = () => {
+    navigationFrame = 0;
+    const marker = Math.min(window.innerHeight * .32, 250);
+    let active = sections[0];
+    sections.forEach((section) => { if (section.getBoundingClientRect().top <= marker) active = section; });
+    if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) active = sections.at(-1);
+    if (active) activate(active.id);
+  };
+  const requestSync = () => { if (!navigationFrame) navigationFrame = window.requestAnimationFrame(sync); };
+  window.addEventListener('scroll', requestSync, { passive: true });
+  window.addEventListener('resize', requestSync);
+  window.requestAnimationFrame(sync);
+}
+
+let mobileMenuTimer = 0;
+function setMobileMenu(open) {
+  const menu = $('#menuButton'); const nav = $('#mobileNav');
+  if (!menu || !nav) return;
+  window.clearTimeout(mobileMenuTimer);
+  menu.setAttribute('aria-expanded', String(open));
+  menu.setAttribute('aria-label', open ? 'Đóng menu' : 'Mở menu');
+  const menuIcon = $('i', menu);
+  if (menuIcon) menuIcon.className = `fa-solid fa-${open ? 'xmark' : 'bars-staggered'}`;
+  if (open) {
+    nav.hidden = false;
+    nav.getBoundingClientRect();
+    nav.classList.add('is-open');
+    return;
+  }
+  nav.classList.remove('is-open');
+  const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220;
+  mobileMenuTimer = window.setTimeout(() => { if (!nav.classList.contains('is-open')) nav.hidden = true; }, delay);
+}
+
+function animateLibraryView(previousView, nextView) {
+  const host = $('#storyGrid');
+  if (!host?.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const direction = nextView === 'selected' && previousView !== 'selected' ? 1 : -1;
+  host.animate([
+    { opacity: .3, transform: `translateX(${direction * 10}px)` },
+    { opacity: 1, transform: 'translateX(0)' },
+  ], { duration: 190, easing: 'cubic-bezier(.2,.8,.2,1)' });
 }
 
 function renderAnnouncements() {
@@ -1149,8 +1202,8 @@ async function loadStories() {
 
 function bindEvents() {
   const menu = $('#menuButton'); const nav = $('#mobileNav');
-  menu?.addEventListener('click', () => { const open = menu.getAttribute('aria-expanded') === 'true'; menu.setAttribute('aria-expanded', String(!open)); nav.hidden = open; });
-  $$('#mobileNav a').forEach((link) => link.addEventListener('click', () => { nav.hidden = true; menu?.setAttribute('aria-expanded', 'false'); }));
+  menu?.addEventListener('click', () => setMobileMenu(menu.getAttribute('aria-expanded') !== 'true'));
+  $$('#mobileNav a').forEach((link) => link.addEventListener('click', () => setMobileMenu(false)));
   $$('[data-open-suggestion]').forEach((button) => button.addEventListener('click', () => openDialog($('#suggestionDialog'))));
   $$('[data-open-external-donation]').forEach((button) => button.addEventListener('click', () => openDonation(null, true)));
   $$('[data-close-dialog]').forEach((button) => button.addEventListener('click', () => closeDialog(button.closest('dialog'))));
@@ -1171,9 +1224,20 @@ function bindEvents() {
     $(`#${id}`)?.addEventListener(id === 'searchInput' ? 'input' : 'change', () => { state.visibleLimit = 12; renderLibrary(); renderCompleted(); });
   });
   $$('[data-library-view]').forEach((button) => button.addEventListener('click', () => {
-    state.libraryView = button.dataset.libraryView === 'selected' ? 'selected' : 'proposed';
+    const nextView = button.dataset.libraryView === 'selected' ? 'selected' : 'proposed';
+    if (nextView === state.libraryView) return;
+    const previousView = state.libraryView;
+    state.libraryView = nextView;
     state.visibleLimit = 12;
     renderLibrary();
+    animateLibraryView(previousView, nextView);
+  }));
+  $$('[data-library-view]').forEach((button, index, tabs) => button.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    const offset = event.key === 'ArrowRight' ? 1 : -1;
+    const next = tabs[(index + offset + tabs.length) % tabs.length];
+    next.focus(); next.click();
   }));
   $('#loadMoreButton')?.addEventListener('click', () => { state.visibleLimit += 12; renderLibrary(); });
   const donationForm = $('#donationForm');
@@ -1185,7 +1249,14 @@ function bindEvents() {
     const picker = $('#donationStoryPicker');
     if (picker && !picker.contains(event.target)) closeDonationStoryPicker();
   });
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeDonationStoryPicker(); });
+  document.addEventListener('click', (event) => {
+    if (nav && !nav.hidden && !event.target.closest('.site-header')) setMobileMenu(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    closeDonationStoryPicker(); setMobileMenu(false);
+  });
+  window.addEventListener('resize', () => { if (window.innerWidth > 1000 && nav && !nav.hidden) setMobileMenu(false); });
   window.addEventListener('focus', scheduleDonationReturnCheck);
   window.addEventListener('pageshow', scheduleDonationReturnCheck);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleDonationReturnCheck(); });
