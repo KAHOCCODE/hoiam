@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.16
+# Hồi Âm Đam Mỹ V06.1.17
 
-Phiên bản V06.1.16 thêm nút mở nguồn trực tiếp trên các thẻ truyện, tinh gọn trang Đã hoàn thành và đồng bộ chuyển động của menu, tab cùng thao tác bàn phím. Dữ liệu Supabase hiện có không thay đổi.
+Phiên bản V06.1.17 thiết kế lại trang Hướng dẫn theo từng thao tác, bổ sung mục lục tương tác, các bước ngắn dễ đọc, trạng thái truyện rõ ràng và giao diện thích ứng tốt hơn trên điện thoại. Dữ liệu Supabase hiện có không thay đổi.
 
 ## Thống kê truy cập
 
