@@ -160,6 +160,10 @@ assert.match(siteCss, /\.guide-index\s*\{[^}]*position:\s*sticky/i, 'Guide index
 assert.match(siteCss, /\.guide-final-cta\s*\{/, 'Guide page needs a clear final action');
 assert.match(adminCss, /\.side-subnav\s*\{/, 'Admin story states need a second-level navigation');
 assert.match(adminCss, /\.side-nav-group\.active \.side-subnav\s*\{/, 'Admin story submenu should only expand in its own section');
+assert.match(adminHtml, /class="side-subnav-label"/, 'Admin story submenu needs a visible context label');
+assert.match(adminCss, /\.side-subnav-label\s*\{/, 'Admin story submenu label needs a distinct visual treatment');
+assert.match(adminCss, /\.side-subnav button\{[^}]*min-height:41px!important/, 'Admin story status targets must be easy to read and click');
+assert.match(adminCss, /\.data-table td\{font-size:\.79rem\}/, 'Admin table text must remain readable');
 assert.match(adminCss, /\.overview-snapshot\s*\{/, 'Admin overview needs a visual snapshot layout');
 assert.match(adminCss, /\.story-primary-toolbar\s*\{/, 'Admin story manager needs a focused primary toolbar');
 assert.match(adminCss, /\.drawer-form-section\s*\{/, 'Admin story editor needs progressive sections');

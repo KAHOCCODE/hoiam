@@ -133,7 +133,9 @@ function switchView(name) {
     if (active) button.setAttribute('aria-current', 'page');
     else button.removeAttribute('aria-current');
   });
-  $('[data-nav-group="stories"]')?.classList.toggle('active', name === 'stories');
+  const storyNavGroup = $('[data-nav-group="stories"]');
+  storyNavGroup?.classList.toggle('active', name === 'stories');
+  $('[data-view="stories"]', storyNavGroup)?.setAttribute('aria-expanded', String(name === 'stories'));
   const label = ({ overview: 'Tổng quan', stories: 'Truyện', donations: 'Donate', sources: 'Nguồn truyện', announcements: 'Thông báo', settings: 'Cài đặt' })[name];
   $('#currentViewLabel').textContent = name === 'stories' ? `Kho truyện / ${statusLabel($('#storyStatusFilter').value === 'all' ? 'Tất cả' : $('#storyStatusFilter').value)}` : label || name;
   $('.sidebar').classList.remove('open');

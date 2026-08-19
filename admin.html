@@ -36,14 +36,15 @@
       <nav id="adminNav" class="side-nav" aria-label="Khu vực quản trị">
         <button class="active" data-view="overview" type="button"><i class="fa-solid fa-chart-pie"></i><span>Tổng quan</span></button>
         <div class="side-nav-group" data-nav-group="stories">
-          <button data-view="stories" type="button"><i class="fa-solid fa-book-open"></i><span>Kho truyện</span><b id="navStoryCount">0</b></button>
+          <button data-view="stories" type="button" aria-expanded="false"><i class="fa-solid fa-book-open"></i><span>Kho truyện</span><b id="navStoryCount">0</b><i class="fa-solid fa-chevron-down side-nav-chevron" aria-hidden="true"></i></button>
           <div class="side-subnav" role="group" aria-label="Trạng thái truyện">
-            <button class="active" data-story-status="all" type="button"><span>Tất cả</span><b id="storyNavAllCount">0</b></button>
-            <button data-story-status="đề xuất" type="button"><span>Đề xuất</span><b id="storyNavProposedCount">0</b></button>
-            <button data-story-status="đã chọn" type="button"><span>Đã chọn</span><b id="storyNavSelectedCount">0</b></button>
-            <button data-story-status="đang lên sóng" type="button"><span>Đang lên sóng</span><b id="storyNavAiringCount">0</b></button>
-            <button data-story-status="đã hoàn thành" type="button"><span>Hoàn thành</span><b id="storyNavCompletedCount">0</b></button>
-            <button data-story-status="trash" type="button"><span>Thùng rác</span><b id="storyNavTrashCount">0</b></button>
+            <span class="side-subnav-label"><i class="fa-solid fa-list-check"></i> Danh sách theo trạng thái</span>
+            <button class="active" data-story-status="all" type="button"><span><i class="fa-solid fa-layer-group"></i>Tất cả truyện</span><b id="storyNavAllCount">0</b></button>
+            <button data-story-status="đề xuất" type="button"><span><i class="fa-solid fa-inbox"></i>Đề xuất</span><b id="storyNavProposedCount">0</b></button>
+            <button data-story-status="đã chọn" type="button"><span><i class="fa-solid fa-pen-nib"></i>Đã chọn</span><b id="storyNavSelectedCount">0</b></button>
+            <button data-story-status="đang lên sóng" type="button"><span><i class="fa-solid fa-tower-broadcast"></i>Đang lên sóng</span><b id="storyNavAiringCount">0</b></button>
+            <button data-story-status="đã hoàn thành" type="button"><span><i class="fa-solid fa-circle-check"></i>Hoàn thành</span><b id="storyNavCompletedCount">0</b></button>
+            <button data-story-status="trash" type="button"><span><i class="fa-solid fa-trash-can"></i>Thùng rác</span><b id="storyNavTrashCount">0</b></button>
           </div>
         </div>
         <button data-view="donations" type="button"><i class="fa-solid fa-fish-fins"></i><span>Donate</span><b id="navDonationCount">0</b></button>
