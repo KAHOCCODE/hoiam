@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.24
+# Hồi Âm Đam Mỹ V06.1.25
 
-Phiên bản V06.1.24 sửa triệt để hiện tượng Admin mobile bị kéo dài ngang do bảng còn kế thừa chiều rộng tối thiểu cũ. Mọi vùng quản trị được giới hạn theo màn hình, tiêu đề và dữ liệu dài tự xuống dòng mà không làm lệch thanh công cụ. Không cần thay đổi SQL.
+Phiên bản V06.1.25 sửa bố cục trình chỉnh sửa truyện trên điện thoại: các nhóm thông tin xếp dọc ổn định, không còn chồng lên trường nhập; phần nội dung cuộn độc lập và luôn bắt đầu từ đầu mỗi khi mở truyện. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 
