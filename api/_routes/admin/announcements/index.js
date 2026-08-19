@@ -10,7 +10,7 @@ const { audit } = require('../../_lib/audit');
 function payloadFrom(body) {
   const tone = ['info', 'success', 'warning', 'danger'].includes(body.tone) ? body.tone : 'info';
   const displayMode = ['banner', 'toast', 'modal'].includes(body.display_mode) ? body.display_mode : 'banner';
-  const pageScope = ['all', 'home', 'library', 'completed', 'guide'].includes(body.page_scope)
+  const pageScope = ['all', 'home', 'library', 'completed', 'guide', 'about', 'privacy', 'terms'].includes(body.page_scope)
     ? body.page_scope
     : 'all';
   return {

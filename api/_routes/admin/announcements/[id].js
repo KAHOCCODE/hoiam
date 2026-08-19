@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     if ('message' in body) payload.message = safeMultilineText(body.message, { max: 3000 });
     if ('tone' in body) payload.tone = ['info', 'success', 'warning', 'danger'].includes(body.tone) ? body.tone : 'info';
     if ('display_mode' in body) payload.display_mode = ['banner', 'toast', 'modal'].includes(body.display_mode) ? body.display_mode : 'banner';
-    if ('page_scope' in body) payload.page_scope = safeText(body.page_scope, { max: 30, fallback: 'all' });
+    if ('page_scope' in body) payload.page_scope = ['all', 'home', 'library', 'completed', 'guide', 'about', 'privacy', 'terms'].includes(body.page_scope) ? body.page_scope : 'all';
     if ('dismissible' in body) payload.dismissible = body.dismissible !== false;
     if ('enabled' in body) payload.enabled = body.enabled !== false;
     if ('startsat' in body) payload.startsat = safeDate(body.startsat);

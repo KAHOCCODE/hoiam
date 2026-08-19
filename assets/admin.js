@@ -516,8 +516,33 @@ async function reviewReplacement(id, action) {
 
 function renderAnnouncements() {
   const host = $('#announcementList'); host.replaceChildren();
-  state.announcements.forEach((item) => { const row = document.createElement('div'); row.className = 'announcement-item'; row.innerHTML = `<span class="announcement-tone"><i class="fa-solid fa-bell"></i></span><div><strong></strong><small></small></div><div class="actions"><button class="small-btn toggle" type="button">${item.enabled ? 'Tắt' : 'Bật'}</button><button class="small-btn delete" type="button"><i class="fa-solid fa-trash"></i></button></div>`; $('strong', row).textContent = item.title; $('small', row).textContent = `${item.display_mode} · ${item.message}`; $('.toggle', row).addEventListener('click', () => editAnnouncement(item.id, { enabled: !item.enabled })); $('.delete', row).addEventListener('click', () => deleteAnnouncement(item.id)); host.append(row); });
+  const modeLabels = { banner: 'Thanh thông báo', toast: 'Góc màn hình', modal: 'Hộp thoại' };
+  const scopeLabels = { all: 'Toàn website', home: 'Trang chủ', library: 'Kho truyện', completed: 'Đã hoàn thành', guide: 'Hướng dẫn', about: 'About Me', privacy: 'Quyền riêng tư', terms: 'Điều khoản' };
+  state.announcements.forEach((item) => {
+    const row = document.createElement('div'); row.className = `announcement-item${item.enabled ? '' : ' disabled'}`;
+    row.innerHTML = `<span class="announcement-tone"><i class="fa-solid fa-bell"></i></span><div><strong></strong><small></small></div><div class="actions"><button class="small-btn edit" type="button"><i class="fa-solid fa-pen"></i> Sửa</button><button class="small-btn toggle" type="button">${item.enabled ? 'Tạm ẩn' : 'Bật lại'}</button><button class="small-btn delete" type="button" aria-label="Xóa thông báo"><i class="fa-solid fa-trash"></i></button></div>`;
+    $('strong', row).textContent = item.title;
+    $('small', row).textContent = `${modeLabels[item.display_mode] || 'Thanh thông báo'} · ${scopeLabels[item.page_scope] || 'Toàn website'} · ${item.message}`;
+    $('.edit', row).addEventListener('click', () => openAnnouncementDialog(item));
+    $('.toggle', row).addEventListener('click', () => editAnnouncement(item.id, { enabled: !item.enabled }));
+    $('.delete', row).addEventListener('click', () => deleteAnnouncement(item.id)); host.append(row);
+  });
   if (!host.children.length) host.innerHTML = '<div class="empty">Chưa có thông báo.</div>';
+}
+
+function openAnnouncementDialog(item = null) {
+  const form = $('#announcementForm'); form.reset(); state.activeAnnouncement = item;
+  form.elements.id.value = item?.id || '';
+  for (const name of ['title','message','tone','display_mode','page_scope']) {
+    if (item && form.elements[name]) form.elements[name].value = item[name] || (name === 'page_scope' ? 'all' : '');
+  }
+  form.elements.startsat.value = localDateTime(item?.startsat);
+  form.elements.endsat.value = localDateTime(item?.endsat);
+  form.elements.dismissible.checked = item ? item.dismissible !== false : true;
+  $('#announcementEyebrow').textContent = item ? 'Chỉnh sửa thông báo' : 'Thông báo mới';
+  $('#announcementDialogTitle').textContent = item ? 'Cập nhật thông báo' : 'Đăng thông báo';
+  $('#saveAnnouncementButton').innerHTML = item ? '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi' : '<i class="fa-solid fa-paper-plane"></i> Đăng thông báo';
+  openDialog($('#announcementDialog'));
 }
 
 async function editAnnouncement(id, payload) { try { await request(`/admin/announcements/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }); await reloadAnnouncements(); toast('Đã cập nhật thông báo.'); } catch (error) { toast(error.message, 'error'); } }
@@ -600,9 +625,13 @@ async function addExternalDonation(event) {
   catch (error) { toast(error.message, 'error'); }
 }
 
-async function createAnnouncement(event) {
+async function saveAnnouncement(event) {
   event.preventDefault(); const form = event.currentTarget; const data = Object.fromEntries(new FormData(form)); data.dismissible = form.elements.dismissible.checked;
-  try { await request('/admin/announcements', { method: 'POST', body: JSON.stringify(data) }); closeDialog($('#announcementDialog')); form.reset(); form.elements.dismissible.checked = true; await reloadAnnouncements(); toast('Đã đăng thông báo.'); }
+  const id = Number(data.id || 0); delete data.id;
+  try {
+    await request(id ? `/admin/announcements/${id}` : '/admin/announcements', { method: id ? 'PATCH' : 'POST', body: JSON.stringify(data) });
+    closeDialog($('#announcementDialog')); form.reset(); state.activeAnnouncement = null; await reloadAnnouncements(); toast(id ? 'Đã lưu thông báo.' : 'Đã đăng thông báo.');
+  }
   catch (error) { toast(error.message, 'error'); }
 }
 
@@ -638,7 +667,7 @@ function bindEvents() {
   $('#completedForm').addEventListener('submit', addCompleted);
   $('#openExternalDonation').addEventListener('click', () => openDialog($('#externalDonationDialog'))); $('#externalDonationForm').addEventListener('submit', addExternalDonation);
   $('#externalDonationForm').elements.story_display.addEventListener('input', (event) => event.currentTarget.setCustomValidity(''));
-  $('#newAnnouncement').addEventListener('click', () => openDialog($('#announcementDialog'))); $('#announcementForm').addEventListener('submit', createAnnouncement);
+  $('#newAnnouncement').addEventListener('click', () => openAnnouncementDialog()); $('#announcementForm').addEventListener('submit', saveAnnouncement);
   $$('[data-close-dialog]').forEach((button) => button.addEventListener('click', () => closeDialog(button.closest('dialog'))));
   $('#settingsForm').addEventListener('submit', saveSettings);
   $('#settingsForm').addEventListener('input', () => markSettingsDirty(true));
