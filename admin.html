@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0b18">
   <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="admin-ui-version" content="06119">
+  <meta http-equiv="Cache-Control" content="no-store">
   <title>Hồi Âm — Admin</title>
   <link rel="icon" href="/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,6 +80,7 @@
             <button data-go-view="sources" type="button"><span class="action-icon warning"><i class="fa-solid fa-triangle-exclamation"></i></span><span><small>Nguồn cần chú ý</small><strong id="statSourceProblems">0</strong></span><i class="fa-solid fa-arrow-right"></i></button>
             <button data-go-view="sources" type="button"><span class="action-icon link"><i class="fa-solid fa-link"></i></span><span><small>Nguồn mới chờ duyệt</small><strong id="statReplacementPending">0</strong></span><i class="fa-solid fa-arrow-right"></i></button>
           </div>
+          <div id="attentionList" class="hidden" aria-hidden="true"></div>
           <div class="dashboard-grid">
             <section class="admin-card span-2"><div class="card-head"><div><h2>Top 3 đề xuất</h2><p>Xếp theo tổng vote hiện tại</p></div><button class="link-btn" data-dashboard-status="đề xuất" type="button">Xem đề xuất</button></div><div id="dashboardTop" class="rank-list"></div></section>
             <section class="admin-card"><div class="card-head"><div><h2>Nguồn truyện</h2><p>Phân bổ theo website</p></div></div><div id="sourceStats" class="source-bars"></div></section>

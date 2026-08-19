@@ -1,3 +1,4 @@
+const ADMIN_UI_VERSION = '06119';
 const state = { stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null };
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -546,5 +547,18 @@ function bindEvents() {
   $('#settingsForm').addEventListener('submit', saveSettings); $('#addSocialLink').addEventListener('click', () => $('#socialLinkRows').append(socialRow()));
 }
 
-bindEvents();
-trySession();
+function ensureCompatibleMarkup() {
+  const markupVersion = document.querySelector('meta[name="admin-ui-version"]')?.content || '';
+  if (markupVersion === ADMIN_UI_VERSION) return true;
+  const url = new URL(window.location.href);
+  if (url.searchParams.get('_admin_ui') !== ADMIN_UI_VERSION) {
+    url.searchParams.set('_admin_ui', ADMIN_UI_VERSION);
+    window.location.replace(url.href);
+  }
+  return false;
+}
+
+if (ensureCompatibleMarkup()) {
+  bindEvents();
+  trySession();
+}

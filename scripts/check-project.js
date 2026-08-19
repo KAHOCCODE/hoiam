@@ -128,6 +128,8 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
+assert.match(adminHtml, /name="admin-ui-version" content="06119"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
 assert.match(adminHtml, /id="storyAdvancedFilters"[^>]+hidden/, 'Secondary story filters need to stay collapsed by default');
@@ -193,6 +195,9 @@ assert.match(appJs, /function setupGuidePage\(\)/, 'Guide page needs focused int
 assert.match(adminJs, /function selectStoryStatus\(/, 'Admin story state navigation needs one controller');
 assert.match(adminJs, /storyFilterToggle/, 'Admin secondary filters need an explicit toggle');
 assert.match(adminJs, /statReplacementPending/, 'Admin overview needs pending replacement data');
+assert.match(adminJs, /function ensureCompatibleMarkup\(/, 'Admin must detect mixed HTML and JavaScript versions');
+assert.match(vercelConfigText, /"source": "\/admin\.html"[\s\S]*?private, no-store, no-cache, must-revalidate/, 'Admin HTML must bypass stale caches');
+assert.doesNotMatch(vercelConfigText, /stale-while-revalidate/, 'Changing interface assets must not be served stale');
 assert.match(appJs, /detail\.addEventListener\('toggle'/, 'Guide sections need synchronized active states');
 assert.match(appJs, /\['ArrowLeft', 'ArrowRight'\]/, 'Library tabs need keyboard navigation');
 assert.match(appJs, /dataset\.locked = String\(locked\)/, 'Story card donations must lock the selected story');
