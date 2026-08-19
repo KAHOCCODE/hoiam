@@ -60,6 +60,7 @@
     ></script>
   </head>
   <body data-page="about">
+    <a class="skip-link" href="#mainContent">Đi đến nội dung</a>
     <div class="galaxy" aria-hidden="true"></div>
     <header class="site-header">
       <div class="shell nav-row">
@@ -72,8 +73,7 @@
           ></a
         >
         <nav class="desktop-nav" aria-label="Điều hướng chính">
-          <a class="nav-home" href="/"
-            ><i class="fa-solid fa-house"></i><span>Trang chủ</span></a
+          <a class="nav-trending" href="/#trending"><i class="fa-solid fa-ranking-star"></i><span>Thịnh hành</span></a><a class="nav-airing" href="/#airing"><i class="fa-solid fa-tower-broadcast"></i><span>Lên sóng</span></a><a class="nav-library" href="/#library"><i class="fa-solid fa-book-open-reader"></i><span>Kho truyện</span></a
           ><a class="nav-completed" href="/completed.html"
             ><i class="fa-solid fa-circle-check"></i
             ><span>Đã hoàn thành</span></a
@@ -88,6 +88,7 @@
           id="menuButton"
           type="button"
           aria-label="Mở menu"
+          aria-expanded="false"
         >
           <i class="fa-solid fa-bars-staggered"></i>
         </button>
@@ -98,8 +99,7 @@
         aria-label="Điều hướng điện thoại"
         hidden
       >
-        <a class="nav-home" href="/"
-          ><i class="fa-solid fa-house"></i><span>Trang chủ</span></a
+        <a class="nav-trending" href="/#trending"><i class="fa-solid fa-ranking-star"></i><span>Thịnh hành</span></a><a class="nav-airing" href="/#airing"><i class="fa-solid fa-tower-broadcast"></i><span>Lên sóng</span></a><a class="nav-library" href="/#library"><i class="fa-solid fa-book-open-reader"></i><span>Kho truyện</span></a
         ><a class="nav-completed" href="/completed.html"
           ><i class="fa-solid fa-circle-check"></i><span>Đã hoàn thành</span></a
         ><a class="nav-guide" href="/guide.html"
@@ -109,7 +109,8 @@
         >
       </nav>
     </header>
-    <main class="page-main shell about-page">
+    <div id="announcementHost" class="announcement-host shell" aria-live="polite"></div>
+    <main id="mainContent" class="page-main shell about-page">
       <section class="about-hero" aria-labelledby="aboutTitle">
         <div class="about-portrait" aria-hidden="true">
           <span class="about-orbit about-orbit-one"></span>
