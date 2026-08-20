@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0b18">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="admin-ui-version" content="06125">
+  <meta name="admin-ui-version" content="06126">
   <meta http-equiv="Cache-Control" content="no-store">
   <title>Hồi Âm — Admin</title>
   <link rel="icon" href="/favicon.ico">
@@ -14,9 +14,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css">
-  <link rel="stylesheet" href="/assets/styles.css?v=06125">
+  <link rel="stylesheet" href="/assets/styles.css?v=06126">
   <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
-  <script src="/assets/admin.js?v=06125" defer></script>
+  <script src="/assets/admin.js?v=06126" defer></script>
 </head>
 <body>
   <div class="admin-cosmos" aria-hidden="true"></div>
@@ -109,6 +109,11 @@
             </div>
             <div class="story-table-meta"><span id="storyFilterSummary">Đang hiển thị mọi loại bản và nguồn</span><strong><b id="storyResultCount">0</b> truyện</strong></div>
             <div class="table-scroll"><table class="data-table responsive-data-table story-data-table"><thead><tr><th scope="col">Truyện</th><th scope="col">Nguồn</th><th scope="col">Mức quan tâm</th><th scope="col">Trạng thái</th><th scope="col"><span class="hidden">Thao tác</span></th></tr></thead><tbody id="storyTable"><tr class="empty-row"><td colspan="5">Đang tải…</td></tr></tbody></table></div>
+            <nav id="storyPager" class="table-pager" aria-label="Phân trang kho truyện" hidden>
+              <button id="storyPrevPage" type="button"><i class="fa-solid fa-chevron-left"></i> Trang trước</button>
+              <span>Trang <b id="storyPageNumber">1</b>/<b id="storyPageTotal">1</b></span>
+              <button id="storyNextPage" type="button">Trang sau <i class="fa-solid fa-chevron-right"></i></button>
+            </nav>
           </section>
         </section>
 
@@ -155,13 +160,13 @@
             <label class="field"><span>Tên truyện</span><input name="title" type="text" required></label>
             <div class="two-col"><label class="field"><span>Loại bản</span><select name="version"><option>Convert</option><option>Edit</option></select></label><label class="field"><span>Trạng thái</span><select name="status"><option value="đề xuất">Đề xuất</option><option value="đã chọn">Đã chọn</option><option value="đang lên sóng">Đang lên sóng</option><option value="đã hoàn thành">Đã hoàn thành</option></select></label></div>
             <div class="two-col"><label class="field"><span>Vote</span><input name="votes" type="number" min="0"></label><label class="drawer-visibility"><input name="visible" type="checkbox"><span><i class="fa-solid fa-eye"></i><b>Hiển thị website</b><small>Bật để người dùng nhìn thấy</small></span></label></div>
-            <div class="field"><label for="editLinkStory">Link nguồn</label><div class="input-action"><input id="editLinkStory" name="linkstory" type="url"><button id="checkSourceButton" type="button" aria-label="Kiểm tra nguồn" title="Kiểm tra nguồn"><i class="fa-solid fa-satellite-dish"></i></button></div></div>
+            <div class="field"><label for="editLinkStory">Link nguồn</label><div class="input-action source-input-action"><input id="editLinkStory" name="linkstory" type="url"><a id="drawerOpenSource" target="_blank" rel="noopener noreferrer" aria-label="Mở nguồn trong tab mới" title="Mở nguồn"><i class="fa-solid fa-arrow-up-right-from-square"></i></a><button id="checkSourceButton" type="button" aria-label="Kiểm tra nguồn" title="Kiểm tra nguồn"><i class="fa-solid fa-satellite-dish"></i></button></div></div>
             <div id="sourceCheckResult" class="inline-result hidden"></div>
           </div>
         </section>
         <details id="storyContentSection" class="drawer-form-section">
           <summary><span><i class="fa-solid fa-photo-film"></i></span><span><strong>Nội dung hiển thị</strong><small>YouTube, ảnh bìa và ghi chú</small></span><i class="fa-solid fa-chevron-down"></i></summary>
-          <div class="drawer-section-content admin-form"><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><figure id="storyThumbnailPreview" class="image-url-preview hidden" aria-live="polite"></figure><label class="field"><span>Ghi chú</span><textarea name="note" rows="4"></textarea></label></div>
+          <div class="drawer-section-content admin-form"><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><label class="field story-note-field"><span>Ghi chú</span><textarea name="note" rows="5"></textarea></label><figure id="storyThumbnailPreview" class="image-url-preview story-thumbnail-preview hidden" aria-live="polite"></figure></div>
         </details>
         <details id="storySourceSection" class="drawer-form-section">
           <summary><span class="source-section-icon"><i class="fa-solid fa-link"></i></span><span><strong>Kiểm soát nguồn</strong><small>Cảnh báo và hạn tìm nguồn thay thế</small></span><i class="fa-solid fa-chevron-down"></i></summary>

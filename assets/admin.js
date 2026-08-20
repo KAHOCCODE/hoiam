@@ -1,8 +1,11 @@
-const ADMIN_UI_VERSION = '06125';
+const ADMIN_UI_VERSION = '06126';
 const state = {
   stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null,
   activeView: sessionStorage.getItem('hoiam_admin_view') || 'overview',
   storyStatus: sessionStorage.getItem('hoiam_admin_story_status') || 'all',
+  storyPage: Math.max(1, Number(sessionStorage.getItem('hoiam_admin_story_page') || 1)),
+  storyPageSize: 30,
+  storyBaseline: '', storyDirty: false,
   activeAnnouncement: null,
 };
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -220,6 +223,13 @@ function setSidebar(open) {
   document.body.classList.toggle('sidebar-open', active);
 }
 
+function setStoryMenu(open) {
+  const group = $('[data-nav-group="stories"]');
+  if (!group) return;
+  group.classList.toggle('expanded', Boolean(open));
+  $('[data-view="stories"]', group)?.setAttribute('aria-expanded', String(Boolean(open)));
+}
+
 function switchView(name) {
   state.activeView = name;
   sessionStorage.setItem('hoiam_admin_view', name);
@@ -232,7 +242,7 @@ function switchView(name) {
   });
   const storyNavGroup = $('[data-nav-group="stories"]');
   storyNavGroup?.classList.toggle('active', name === 'stories');
-  $('[data-view="stories"]', storyNavGroup)?.setAttribute('aria-expanded', String(name === 'stories'));
+  setStoryMenu(name === 'stories');
   const label = ({ overview: 'Tổng quan', stories: 'Truyện', donations: 'Donate', sources: 'Nguồn truyện', announcements: 'Thông báo', settings: 'Cài đặt' })[name];
   $('#currentViewLabel').textContent = name === 'stories' ? `Kho truyện / ${statusLabel($('#storyStatusFilter').value === 'all' ? 'Tất cả' : $('#storyStatusFilter').value)}` : label || name;
 }
@@ -240,8 +250,10 @@ function switchView(name) {
 function selectStoryStatus(status, openView = true) {
   const allowed = ['all', 'đề xuất', 'đã chọn', 'đang lên sóng', 'đã hoàn thành', 'trash'];
   const value = allowed.includes(status) ? status : 'all';
+  if (state.storyStatus !== value) state.storyPage = 1;
   state.storyStatus = value;
   sessionStorage.setItem('hoiam_admin_story_status', value);
+  sessionStorage.setItem('hoiam_admin_story_page', String(state.storyPage));
   $('#storyStatusFilter').value = value;
   $$('[data-story-status]').forEach((button) => {
     const active = button.dataset.storyStatus === value;
@@ -361,10 +373,19 @@ function renderStories() {
   $('#storyFilterSummary').textContent = activeFilters.length ? `Đang lọc: ${activeFilters.join(' · ')}` : 'Đang hiển thị mọi loại bản và nguồn';
   $('#storyFilterCount').textContent = activeFilters.length;
   $('#storyFilterCount').hidden = !activeFilters.length;
-  stories.forEach((story) => {
+  const totalPages = Math.max(1, Math.ceil(stories.length / state.storyPageSize));
+  state.storyPage = Math.min(Math.max(1, state.storyPage), totalPages);
+  sessionStorage.setItem('hoiam_admin_story_page', String(state.storyPage));
+  const visibleStories = stories.slice((state.storyPage - 1) * state.storyPageSize, state.storyPage * state.storyPageSize);
+  $('#storyPageNumber').textContent = number.format(state.storyPage);
+  $('#storyPageTotal').textContent = number.format(totalPages);
+  $('#storyPrevPage').disabled = state.storyPage <= 1;
+  $('#storyNextPage').disabled = state.storyPage >= totalPages;
+  $('#storyPager').hidden = stories.length <= state.storyPageSize;
+  visibleStories.forEach((story) => {
     const tr = document.createElement('tr');
     const status = story.deletedat ? 'trash' : story.status;
-    tr.innerHTML = `<td data-label="Truyện"><div class="story-cell"><span class="admin-story-cover"><i class="fa-solid fa-book"></i></span><div><strong></strong><small><b class="story-version"></b><i></i></small></div></div></td><td data-label="Nguồn"><div class="source-state"><strong></strong><small></small></div></td><td data-label="Quan tâm"><div class="story-interest"><strong><i class="fa-solid fa-heart"></i> ${number.format(story.votes)}</strong><small>${number.format(story.views)} mở · ${number.format(story.youtube_clicks)} YouTube</small></div></td><td data-label="Trạng thái"><span class="status-pill" data-status="${status}">${statusLabel(status)}</span></td><td data-label="Thao tác"><div class="row-actions"><button type="button" title="Mở chỉnh sửa" aria-label="Mở chỉnh sửa truyện"><i class="fa-solid fa-pen"></i></button></div></td>`;
+    tr.innerHTML = `<td data-label="Truyện"><div class="story-cell"><span class="admin-story-cover"><i class="fa-solid fa-book"></i></span><div><strong></strong><small><b class="story-version"></b><i></i></small></div></div></td><td data-label="Nguồn"><div class="source-state"><strong></strong><small></small></div></td><td data-label="Quan tâm"><div class="story-interest"><strong><i class="fa-solid fa-heart"></i> ${number.format(story.votes)}</strong><small>${number.format(story.views)} mở · ${number.format(story.youtube_clicks)} YouTube</small></div></td><td data-label="Trạng thái"><span class="status-pill" data-status="${status}">${statusLabel(status)}</span></td><td data-label="Thao tác"><div class="row-actions"><a target="_blank" rel="noopener noreferrer" title="Mở nguồn" aria-label="Mở nguồn truyện trong tab mới"><i class="fa-solid fa-arrow-up-right-from-square"></i></a><button type="button" title="Mở chỉnh sửa" aria-label="Mở chỉnh sửa truyện"><i class="fa-solid fa-pen"></i></button></div></td>`;
     $('.story-cell strong', tr).textContent = story.title;
     $('.story-version', tr).textContent = story.version;
     $('.story-version', tr).dataset.version = story.version.toLowerCase();
@@ -376,6 +397,7 @@ function renderStories() {
       image.src = story.thumbnail_url; cover.append(image);
     }
     $('.source-state strong', tr).textContent = sourceDomain(story.linkstory); $('.source-state small', tr).textContent = sourceLabel(story.source_status);
+    const sourceAction = $('.row-actions a', tr); sourceAction.href = story.linkstory || '#'; sourceAction.hidden = !story.linkstory;
     if (['suspected', 'confirmed'].includes(story.source_status)) $('.source-state', tr).classList.add('problem');
     $('button', tr).addEventListener('click', () => openStoryDrawer(story.id));
     tr.tabIndex = 0;
@@ -386,12 +408,45 @@ function renderStories() {
   if (!host.children.length) host.innerHTML = '<tr class="empty-row"><td colspan="5"><div class="empty">Không có truyện phù hợp.</div></td></tr>';
 }
 
+function refreshStoryState(rawStory) {
+  if (!rawStory) return;
+  const story = normalizeStory(rawStory);
+  const index = state.stories.findIndex((item) => item.id === story.id);
+  if (index >= 0) state.stories[index] = story;
+  else state.stories.unshift(story);
+  renderStorySourceOptions(); renderDashboard(); renderStories(); renderSources(); fillStorySelects();
+}
+
 function localDateTime(value) {
   if (!value) return ''; const date = new Date(value); if (Number.isNaN(date.getTime())) return '';
   const offset = date.getTimezoneOffset() * 60000; return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }
 
-function openStoryDrawer(id) {
+function storyFormSnapshot() {
+  const form = $('#storyEditForm');
+  if (!form) return '';
+  const values = Object.fromEntries(new FormData(form));
+  values.visible = form.elements.visible.checked;
+  values.source_warning_public = form.elements.source_warning_public.checked;
+  return JSON.stringify(values);
+}
+
+function updateDrawerSourceAction() {
+  const link = $('#drawerOpenSource'); if (!link) return;
+  const url = safeUrl($('#editLinkStory')?.value);
+  link.href = url || '#'; link.classList.toggle('disabled', !url); link.setAttribute('aria-disabled', String(!url));
+}
+
+function markStoryDirty() {
+  state.storyDirty = Boolean(state.activeStory && state.storyBaseline && storyFormSnapshot() !== state.storyBaseline);
+  $('#storyEditForm')?.classList.toggle('has-unsaved-changes', state.storyDirty);
+}
+
+async function openStoryDrawer(id) {
+  if ($('#storyDrawer').classList.contains('open') && state.storyDirty) {
+    const discard = await confirmAction('Bỏ thay đổi chưa lưu?', 'Nội dung bạn vừa sửa sẽ không được giữ.', 'Bỏ thay đổi');
+    if (!discard) return;
+  }
   const story = state.stories.find((item) => item.id === id); if (!story) return;
   state.activeStory = story; const form = $('#storyEditForm');
   for (const name of ['id','title','linkstory','youtubelink','thumbnail_url','version','votes','status','note','source_status','source_reason']) form.elements[name].value = story[name] ?? '';
@@ -406,6 +461,8 @@ function openStoryDrawer(id) {
   trashButton.className = `btn ${story.deletedat ? 'btn-success' : 'btn-danger'}`;
   trashButton.innerHTML = story.deletedat ? '<i class="fa-solid fa-trash-arrow-up"></i> Khôi phục truyện' : '<i class="fa-solid fa-trash"></i> Chuyển vào thùng rác';
   refreshImagePreviews('#storyThumbnailPreview');
+  updateDrawerSourceAction();
+  state.storyBaseline = storyFormSnapshot(); state.storyDirty = false; form.classList.remove('has-unsaved-changes');
   const drawer = $('#storyDrawer'); returnFocus.set(drawer, document.activeElement);
   const drawerBody = $('.drawer-body', drawer); if (drawerBody) drawerBody.scrollTop = 0;
   drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false'); document.body.classList.add('drawer-open');
@@ -414,8 +471,17 @@ function openStoryDrawer(id) {
 
 function closeDrawer() {
   const drawer = $('#storyDrawer'); drawer.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true'); document.body.classList.remove('drawer-open'); state.activeStory = null;
+  state.storyBaseline = ''; state.storyDirty = false; $('#storyEditForm')?.classList.remove('has-unsaved-changes');
   const target = returnFocus.get(drawer); returnFocus.delete(drawer);
   if (target?.isConnected) window.requestAnimationFrame(() => target.focus({ preventScroll: true }));
+}
+
+async function requestCloseDrawer() {
+  if (state.storyDirty) {
+    const discard = await confirmAction('Bỏ thay đổi chưa lưu?', 'Nếu đóng bây giờ, nội dung bạn vừa sửa sẽ mất.', 'Đóng không lưu');
+    if (!discard) return;
+  }
+  closeDrawer();
 }
 
 async function saveStory(event) {
@@ -435,8 +501,14 @@ async function saveStory(event) {
     source_warning_public: form.elements.source_warning_public.checked,
     visible: form.elements.visible.checked, deletedat: null,
   };
-  try { await request(`/admin/stories/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }); closeDrawer(); await reloadStories(); toast('Đã lưu truyện.'); }
+  const button = form.querySelector('[type="submit"]');
+  try {
+    if (button) { button.disabled = true; button.classList.add('loading'); }
+    const result = await request(`/admin/stories/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+    refreshStoryState(result.story); state.storyDirty = false; closeDrawer(); toast('Đã lưu truyện.');
+  }
   catch (error) { toast(error.message, 'error'); }
+  finally { if (button) { button.disabled = false; button.classList.remove('loading'); } }
 }
 
 async function trashStory() {
@@ -444,13 +516,13 @@ async function trashStory() {
   if ($('#trashStoryButton').dataset.action === 'restore') {
     if (!await confirmAction('Khôi phục truyện?', 'Truyện sẽ xuất hiện lại trong kho theo trạng thái đã lưu.', 'Khôi phục', 'question')) return;
     try {
-      await request(`/admin/stories/${id}`, { method: 'PATCH', body: JSON.stringify({ deletedat: null, visible: true }) });
-      closeDrawer(); await reloadStories(); toast('Đã khôi phục truyện.');
+      const result = await request(`/admin/stories/${id}`, { method: 'PATCH', body: JSON.stringify({ deletedat: null, visible: true }) });
+      refreshStoryState(result.story); state.storyDirty = false; closeDrawer(); toast('Đã khôi phục truyện.');
     } catch (error) { toast(error.message, 'error'); }
     return;
   }
   if (!await confirmAction('Chuyển vào thùng rác?', 'Truyện sẽ bị ẩn nhưng dữ liệu vẫn được giữ.', 'Chuyển vào thùng rác')) return;
-  try { await request(`/admin/stories/${id}`, { method: 'DELETE', body: '{}' }); closeDrawer(); await reloadStories(); toast('Đã chuyển vào thùng rác.'); }
+  try { const result = await request(`/admin/stories/${id}`, { method: 'DELETE', body: '{}' }); refreshStoryState(result.story); state.storyDirty = false; closeDrawer(); toast('Đã chuyển vào thùng rác.'); }
   catch (error) { toast(error.message, 'error'); }
 }
 
@@ -718,10 +790,10 @@ async function saveAnnouncement(event) {
 function bindEvents() {
   $('#loginForm').addEventListener('submit', login); $('#logoutButton').addEventListener('click', logout);
   $$('#adminNav [data-view]').forEach((button) => button.addEventListener('click', () => {
-    if (button.dataset.view === 'stories') selectStoryStatus(state.storyStatus);
-    else switchView(button.dataset.view);
+    if (button.dataset.view === 'stories') { setStoryMenu(!$('[data-nav-group="stories"]').classList.contains('expanded')); return; }
+    switchView(button.dataset.view); setSidebar(false);
   }));
-  $$('[data-story-status]').forEach((button) => button.addEventListener('click', () => selectStoryStatus(button.dataset.storyStatus)));
+  $$('[data-story-status]').forEach((button) => button.addEventListener('click', () => { selectStoryStatus(button.dataset.storyStatus); setSidebar(false); }));
   $$('[data-dashboard-status]').forEach((button) => button.addEventListener('click', () => selectStoryStatus(button.dataset.dashboardStatus)));
   $$('[data-go-view]').forEach((button) => button.addEventListener('click', () => switchView(button.dataset.goView)));
   $('#sidebarToggle').addEventListener('click', () => setSidebar(!$('.sidebar').classList.contains('open')));
@@ -731,6 +803,7 @@ function bindEvents() {
   $('#refreshButton').addEventListener('click', async () => { try { await loadAll(); toast('Đã tải dữ liệu mới.'); } catch (error) { toast(error.message, 'error'); } });
   let storySearchTimer = null;
   ['storySearch','storyVersionFilter','storySourceFilter','storySort'].forEach((id) => $(`#${id}`).addEventListener(id === 'storySearch' ? 'input' : 'change', () => {
+    state.storyPage = 1;
     if (id !== 'storySearch') return renderStories();
     window.clearTimeout(storySearchTimer); storySearchTimer = window.setTimeout(renderStories, 120);
   }));
@@ -739,10 +812,16 @@ function bindEvents() {
     panel.hidden = !open; $('#storyFilterToggle').setAttribute('aria-expanded', String(open));
   });
   $('#resetStoryFilters').addEventListener('click', () => {
-    $('#storyVersionFilter').value = 'all'; $('#storySourceFilter').value = 'all'; renderStories();
+    $('#storyVersionFilter').value = 'all'; $('#storySourceFilter').value = 'all'; state.storyPage = 1; renderStories();
   });
+  $('#storyPrevPage').addEventListener('click', () => { state.storyPage = Math.max(1, state.storyPage - 1); renderStories(); $('#storySearch').focus({ preventScroll: true }); });
+  $('#storyNextPage').addEventListener('click', () => { state.storyPage += 1; renderStories(); $('#storySearch').focus({ preventScroll: true }); });
   ['donationSearch','donationFilter','donationSourceFilter','donationSort'].forEach((id) => $(`#${id}`).addEventListener(id === 'donationSearch' ? 'input' : 'change', renderDonations));
-  $$('[data-close-drawer]').forEach((node) => node.addEventListener('click', closeDrawer));
+  $$('[data-close-drawer]').forEach((node) => node.addEventListener('click', requestCloseDrawer));
+  $('#storyEditForm').addEventListener('input', markStoryDirty);
+  $('#storyEditForm').addEventListener('change', markStoryDirty);
+  $('#editLinkStory').addEventListener('input', updateDrawerSourceAction);
+  $('#drawerOpenSource').addEventListener('click', (event) => { if (event.currentTarget.classList.contains('disabled')) event.preventDefault(); });
   $('#storyEditForm').addEventListener('submit', saveStory); $('#trashStoryButton').addEventListener('click', trashStory); $('#checkSourceButton').addEventListener('click', checkSource);
   $$('[data-open-completed]').forEach((button) => button.addEventListener('click', () => {
     $('#completedForm').reset(); refreshImagePreviews('#completedThumbnailPreview'); openDialog($('#completedDialog'));
@@ -764,9 +843,10 @@ function bindEvents() {
   bindImagePreviews();
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
-    if ($('#storyDrawer').classList.contains('open')) closeDrawer();
+    if ($('#storyDrawer').classList.contains('open')) requestCloseDrawer();
     else if ($('.sidebar').classList.contains('open')) setSidebar(false);
   });
+  window.addEventListener('beforeunload', (event) => { if (state.storyDirty) event.preventDefault(); });
 }
 
 function ensureCompatibleMarkup() {
