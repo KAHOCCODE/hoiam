@@ -458,3 +458,126 @@ img { max-width: 100%; display: block; }
 @media(max-width:1000px){.quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.library-switch{width:100%}.library-tab{flex:1}}
 @media(max-width:720px){.hero-emblem{width:220px!important;height:220px;margin:3px auto 0;display:grid!important}.echo-greeting{right:-18%;bottom:17%}.library-switch{justify-content:flex-start}.library-tab{min-width:max-content;flex:0 0 auto}.library-panel .filters:not(.filters-expanded) .filter-advanced{display:none}#libraryFilterToggle{display:inline-flex;align-items:center;gap:6px}.library-filter-tools{margin-top:-7px;flex-wrap:wrap}.active-filter-chips{order:3;flex-basis:100%}.quick-actions{grid-template-columns:1fr}.site-header,.panel,.modal,.modal::backdrop{backdrop-filter:none}.galaxy::after{display:none}}
 @media(max-width:430px){.hero-emblem{width:190px!important;height:190px}.echo-greeting{right:-31%;font-size:.55rem}.library-filter-tools>button{flex:1}.active-filter-chips{flex:none;width:100%}}
+
+/* V06.1.27 — Hồi Hồi: linh hồn bóng tối nhỏ, mắt pha lê và ấn Hồi Âm */
+.hero-emblem {
+  overflow: visible;
+  isolation: isolate;
+}
+.hero-emblem::before {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle,rgba(111,85,170,.2),rgba(27,20,53,.08) 54%,transparent 72%);
+  filter: blur(12px);
+}
+.echo-orbit {
+  inset: 7%;
+  border-color: rgba(122,210,223,.18);
+}
+.echo-orbit-two {
+  inset: 17%;
+  border-color: rgba(232,158,98,.18);
+}
+.echo-mascot-art {
+  position: absolute;
+  inset: 1%;
+  z-index: 2;
+  width: 98%;
+  height: 98%;
+  overflow: visible;
+  filter: drop-shadow(0 24px 30px rgba(2,3,10,.48));
+}
+.echo-spirit {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: echo-spirit-float 4.8s ease-in-out infinite;
+}
+.echo-body {
+  stroke: rgba(201,196,218,.15);
+  stroke-width: 1.2;
+}
+.echo-body-light {
+  fill: rgba(255,255,255,.045);
+}
+.echo-arm {
+  fill: none;
+  stroke: #25222f;
+  stroke-width: 24;
+  stroke-linecap: round;
+}
+.echo-eye-shell {
+  fill: #080a11;
+  stroke: rgba(193,187,218,.26);
+  stroke-width: 2;
+}
+.echo-eye-iris {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: echo-eye-glow 4.6s ease-in-out infinite;
+}
+.echo-eye-shine {
+  fill: rgba(255,255,255,.92);
+}
+.echo-eye-spark {
+  fill: #82dce3;
+  opacity: .78;
+}
+.echo-cheek {
+  fill: #d8698d;
+  opacity: .45;
+  filter: blur(2px);
+}
+.echo-mouth {
+  fill: none;
+  stroke: #d8cfdc;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.echo-sigil-art circle {
+  fill: rgba(110,55,33,.32);
+  stroke: #eea05e;
+  stroke-width: 1.5;
+}
+.echo-sigil-art path,.echo-sigil-art rect {
+  fill: none;
+  stroke: #ffc080;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.echo-sigil-art rect {
+  fill: #ffc080;
+  stroke: none;
+}
+.echo-foot {
+  fill: #d87845;
+  stroke: rgba(255,184,125,.28);
+  stroke-width: 1.5;
+}
+.echo-hole-shape {
+  filter: drop-shadow(0 13px 18px rgba(0,0,0,.44));
+}
+.echo-sparkles {
+  fill: #74dce6;
+  stroke: #74dce6;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: .72;
+  animation: echo-sparkle 3.4s ease-in-out infinite;
+}
+@keyframes echo-spirit-float {
+  50% { transform: translateY(-7px) rotate(.7deg); }
+}
+@keyframes echo-eye-glow {
+  50% { filter: brightness(1.12) saturate(1.08); }
+}
+@keyframes echo-sparkle {
+  50% { opacity: .35; transform: scale(.94); }
+}
+
+@media(max-width:720px) {
+  .echo-mascot-art { inset: -2%; width: 104%; height: 104%; }
+}

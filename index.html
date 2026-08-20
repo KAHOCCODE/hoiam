@@ -66,9 +66,47 @@
       </div>
       <div class="hero-emblem" aria-hidden="true">
         <span class="echo-orbit echo-orbit-one"></span><span class="echo-orbit echo-orbit-two"></span>
-        <span class="echo-hole"></span>
-        <span class="echo-mascot"><i class="echo-ear echo-ear-left"></i><i class="echo-ear echo-ear-right"></i><b class="echo-eye echo-eye-left"></b><b class="echo-eye echo-eye-right"></b><i class="echo-blush echo-blush-left"></i><i class="echo-blush echo-blush-right"></i><span class="echo-sigil"><i class="fa-solid fa-headphones-simple"></i></span><i class="echo-paw echo-paw-left"></i><i class="echo-paw echo-paw-right"></i></span>
-        <span class="echo-greeting"><i class="fa-solid fa-sparkles"></i> Hồi Hồi đang nghe nè!</span>
+        <svg class="echo-mascot-art" viewBox="0 0 360 360" focusable="false">
+          <defs>
+            <linearGradient id="echoBody" x1=".28" y1="0" x2=".75" y2="1">
+              <stop offset="0" stop-color="#474153"/><stop offset=".48" stop-color="#292633"/><stop offset="1" stop-color="#11131c"/>
+            </linearGradient>
+            <radialGradient id="echoEye" cx="38%" cy="30%" r="75%">
+              <stop offset="0" stop-color="#ffffff"/><stop offset=".2" stop-color="#d9d7ea"/><stop offset=".52" stop-color="#8c86a8"/><stop offset=".78" stop-color="#486b79"/><stop offset="1" stop-color="#10141d"/>
+            </radialGradient>
+            <radialGradient id="echoHole" cx="50%" cy="44%" r="62%">
+              <stop offset="0" stop-color="#8d4b2b"/><stop offset=".38" stop-color="#4b251d"/><stop offset=".72" stop-color="#21131a"/><stop offset="1" stop-color="#090b14" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="echoSoftGlow" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <ellipse class="echo-hole-shape" cx="180" cy="292" rx="118" ry="38" fill="url(#echoHole)"/>
+          <ellipse cx="180" cy="296" rx="76" ry="18" fill="#080a12" opacity=".7"/>
+          <g class="echo-spirit">
+            <path class="echo-arm echo-arm-left" d="M103 183c-24 8-37 29-27 43 8 11 26 5 39-11"/>
+            <path class="echo-arm echo-arm-right" d="M257 183c24 8 37 29 27 43-8 11-26 5-39-11"/>
+            <path class="echo-body" d="M180 53c-53 0-88 38-86 94 1 25-10 51-8 77 4 52 39 80 94 80s90-28 94-80c2-26-9-52-8-77 2-56-33-94-86-94Z" fill="url(#echoBody)"/>
+            <path class="echo-body-light" d="M119 104c17-30 50-43 81-36-51 10-75 49-72 95 2 30-8 56-3 85-21-24-25-54-20-83 4-24 1-42 14-61Z"/>
+            <ellipse class="echo-eye-shell" cx="145" cy="143" rx="31" ry="37"/>
+            <ellipse class="echo-eye-shell" cx="215" cy="143" rx="31" ry="37"/>
+            <ellipse class="echo-eye-iris" cx="145" cy="145" rx="24" ry="29" fill="url(#echoEye)"/>
+            <ellipse class="echo-eye-iris" cx="215" cy="145" rx="24" ry="29" fill="url(#echoEye)"/>
+            <ellipse class="echo-eye-shine" cx="136" cy="133" rx="8" ry="10"/>
+            <ellipse class="echo-eye-shine" cx="206" cy="133" rx="8" ry="10"/>
+            <circle class="echo-eye-spark" cx="153" cy="156" r="3.5"/><circle class="echo-eye-spark" cx="223" cy="156" r="3.5"/>
+            <ellipse class="echo-cheek" cx="111" cy="188" rx="18" ry="7"/><ellipse class="echo-cheek" cx="249" cy="188" rx="18" ry="7"/>
+            <path class="echo-mouth" d="M173 184c4 5 10 5 14 0"/>
+            <g class="echo-sigil-art" filter="url(#echoSoftGlow)">
+              <circle cx="180" cy="232" r="25"/><path d="M168 234v-5c0-8 5-14 12-14s12 6 12 14v5"/><rect x="164" y="231" width="6" height="10" rx="3"/><rect x="190" y="231" width="6" height="10" rx="3"/>
+            </g>
+            <ellipse class="echo-foot echo-foot-left" cx="139" cy="288" rx="25" ry="13" transform="rotate(-10 139 288)"/>
+            <ellipse class="echo-foot echo-foot-right" cx="221" cy="288" rx="25" ry="13" transform="rotate(10 221 288)"/>
+          </g>
+          <g class="echo-sparkles">
+            <path d="M72 119v18M63 128h18"/><path d="M287 99v13M280.5 105.5h13"/><circle cx="294" cy="182" r="4"/><circle cx="79" cy="208" r="3"/>
+          </g>
+        </svg>
       </div>
     </section>
 

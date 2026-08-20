@@ -94,6 +94,8 @@ assert.match(homeHtml, /data-library-view="selected"/, 'Library needs a separate
 assert.match(homeHtml, /data-library-view="voted"/, 'Library needs a personal voted-story view');
 assert.match(homeHtml, /data-library-view="recent"/, 'Library needs a recent-story view');
 assert.match(homeHtml, /id="libraryViewTitle"/, 'Library needs a clear title for the active story group');
+assert.match(homeHtml, /class="echo-mascot-art"/, 'Homepage needs the official Hoi Hoi mascot artwork');
+assert.doesNotMatch(homeHtml, /Hồi Hồi đang nghe nè!/, 'Mascot artwork must not carry a distracting speech label');
 assert.match(homeHtml, /class="filter-select"/, 'Library filters need consistent icon labels');
 assert.match(homeHtml, /id="storyDialog"[^>]+aria-labelledby="storyDialogTitle"/, 'Story modal needs an accessible title');
 assert.match(homeHtml, /id="suggestionDialog"[^>]+aria-labelledby="suggestionDialogTitle"/, 'Suggestion modal needs an accessible title');
