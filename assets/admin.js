@@ -1,4 +1,4 @@
-const ADMIN_UI_VERSION = '06128';
+const ADMIN_UI_VERSION = '06129';
 const state = {
   stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null,
   activeView: sessionStorage.getItem('hoiam_admin_view') || 'overview',
@@ -554,7 +554,7 @@ async function findStoryCover(silent = false) {
     if (button) { button.disabled = true; button.classList.add('loading'); }
     const payload = await request('/admin/cover-image', { method: 'POST', body: JSON.stringify({ url: sourceUrl }) });
     const imageUrl = safeUrl(payload.image_url);
-    if (!imageUrl) throw new Error('Trang nguồn không có ảnh bìa phù hợp.');
+    if (!imageUrl) throw new Error(payload.reason || 'Trang nguồn không có ảnh bìa phù hợp.');
     form.elements.thumbnail_url.value = imageUrl;
     form.elements.thumbnail_url.dispatchEvent(new Event('input', { bubbles: true }));
     refreshImagePreviews('#storyThumbnailPreview');
@@ -597,7 +597,7 @@ async function scanMissingStoryCovers() {
           const index = state.stories.findIndex((item) => item.id === normalized.id);
           if (index >= 0) state.stories[index] = normalized;
           found += 1;
-        }
+        } else notFound += 1;
       } catch { notFound += 1; }
       finished += 1;
       label.textContent = `Đang rà ${number.format(finished)}/${number.format(queue.length)}`;
