@@ -581,3 +581,35 @@ img { max-width: 100%; display: block; }
 @media(max-width:720px) {
   .echo-mascot-art { inset: -2%; width: 104%; height: 104%; }
 }
+
+/* V06.1.28 — mascot chính thức và bìa truyện hiển thị trọn */
+.echo-mascot-image {
+  width: 66%;
+  height: 86%;
+  position: absolute;
+  z-index: 2;
+  bottom: 7%;
+  object-fit: contain;
+  filter: drop-shadow(0 22px 28px rgba(0,0,0,.48)) drop-shadow(0 0 22px rgba(111,71,165,.2));
+  animation: echo-mascot-float 4.8s ease-in-out infinite;
+}
+@keyframes echo-mascot-float {
+  50% { transform: translateY(-7px) rotate(.7deg); }
+}
+.story-dialog-content { grid-template-columns: minmax(260px,320px) minmax(0,1fr); }
+.detail-cover { position: relative; background: #090d18; }
+.detail-cover-backdrop { position:absolute;inset:-22px;z-index:0;background-position:center;background-size:cover;filter:blur(20px) saturate(.8);opacity:.42;transform:scale(1.12); }
+.detail-cover-backdrop::after { content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,10,20,.2),rgba(7,10,20,.72)); }
+.detail-cover-image { width:100%;height:100%;padding:20px;position:relative;z-index:1;object-fit:contain;filter:drop-shadow(0 16px 24px rgba(0,0,0,.5)); }
+.detail-empty-cover { width:100%;height:100%;min-height:500px;position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 38%,rgba(112,77,165,.25),transparent 45%),linear-gradient(180deg,#11182b,#090d18); }
+.detail-empty-cover img { width:min(82%,250px);max-height:88%;object-fit:contain;filter:drop-shadow(0 18px 28px rgba(0,0,0,.5)); }
+.detail-empty-board { width:min(78%,220px);min-height:58px;padding:10px 14px;position:absolute;z-index:2;left:50%;bottom:17%;display:grid;place-items:center;transform:translateX(-50%) rotate(-1deg);border:2px solid #a86135;border-radius:10px;color:#ffe0ad;background:linear-gradient(155deg,#5d321e,#3a2118);box-shadow:0 12px 24px rgba(0,0,0,.4),inset 0 0 0 2px rgba(255,190,115,.08);font-size:.72rem;font-weight:850;text-align:center; }
+
+@media(max-width:720px) {
+  .echo-mascot-image { width:69%;height:88%;bottom:5%; }
+  .detail-cover { min-height:280px;max-height:320px; }
+  .detail-cover-image { padding:14px; }
+  .detail-empty-cover { min-height:280px; }
+  .detail-empty-cover img { width:min(66%,210px);max-height:94%; }
+  .detail-empty-board { bottom:12%;min-height:48px;font-size:.65rem; }
+}

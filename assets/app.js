@@ -78,7 +78,7 @@ function storageSet(key, value, session = false) {
   try { (session ? sessionStorage : localStorage).setItem(key, value); } catch { /* private mode */ }
 }
 
-const PUBLIC_CACHE_VERSION = '06126';
+const PUBLIC_CACHE_VERSION = '06128';
 const PUBLIC_CACHE_MAX_AGE = 6 * 60 * 60_000;
 
 function readPublicCache(name) {
@@ -654,9 +654,22 @@ function showStory(id) {
   rememberStory(story.id);
   host.replaceChildren();
   const image = storyImage(story);
-  const cover = element('div', `detail-cover${image ? ' has-image' : ''}`);
-  if (image) cover.style.backgroundImage = `url("${image.replace(/"/g, '')}")`;
-  cover.append(icon('book-open-reader'), element('span', 'detail-cover-label', image ? 'Ảnh từ nội dung đang lên sóng' : 'Bìa truyện đang cập nhật'));
+  const cover = element('div', `detail-cover${image ? ' has-image' : ' is-empty'}`);
+  const showEmptyCover = () => {
+    cover.classList.remove('has-image'); cover.classList.add('is-empty'); cover.replaceChildren();
+    const emptyCover = element('div', 'detail-empty-cover');
+    const mascot = new Image(); mascot.src = '/assets/images/hoi-hoi.webp'; mascot.alt = '';
+    emptyCover.append(mascot, element('span', 'detail-empty-board', 'Chưa có ảnh bìa'));
+    cover.append(emptyCover);
+  };
+  if (image) {
+    const backdrop = element('span', 'detail-cover-backdrop');
+    backdrop.style.backgroundImage = `url("${image.replace(/"/g, '')}")`;
+    const coverImage = new Image();
+    coverImage.className = 'detail-cover-image'; coverImage.src = image; coverImage.alt = `Bìa truyện ${story.title}`;
+    coverImage.addEventListener('error', showEmptyCover, { once: true });
+    cover.append(backdrop, coverImage);
+  } else showEmptyCover();
   host.append(cover);
   const body = element('div', 'detail-body');
   const chips = element('div', 'badge-row'); chips.append(badge(story.version, story.version.toLowerCase()), badge(statusLabel(story.status), 'status'), badge(sourceDomain(story), 'source'));
