@@ -99,6 +99,47 @@ function normalizeServerKey(rawValue) {
   return legacyJwt ? legacyJwt[0] : '';
 }
 
+function normalizeTableName(rawValue) {
+  const value = String(rawValue || 'stories')
+    .trim()
+    .replace(/^[\\]*["']+|[\\]*["']+$/g, '')
+    .trim();
+  const match = value.match(/^(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)$/);
+  if (!match) throw new Error('SUPABASE_STORIES_TABLE must be a table name such as stories.');
+  return match[1];
+}
+
+async function verifySupabaseTable({ url, key, tableName }) {
+  let response;
+
+  try {
+    response = await fetch(`${url}/rest/v1/${tableName}?select=id&limit=1`, {
+      headers: {
+        apikey: key,
+        ...(key.split('.').length === 3 ? { Authorization: `Bearer ${key}` } : {}),
+      },
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (error) {
+    throw new Error(`Could not reach Supabase (${error.message}).`);
+  }
+
+  let payload = null;
+  try { payload = await response.json(); } catch { payload = null; }
+  if (response.ok) return;
+
+  const code = String(payload?.code || '');
+  if (response.status === 404 || code === 'PGRST205') {
+    const project = new URL(url).hostname.split('.')[0];
+    throw new Error(`Supabase project ${project} does not contain table "${tableName}". Check SUPABASE_STORIES_TABLE in .env.local.`);
+  }
+  if ([401, 403].includes(response.status)) {
+    throw new Error('Supabase rejected the server key. Pull the Production environment variables again.');
+  }
+
+  throw new Error(payload?.message || `Supabase returned HTTP ${response.status}.`);
+}
+
 function resolveSupabaseUrl(rawUrl, legacyKey) {
   try {
     return {
@@ -119,7 +160,7 @@ function fail(message) {
   process.exit(1);
 }
 
-function main() {
+async function main() {
   const projectRoot = path.resolve(__dirname, '..');
   const envPath = path.join(projectRoot, '.env.local');
 
@@ -153,6 +194,7 @@ function main() {
 
   const resolvedUrl = resolveSupabaseUrl(variables.SUPABASE_URL, legacyKey);
   variables.SUPABASE_URL = resolvedUrl.url;
+  variables.SUPABASE_STORIES_TABLE = normalizeTableName(variables.SUPABASE_STORIES_TABLE);
 
   if (resolvedUrl.source !== 'environment') {
     process.stdout.write(
@@ -161,6 +203,13 @@ function main() {
         : '[Hoi Am] Using the Supabase URL from the original Hoi Am site.\n'
     );
   }
+
+  await verifySupabaseTable({
+    url: variables.SUPABASE_URL,
+    key: secretKey || legacyKey,
+    tableName: variables.SUPABASE_STORIES_TABLE,
+  });
+  process.stdout.write(`[Hoi Am] Supabase table "${variables.SUPABASE_STORIES_TABLE}" is ready.\n`);
 
   process.stdout.write('[Hoi Am] Loaded into the local server:\n');
   Object.keys(variables).sort().forEach((name) => process.stdout.write(`  - ${name}\n`));
@@ -190,7 +239,9 @@ function main() {
   process.exit(Number.isInteger(result.status) ? result.status : 1);
 }
 
-if (require.main === module) main();
+if (require.main === module) {
+  main().catch((error) => fail(error.message));
+}
 
 module.exports = {
   decodeEnvValue,
@@ -198,5 +249,7 @@ module.exports = {
   normalizeSupabaseUrl,
   projectUrlFromLegacyKey,
   normalizeServerKey,
+  normalizeTableName,
+  verifySupabaseTable,
   resolveSupabaseUrl,
 };

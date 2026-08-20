@@ -282,12 +282,20 @@ const { normalizeStatus } = require(path.join(root, 'api/_routes/_lib/utils'));
 assert.equal(normalizeStatus('đang đọc'), 'đang lên sóng');
 assert.equal(normalizeStatus('ĐÃ HOÀN THÀNH'), 'đã hoàn thành');
 
+process.env.SUPABASE_URL = 'https://example.supabase.co';
+process.env.SUPABASE_SECRET_KEY = 'sb_secret_project_check';
+const { normalizeTableName } = require(path.join(root, 'api/_routes/_lib/supabase'));
+assert.equal(normalizeTableName('stories'), 'stories');
+assert.equal(normalizeTableName(' public.stories '), 'stories');
+assert.throws(() => normalizeTableName('stories?select=*'), /SUPABASE_STORIES_TABLE/);
+
 const vercelConfig = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 assert.deepEqual(vercelConfig.rewrites?.[0], {
-  source: '/api/:path*',
-  destination: '/api?path=:path*',
+  source: '/api/(.*)',
+  destination: '/api?path=$1',
 }, 'Vercel must rewrite every nested API route to the shared function');
+assert.doesNotMatch(vercelConfigText, /:path\*/, 'Vercel CLI 59 must not receive the legacy repeated path parameter');
 
 const deployableFunctions = [];
 function collectFunctions(directory) {

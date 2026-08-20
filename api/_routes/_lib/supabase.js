@@ -60,13 +60,29 @@ function normalizeServerKey(rawValue) {
   return legacyJwt ? legacyJwt[0] : '';
 }
 
+function normalizeTableName(rawValue) {
+  const value = String(rawValue || 'stories')
+    .trim()
+    .replace(/^[\\]*["']+|[\\]*["']+$/g, '')
+    .trim();
+  const match = value.match(/^(?:public\.)?([A-Za-z_][A-Za-z0-9_]*)$/);
+
+  if (!match) {
+    const error = new Error('SUPABASE_STORIES_TABLE chỉ được chứa tên bảng, ví dụ: stories.');
+    error.status = 500;
+    throw error;
+  }
+
+  return match[1];
+}
+
 const serverApiKey = normalizeServerKey(getEnv('SUPABASE_SECRET_KEY', legacyServiceRoleKey));
 if (!serverApiKey) {
   const error = new Error('Supabase server key không đúng định dạng.');
   error.status = 500;
   throw error;
 }
-const table = getEnv('SUPABASE_STORIES_TABLE', 'stories');
+const table = normalizeTableName(getEnv('SUPABASE_STORIES_TABLE', 'stories'));
 
 function authorizationHeaders() {
   const looksLikeJwt = serverApiKey.split('.').length === 3;
@@ -121,5 +137,6 @@ module.exports = {
   normalizeSupabaseUrl,
   projectUrlFromLegacyKey,
   normalizeServerKey,
+  normalizeTableName,
   isMissingDatabaseObject,
 };
