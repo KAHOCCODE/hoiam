@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.26
+# Hồi Âm Đam Mỹ V06.1.27
 
-Phiên bản V06.1.26 làm nhẹ thao tác trên Kho truyện và Admin: menu trạng thái mở theo hai cấp, danh sách Admin phân trang 30 truyện và cập nhật cục bộ sau khi lưu; trình sửa bảo vệ nội dung chưa lưu và không để ảnh bìa che ghi chú. Trang công khai có mục Đã vote/Gần đây, chia sẻ truyện, chọn ngẫu nhiên, bộ lọc mobile rõ hơn, tải ảnh và danh sách hoàn thành theo nhu cầu, cùng nhân vật Hồi Hồi mới. Không cần thay đổi SQL.
+Phiên bản V06.1.27 thiết kế lại Hồi Hồi thành linh hồn bóng tối nhỏ với mắt pha lê, chân cam và ấn Hồi Âm; bỏ khung thoại gây rối ở màn hình nhỏ. Bản này cũng thay route API cũ không còn tương thích Vercel CLI 59, làm sạch tên bảng Supabase và kiểm tra kết nối dữ liệu trước khi khởi động local. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 
