@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.28
+# Hồi Âm Đam Mỹ V06.1.29
 
-Phiên bản V06.1.28 dùng mẫu Hồi Hồi chính thức, hiển thị trọn ảnh bìa trong modal và có bảng “Chưa có ảnh bìa” khi chưa tìm được hình. Dashboard có thể tự nhận diện ảnh từ metadata phổ biến của mọi website nguồn, rà toàn bộ truyện còn thiếu bìa và lưu từng kết quả ngay để chạy tiếp an toàn. Trình sửa truyện gom kiểm soát nguồn về đúng khu vực link nguồn, không còn che ghi chú; đăng nhập admin có tùy chọn ghi nhớ 30 ngày. Không cần thay đổi SQL.
+Phiên bản V06.1.29 cố định ảnh bìa ở cột trái trên máy tính và cho phần thông tin bên phải cuộn độc lập. Trên điện thoại, modal dùng một vùng cuộn duy nhất trong khi nút đóng luôn nằm yên. Bản này cũng chuyển các trường hợp website không có ảnh hoặc từ chối đọc tự động thành kết quả rà soát bình thường, tránh hàng loạt lỗi 404/422 màu đỏ trong Console. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 

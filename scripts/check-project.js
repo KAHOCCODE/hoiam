@@ -79,6 +79,7 @@ const siteCss = fs.readFileSync(path.join(root, 'assets/site.css'), 'utf8');
 const appJs = fs.readFileSync(path.join(root, 'assets/app.js'), 'utf8');
 const adminCss = fs.readFileSync(path.join(root, 'assets/styles.css'), 'utf8');
 const adminJs = fs.readFileSync(path.join(root, 'assets/admin.js'), 'utf8');
+const coverImageApi = fs.readFileSync(path.join(root, 'api/_routes/admin/cover-image.js'), 'utf8');
 const settingsLib = fs.readFileSync(path.join(root, 'api/_routes/_lib/settings.js'), 'utf8');
 const publicStoriesApi = fs.readFileSync(path.join(root, 'api/_routes/stories/index.js'), 'utf8');
 const publicSettingsApi = fs.readFileSync(path.join(root, 'api/_routes/settings/index.js'), 'utf8');
@@ -143,7 +144,7 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
-assert.match(adminHtml, /name="admin-ui-version" content="06128"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /name="admin-ui-version" content="06129"/, 'Admin markup needs an explicit UI version');
 assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
@@ -172,6 +173,9 @@ assert.match(siteCss, /\.badge\.convert[^}]*background:/i, 'Convert badge needs 
 assert.match(siteCss, /\.badge\.edit[^}]*background:/i, 'Edit badge needs its own background');
 assert.match(siteCss, /\.donation-story-menu\s*\{[^}]*overflow:\s*auto/i, 'Story search must scroll naturally with its options');
 assert.match(siteCss, /\.story-dialog-content\s*\{[^}]*grid-template-columns:/i, 'Story modal needs a structured desktop layout');
+assert.match(siteCss, /\.modal-card\.detail-card\s*\{[^}]*overflow:\s*hidden/i, 'Story modal shell must stay fixed while its content scrolls');
+assert.match(siteCss, /\.detail-body\s*\{[^}]*overflow-y:\s*auto/i, 'Desktop story details need an independent scroll area');
+assert.match(siteCss, /\.detail-cover\s*\{[^}]*height:\s*100%/i, 'Desktop story cover must remain fixed at full modal height');
 assert.match(siteCss, /max-height:\s*calc\(100dvh/i, 'Modals must fit the mobile viewport');
 assert.match(siteCss, /\.mobile-nav\.is-open\s*\{[^}]*opacity:\s*1/i, 'Mobile navigation needs a visible animated state');
 assert.match(siteCss, /\.direct-source-link\s*\{/, 'Direct source actions need a consistent visual style');
@@ -255,6 +259,7 @@ assert.match(adminJs, /restoreDialogFocus\(dialog\)/, 'Admin dialogs need to res
 assert.match(adminJs, /const imagePreviews = \[/, 'Admin must initialize image URL previews');
 assert.match(adminJs, /function scanMissingStoryCovers\(/, 'Admin must scan every story still missing a cover');
 assert.match(adminJs, /Promise\.all\(Array\.from\(\{ length: Math\.min\(3, queue\.length\) \}, worker\)\)/, 'Cover scanning must use bounded concurrency');
+assert.match(coverImageApi, /json\(res, 200, \{\s*found: false,/s, 'Expected cover misses must not flood the browser console with HTTP errors');
 assert.match(adminJs, /\$\('#sidebarClose'\)\.addEventListener/, 'Mobile and tablet navigation needs an explicit close action');
 assert.match(adminJs, /\$\('#storyContentSection'\)\.open = true/, 'Common story display fields should open immediately');
 const switchViewBlock = adminJs.slice(adminJs.indexOf('function switchView('), adminJs.indexOf('function selectStoryStatus('));
