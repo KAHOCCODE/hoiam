@@ -17,6 +17,7 @@ const required = [
   'assets/site.css',
   'assets/styles.css',
   'assets/images/galaxy.webp',
+  'assets/images/hoi-hoi.webp',
   'assets/vendor/fontawesome/css/all.min.css',
   'assets/vendor/fontawesome/webfonts/fa-solid-900.woff2',
   'robots.txt',
@@ -94,7 +95,7 @@ assert.match(homeHtml, /data-library-view="selected"/, 'Library needs a separate
 assert.match(homeHtml, /data-library-view="voted"/, 'Library needs a personal voted-story view');
 assert.match(homeHtml, /data-library-view="recent"/, 'Library needs a recent-story view');
 assert.match(homeHtml, /id="libraryViewTitle"/, 'Library needs a clear title for the active story group');
-assert.match(homeHtml, /class="echo-mascot-art"/, 'Homepage needs the official Hoi Hoi mascot artwork');
+assert.match(homeHtml, /class="echo-mascot-image"[^>]+hoi-hoi\.webp/, 'Homepage needs the official Hoi Hoi mascot artwork');
 assert.doesNotMatch(homeHtml, /Hồi Hồi đang nghe nè!/, 'Mascot artwork must not carry a distracting speech label');
 assert.match(homeHtml, /class="filter-select"/, 'Library filters need consistent icon labels');
 assert.match(homeHtml, /id="storyDialog"[^>]+aria-labelledby="storyDialogTitle"/, 'Story modal needs an accessible title');
@@ -142,7 +143,7 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
-assert.match(adminHtml, /name="admin-ui-version" content="06126"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /name="admin-ui-version" content="06128"/, 'Admin markup needs an explicit UI version');
 assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
@@ -152,6 +153,9 @@ assert.match(adminHtml, /id="drawerOpenSource"/, 'Story editor needs a direct so
 assert.match(adminHtml, /id="overviewRing"/, 'Admin overview needs a visual progress summary');
 assert.match(adminHtml, /id="storyContentSection"/, 'Story editor needs grouped display fields');
 assert.match(adminHtml, /id="storySourceSection"/, 'Story editor needs grouped source controls');
+assert.match(adminHtml, /id="rememberAdmin"[^>]+checked/, 'Admin login needs an explicit remembered-session option');
+assert.match(adminHtml, /id="scanStoryCovers"/, 'Admin story manager needs a full missing-cover scan');
+assert.match(adminHtml, /id="findStoryCoverButton"/, 'Story editor needs a focused cover lookup action');
 assert.match(adminHtml, /id="donationDetailDialog"/, 'Admin donations need a detail dialog');
 assert.match(adminHtml, /responsive-data-table story-data-table/, 'Admin story rows need a mobile card layout');
 assert.match(adminHtml, /responsive-data-table donation-data-table/, 'Admin donation rows need a mobile card layout');
@@ -249,6 +253,8 @@ assert.match(adminJs, /request\('\/admin\/bootstrap'\)/, 'Admin startup must use
 assert.match(adminJs, /window\.innerWidth <= 1024/, 'Admin navigation must switch to a drawer on tablets');
 assert.match(adminJs, /restoreDialogFocus\(dialog\)/, 'Admin dialogs need to restore keyboard focus');
 assert.match(adminJs, /const imagePreviews = \[/, 'Admin must initialize image URL previews');
+assert.match(adminJs, /function scanMissingStoryCovers\(/, 'Admin must scan every story still missing a cover');
+assert.match(adminJs, /Promise\.all\(Array\.from\(\{ length: Math\.min\(3, queue\.length\) \}, worker\)\)/, 'Cover scanning must use bounded concurrency');
 assert.match(adminJs, /\$\('#sidebarClose'\)\.addEventListener/, 'Mobile and tablet navigation needs an explicit close action');
 assert.match(adminJs, /\$\('#storyContentSection'\)\.open = true/, 'Common story display fields should open immediately');
 const switchViewBlock = adminJs.slice(adminJs.indexOf('function switchView('), adminJs.indexOf('function selectStoryStatus('));
@@ -262,6 +268,16 @@ assert.match(appJs, /hoiam_bank_trip_started/, 'Donation flow must remember a tr
 assert.match(appJs, /addEventListener\('visibilitychange'/, 'Donation form must return when the bank app becomes hidden');
 assert.match(appJs, /addEventListener\('focus'/, 'Donation form must return when the browser regains focus');
 assert.match(appJs, /addEventListener\('pageshow'/, 'Donation form must return after browser history navigation');
+assert.match(appJs, /detail-empty-board', 'Chưa có ảnh bìa'/, 'Missing covers need the Hoi Hoi fallback board');
+
+const { coverCandidates, absoluteImageUrl, privateAddress } = require(path.join(root, 'api/_routes/_lib/cover-image'));
+assert.equal(coverCandidates('<meta property="og:image" content="/photo/123?o=1">')[0], '/photo/123?o=1');
+assert.equal(coverCandidates('<img data-src="https://blogger.example/cover.jpg" width="320" height="480">')[0], 'https://blogger.example/cover.jpg');
+assert.equal(coverCandidates('<script>{"coverUrl":"https:\\/\\/img.example\\/book.webp"}</script>')[0], 'https://img.example/book.webp');
+assert.equal(absoluteImageUrl('/photo/123?o=1', 'https://wikicv.org/truyen/demo'), 'https://wikicv.org/photo/123?o=1');
+assert.equal(absoluteImageUrl('http://127.0.0.1/private.jpg', 'https://example.com/story'), '');
+assert.equal(privateAddress('127.0.0.1'), true);
+assert.equal(privateAddress('8.8.8.8'), false);
 
 const dropStatusConstraint = migrationSql.indexOf('drop constraint if exists stories_status_check');
 const normalizeStatuses = migrationSql.indexOf('update public.stories');

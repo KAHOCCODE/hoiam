@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.27
+# Hồi Âm Đam Mỹ V06.1.28
 
-Phiên bản V06.1.27 thiết kế lại Hồi Hồi thành linh hồn bóng tối nhỏ với mắt pha lê, chân cam và ấn Hồi Âm; bỏ khung thoại gây rối ở màn hình nhỏ. Bản này cũng thay route API cũ không còn tương thích Vercel CLI 59, làm sạch tên bảng Supabase và kiểm tra kết nối dữ liệu trước khi khởi động local. Không cần thay đổi SQL.
+Phiên bản V06.1.28 dùng mẫu Hồi Hồi chính thức, hiển thị trọn ảnh bìa trong modal và có bảng “Chưa có ảnh bìa” khi chưa tìm được hình. Dashboard có thể tự nhận diện ảnh từ metadata phổ biến của mọi website nguồn, rà toàn bộ truyện còn thiếu bìa và lưu từng kết quả ngay để chạy tiếp an toàn. Trình sửa truyện gom kiểm soát nguồn về đúng khu vực link nguồn, không còn che ghi chú; đăng nhập admin có tùy chọn ghi nhớ 30 ngày. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 
@@ -13,6 +13,14 @@ Toàn bộ endpoint được rewrite vào một Vercel Function để tương th
 
 ## Có gì mới
 
+- Nút **Rà ảnh bìa** xử lý toàn bộ truyện đang thiếu ảnh, không giới hạn tên miền và không dừng cả lượt khi một website từ chối truy cập.
+- Tự đọc Open Graph, Twitter Card, JSON-LD, `image_src`, ảnh lazy-load và dữ liệu ảnh thường gặp trên WordPress, Blogspot cùng các website truyện khác.
+- Mỗi ảnh tìm được được lưu ngay; chạy lại sẽ tự bỏ qua truyện đã có bìa.
+- Có nút tìm ảnh riêng trong trình sửa; khi đổi link nguồn mà chưa có bìa, dashboard tự thử nhận diện ảnh.
+- Ảnh bìa trong modal dùng chế độ hiển thị trọn thay vì cắt giữa; link ảnh lỗi tự chuyển về Hồi Hồi cầm bảng “Chưa có ảnh bìa”.
+- Dùng mẫu Hồi Hồi chính thức được cung cấp thay cho hình vẽ CSS/SVG cũ.
+- Kiểm soát nguồn nằm cùng cột với link nguồn; ảnh xem trước và ghi chú có vùng riêng, không chồng lấp.
+- Có thể ghi nhớ phiên đăng nhập admin 30 ngày trên thiết bị riêng; bỏ chọn để dùng phiên 8 giờ.
 - Nền Ngân Hà WebP 80 KB, giao diện responsive và hỗ trợ giảm chuyển động.
 - Bốn trạng thái: Đề xuất, Đã chọn, Đang lên sóng, Đã hoàn thành.
 - Kho truyện lọc theo Convert/Edit, nguồn, vote và thời gian.
