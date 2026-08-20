@@ -49,16 +49,17 @@ function cookieSecurity(req) {
   return protocol === 'https' || process.env.NODE_ENV === 'production' ? '; Secure' : '';
 }
 
-function setSession(req, res) {
+function setSession(req, res, remember = false) {
+  const maxAge = remember ? 60 * 60 * 24 * 30 : 60 * 60 * 8;
   const token = encode({
     role: 'admin',
     iat: Date.now(),
-    exp: Date.now() + 1000 * 60 * 60 * 8,
+    exp: Date.now() + 1000 * maxAge,
   });
 
   res.setHeader(
     'Set-Cookie',
-    `${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly${cookieSecurity(req)}; SameSite=Strict; Max-Age=${60 * 60 * 8}; Path=/`
+    `${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly${cookieSecurity(req)}; SameSite=Strict; Max-Age=${maxAge}; Path=/`
   );
 }
 

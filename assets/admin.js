@@ -1,4 +1,4 @@
-const ADMIN_UI_VERSION = '06126';
+const ADMIN_UI_VERSION = '06128';
 const state = {
   stories: [], donations: [], replacements: [], announcements: [], settings: null, activeStory: null,
   activeView: sessionStorage.getItem('hoiam_admin_view') || 'overview',
@@ -199,7 +199,7 @@ async function trySession() {
 async function login(event) {
   event.preventDefault();
   try {
-    await request('/admin/login', { method: 'POST', body: JSON.stringify({ password: $('#password').value }) });
+    await request('/admin/login', { method: 'POST', body: JSON.stringify({ password: $('#password').value, remember: $('#rememberAdmin').checked }) });
     $('#password').value = '';
     await loadAll();
     setAuthenticated(true);
@@ -367,6 +367,9 @@ function renderStories() {
   const host = $('#storyTable'); host.replaceChildren();
   const stories = storyFilters();
   $('#storyResultCount').textContent = number.format(stories.length);
+  const missingCovers = state.stories.filter((story) => !story.deletedat && story.linkstory && !story.thumbnail_url).length;
+  $('#missingCoverCount').textContent = number.format(missingCovers);
+  $('#scanStoryCovers').disabled = !missingCovers;
   const activeFilters = [];
   if ($('#storyVersionFilter').value !== 'all') activeFilters.push($('#storyVersionFilter').value);
   if ($('#storySourceFilter').value !== 'all') activeFilters.push($('#storySourceFilter').selectedOptions[0]?.textContent || 'Nguồn');
@@ -495,6 +498,7 @@ async function saveStory(event) {
   const payload = {
     title: form.elements.title.value, linkstory: form.elements.linkstory.value,
     youtubelink: newYoutube, thumbnail_url: form.elements.thumbnail_url.value,
+    auto_thumbnail: !safeUrl(form.elements.thumbnail_url.value),
     version: form.elements.version.value, votes: Number(form.elements.votes.value), status,
     note: form.elements.note.value, source_status: form.elements.source_status.value,
     source_reason: form.elements.source_reason.value, source_deadline: form.elements.source_deadline.value || null,
@@ -536,6 +540,78 @@ async function checkSource() {
     result.textContent = `${payload.status ? `HTTP ${payload.status} · ` : ''}${payload.note}`;
     if (!payload.reachable) result.textContent += ' · Bạn quyết định trạng thái nguồn trước khi lưu.';
   } catch (error) { result.className = 'inline-result warn'; result.textContent = error.message; }
+}
+
+async function findStoryCover(silent = false) {
+  const form = $('#storyEditForm'); const button = $('#findStoryCoverButton');
+  const sourceUrl = safeUrl(form?.elements.linkstory.value);
+  if (!sourceUrl) {
+    if (!silent) toast('Truyện chưa có link nguồn hợp lệ.', 'warning');
+    return '';
+  }
+  if (button?.disabled) return '';
+  try {
+    if (button) { button.disabled = true; button.classList.add('loading'); }
+    const payload = await request('/admin/cover-image', { method: 'POST', body: JSON.stringify({ url: sourceUrl }) });
+    const imageUrl = safeUrl(payload.image_url);
+    if (!imageUrl) throw new Error('Trang nguồn không có ảnh bìa phù hợp.');
+    form.elements.thumbnail_url.value = imageUrl;
+    form.elements.thumbnail_url.dispatchEvent(new Event('input', { bubbles: true }));
+    refreshImagePreviews('#storyThumbnailPreview');
+    markStoryDirty();
+    if (!silent) toast('Đã lấy ảnh bìa từ trang nguồn.');
+    return imageUrl;
+  } catch (error) {
+    if (!silent) toast(error.message, error.status === 404 ? 'info' : 'warning');
+    return '';
+  } finally {
+    if (button) { button.disabled = false; button.classList.remove('loading'); }
+  }
+}
+
+async function scanMissingStoryCovers() {
+  const queue = state.stories.filter((story) => !story.deletedat && story.linkstory && !story.thumbnail_url);
+  if (!queue.length) return toast('Tất cả truyện có thể nhận diện đều đã có ảnh bìa.', 'info');
+  const accepted = await confirmAction(
+    `Rà ${number.format(queue.length)} truyện chưa có ảnh?`,
+    'Hệ thống sẽ đọc lần lượt các website nguồn và lưu ngay ảnh tìm được. Có thể đóng rồi chạy tiếp nếu chưa hoàn tất.',
+    'Bắt đầu rà',
+    'question'
+  );
+  if (!accepted) return;
+
+  const button = $('#scanStoryCovers'); const label = $('span', button);
+  let cursor = 0; let finished = 0; let found = 0; let notFound = 0;
+  button.disabled = true; button.classList.add('loading');
+
+  async function worker() {
+    while (cursor < queue.length) {
+      const story = queue[cursor]; cursor += 1;
+      try {
+        const payload = await request('/admin/cover-image', {
+          method: 'POST',
+          body: JSON.stringify({ url: story.linkstory, story_id: story.id }),
+        });
+        if (payload.story) {
+          const normalized = normalizeStory(payload.story);
+          const index = state.stories.findIndex((item) => item.id === normalized.id);
+          if (index >= 0) state.stories[index] = normalized;
+          found += 1;
+        }
+      } catch { notFound += 1; }
+      finished += 1;
+      label.textContent = `Đang rà ${number.format(finished)}/${number.format(queue.length)}`;
+    }
+  }
+
+  try {
+    await Promise.all(Array.from({ length: Math.min(3, queue.length) }, worker));
+    renderStorySourceOptions(); renderDashboard(); renderStories(); renderSources();
+    toast(`Đã thêm ${number.format(found)} ảnh bìa${notFound ? ` · ${number.format(notFound)} trang chưa tìm thấy ảnh` : ''}.`, found ? 'success' : 'info');
+  } finally {
+    label.textContent = 'Rà ảnh bìa'; button.classList.remove('loading');
+    button.disabled = !state.stories.some((story) => !story.deletedat && story.linkstory && !story.thumbnail_url);
+  }
 }
 
 function donationFilters() {
@@ -821,8 +897,13 @@ function bindEvents() {
   $('#storyEditForm').addEventListener('input', markStoryDirty);
   $('#storyEditForm').addEventListener('change', markStoryDirty);
   $('#editLinkStory').addEventListener('input', updateDrawerSourceAction);
+  $('#editLinkStory').addEventListener('change', () => {
+    if (!safeUrl($('#storyEditForm').elements.thumbnail_url.value)) findStoryCover(true);
+  });
   $('#drawerOpenSource').addEventListener('click', (event) => { if (event.currentTarget.classList.contains('disabled')) event.preventDefault(); });
   $('#storyEditForm').addEventListener('submit', saveStory); $('#trashStoryButton').addEventListener('click', trashStory); $('#checkSourceButton').addEventListener('click', checkSource);
+  $('#findStoryCoverButton').addEventListener('click', () => findStoryCover(false));
+  $('#scanStoryCovers').addEventListener('click', scanMissingStoryCovers);
   $$('[data-open-completed]').forEach((button) => button.addEventListener('click', () => {
     $('#completedForm').reset(); refreshImagePreviews('#completedThumbnailPreview'); openDialog($('#completedDialog'));
   }));

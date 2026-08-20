@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     }
 
     attempts.delete(ip);
-    setSession(req, res);
+    setSession(req, res, body.remember === true);
     json(res, 200, { ok: true });
   } catch (error) {
     const status = error.message === 'Payload too large' ? 413 : 400;

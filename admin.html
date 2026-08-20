@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0b18">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="admin-ui-version" content="06126">
+  <meta name="admin-ui-version" content="06128">
   <meta http-equiv="Cache-Control" content="no-store">
   <title>Hồi Âm — Admin</title>
   <link rel="icon" href="/favicon.ico">
@@ -14,9 +14,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css">
-  <link rel="stylesheet" href="/assets/styles.css?v=06126">
+  <link rel="stylesheet" href="/assets/styles.css?v=06128">
   <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
-  <script src="/assets/admin.js?v=06126" defer></script>
+  <script src="/assets/admin.js?v=06128" defer></script>
 </head>
 <body>
   <div class="admin-cosmos" aria-hidden="true"></div>
@@ -25,7 +25,7 @@
     <section class="login-card">
       <a class="login-brand" href="/"><span><i class="fa-solid fa-headphones-simple"></i></span><div><strong>Hồi Âm</strong><small>Control center</small></div></a>
       <div class="login-copy"><span class="eyebrow">Khu vực quản trị</span><h1>Chào mừng trở lại.</h1><p>Quản lý truyện, nguồn, donate và nội dung website tại một nơi.</p></div>
-      <form id="loginForm" class="admin-form" aria-label="Đăng nhập admin"><label class="field"><span>Mật khẩu admin</span><span class="password-field"><i class="fa-solid fa-lock"></i><input id="password" type="password" required autocomplete="current-password" placeholder="Nhập mật khẩu"></span></label><button class="btn btn-primary" type="submit">Mở dashboard <i class="fa-solid fa-arrow-right"></i></button></form>
+      <form id="loginForm" class="admin-form" aria-label="Đăng nhập admin"><label class="field"><span>Mật khẩu admin</span><span class="password-field"><i class="fa-solid fa-lock"></i><input id="password" type="password" required autocomplete="current-password" placeholder="Nhập mật khẩu"></span></label><label class="remember-login"><input id="rememberAdmin" type="checkbox" checked><span><i class="fa-solid fa-shield-heart"></i><b>Ghi nhớ đăng nhập</b><small>Giữ phiên trên thiết bị này trong 30 ngày</small></span></label><button class="btn btn-primary" type="submit">Mở dashboard <i class="fa-solid fa-arrow-right"></i></button></form>
       <a class="back-link" href="/"><i class="fa-solid fa-arrow-left"></i> Về trang công khai</a>
     </section>
   </main>
@@ -100,6 +100,7 @@
             <div class="story-primary-toolbar">
               <label class="admin-search"><i class="fa-solid fa-magnifying-glass"></i><input id="storySearch" type="search" placeholder="Tìm tên truyện hoặc website nguồn…"></label>
               <label class="compact-control"><span>Sắp xếp</span><select id="storySort" aria-label="Sắp xếp truyện"><option value="votes-desc">Vote cao → thấp</option><option value="votes-asc">Vote thấp → cao</option><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="title">Tên A → Z</option></select></label>
+              <button id="scanStoryCovers" class="cover-scan-button" type="button"><i class="fa-solid fa-images"></i><span>Rà ảnh bìa</span><b id="missingCoverCount">0</b></button>
               <button id="storyFilterToggle" class="filter-toggle" type="button" aria-expanded="false" aria-controls="storyAdvancedFilters"><i class="fa-solid fa-sliders"></i><span>Bộ lọc thêm</span><b id="storyFilterCount" hidden>0</b></button>
             </div>
             <div id="storyAdvancedFilters" class="story-advanced-filters" hidden>
@@ -163,14 +164,14 @@
             <div class="field"><label for="editLinkStory">Link nguồn</label><div class="input-action source-input-action"><input id="editLinkStory" name="linkstory" type="url"><a id="drawerOpenSource" target="_blank" rel="noopener noreferrer" aria-label="Mở nguồn trong tab mới" title="Mở nguồn"><i class="fa-solid fa-arrow-up-right-from-square"></i></a><button id="checkSourceButton" type="button" aria-label="Kiểm tra nguồn" title="Kiểm tra nguồn"><i class="fa-solid fa-satellite-dish"></i></button></div></div>
             <div id="sourceCheckResult" class="inline-result hidden"></div>
           </div>
+          <details id="storySourceSection" class="drawer-form-section source-inline-section">
+            <summary><span class="source-section-icon"><i class="fa-solid fa-link"></i></span><span><strong>Kiểm soát nguồn</strong><small>Cảnh báo và hạn tìm nguồn thay thế</small></span><i class="fa-solid fa-chevron-down"></i></summary>
+            <div class="drawer-section-content admin-form"><label class="field"><span>Trạng thái nguồn</span><select name="source_status"><option value="normal">Bình thường</option><option value="suspected">Nghi ngờ</option><option value="confirmed">Admin xác nhận lỗi</option><option value="replaced">Đã thay thế</option></select></label><label class="field"><span>Lý do</span><textarea name="source_reason" rows="3"></textarea></label><label class="field"><span>Hạn tìm nguồn</span><input name="source_deadline" type="datetime-local"></label><label class="check-row source-public-check"><input name="source_warning_public" type="checkbox"><span>Công khai cảnh báo và đếm ngược</span></label></div>
+          </details>
         </section>
         <details id="storyContentSection" class="drawer-form-section">
           <summary><span><i class="fa-solid fa-photo-film"></i></span><span><strong>Nội dung hiển thị</strong><small>YouTube, ảnh bìa và ghi chú</small></span><i class="fa-solid fa-chevron-down"></i></summary>
-          <div class="drawer-section-content admin-form"><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>URL ảnh bìa riêng</span><input name="thumbnail_url" type="url"></label><label class="field story-note-field"><span>Ghi chú</span><textarea name="note" rows="5"></textarea></label><figure id="storyThumbnailPreview" class="image-url-preview story-thumbnail-preview hidden" aria-live="polite"></figure></div>
-        </details>
-        <details id="storySourceSection" class="drawer-form-section">
-          <summary><span class="source-section-icon"><i class="fa-solid fa-link"></i></span><span><strong>Kiểm soát nguồn</strong><small>Cảnh báo và hạn tìm nguồn thay thế</small></span><i class="fa-solid fa-chevron-down"></i></summary>
-          <div class="drawer-section-content admin-form"><label class="field"><span>Trạng thái nguồn</span><select name="source_status"><option value="normal">Bình thường</option><option value="suspected">Nghi ngờ</option><option value="confirmed">Admin xác nhận lỗi</option><option value="replaced">Đã thay thế</option></select></label><label class="field"><span>Lý do</span><textarea name="source_reason" rows="3"></textarea></label><label class="field"><span>Hạn tìm nguồn</span><input name="source_deadline" type="datetime-local"></label><label class="check-row source-public-check"><input name="source_warning_public" type="checkbox"><span>Công khai cảnh báo và đếm ngược</span></label></div>
+          <div class="drawer-section-content admin-form"><label class="field"><span>Link YouTube</span><input name="youtubelink" type="url"></label><label class="field"><span>Ảnh bìa</span><div class="input-action cover-input-action"><input name="thumbnail_url" type="url" placeholder="Tự lấy từ nguồn hoặc dán URL"><button id="findStoryCoverButton" type="button" title="Tìm ảnh từ trang nguồn" aria-label="Tìm ảnh bìa từ trang nguồn"><i class="fa-solid fa-wand-magic-sparkles"></i></button></div></label><figure id="storyThumbnailPreview" class="image-url-preview story-thumbnail-preview hidden" aria-live="polite"></figure><label class="field story-note-field"><span>Ghi chú</span><textarea name="note" rows="5"></textarea></label></div>
         </details>
       </div>
       <footer aria-label="Thao tác chỉnh sửa"><button id="trashStoryButton" class="btn btn-danger" type="button"><i class="fa-solid fa-trash"></i> Chuyển vào thùng rác</button><span></span><button class="btn btn-ghost" data-close-drawer type="button">Hủy</button><button class="btn btn-primary" type="submit">Lưu</button></footer>
