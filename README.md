@@ -1,6 +1,6 @@
-# Hồi Âm Đam Mỹ V06.1.25
+# Hồi Âm Đam Mỹ V06.1.26
 
-Phiên bản V06.1.25 sửa bố cục trình chỉnh sửa truyện trên điện thoại: các nhóm thông tin xếp dọc ổn định, không còn chồng lên trường nhập; phần nội dung cuộn độc lập và luôn bắt đầu từ đầu mỗi khi mở truyện. Không cần thay đổi SQL.
+Phiên bản V06.1.26 làm nhẹ thao tác trên Kho truyện và Admin: menu trạng thái mở theo hai cấp, danh sách Admin phân trang 30 truyện và cập nhật cục bộ sau khi lưu; trình sửa bảo vệ nội dung chưa lưu và không để ảnh bìa che ghi chú. Trang công khai có mục Đã vote/Gần đây, chia sẻ truyện, chọn ngẫu nhiên, bộ lọc mobile rõ hơn, tải ảnh và danh sách hoàn thành theo nhu cầu, cùng nhân vật Hồi Hồi mới. Không cần thay đổi SQL.
 
 ## Thống kê truy cập
 

@@ -91,6 +91,8 @@ assert.match(homeHtml, /id="donationStorySearch"/, 'Donation story picker needs 
 assert.match(homeHtml, /id="donationStoryPicker"/, 'Donation needs one combined searchable story picker');
 assert.match(homeHtml, /data-library-view="proposed"/, 'Library needs a proposed-story view');
 assert.match(homeHtml, /data-library-view="selected"/, 'Library needs a separate selected-story view');
+assert.match(homeHtml, /data-library-view="voted"/, 'Library needs a personal voted-story view');
+assert.match(homeHtml, /data-library-view="recent"/, 'Library needs a recent-story view');
 assert.match(homeHtml, /id="libraryViewTitle"/, 'Library needs a clear title for the active story group');
 assert.match(homeHtml, /class="filter-select"/, 'Library filters need consistent icon labels');
 assert.match(homeHtml, /id="storyDialog"[^>]+aria-labelledby="storyDialogTitle"/, 'Story modal needs an accessible title');
@@ -138,12 +140,13 @@ assert.doesNotMatch(adminHtml, /\/_vercel\/insights\/script\.js/, 'Admin traffic
 assert.match(sitemapText, /privacy\.html/, 'Sitemap needs the privacy policy');
 assert.match(sitemapText, /terms\.html/, 'Sitemap needs the terms page');
 assert.match(adminHtml, /name="robots" content="noindex/i, 'Admin must not be indexed');
-assert.match(adminHtml, /name="admin-ui-version" content="06125"/, 'Admin markup needs an explicit UI version');
+assert.match(adminHtml, /name="admin-ui-version" content="06126"/, 'Admin markup needs an explicit UI version');
 assert.match(adminHtml, /id="attentionList"[^>]+hidden/, 'Admin needs a hidden compatibility host for older scripts');
 assert.match(adminHtml, /id="storySort"/, 'Admin stories need sorting');
 assert.match(adminHtml, /data-story-status="đề xuất"/, 'Admin story navigation needs status submenus');
 assert.match(adminHtml, /id="storyAdvancedFilters"[^>]+hidden/, 'Secondary story filters need to stay collapsed by default');
 assert.match(adminHtml, /id="storyResultCount"/, 'Admin story manager needs a visible result count');
+assert.match(adminHtml, /id="drawerOpenSource"/, 'Story editor needs a direct source action');
 assert.match(adminHtml, /id="overviewRing"/, 'Admin overview needs a visual progress summary');
 assert.match(adminHtml, /id="storyContentSection"/, 'Story editor needs grouped display fields');
 assert.match(adminHtml, /id="storySourceSection"/, 'Story editor needs grouped source controls');
@@ -170,7 +173,7 @@ assert.match(siteCss, /\.guide-layout\s*\{[^}]*grid-template-columns:/i, 'Guide 
 assert.match(siteCss, /\.guide-index\s*\{[^}]*position:\s*sticky/i, 'Guide index needs to remain visible on desktop');
 assert.match(siteCss, /\.guide-final-cta\s*\{/, 'Guide page needs a clear final action');
 assert.match(adminCss, /\.side-subnav\s*\{/, 'Admin story states need a second-level navigation');
-assert.match(adminCss, /\.side-nav-group\.active \.side-subnav\s*\{/, 'Admin story submenu should only expand in its own section');
+assert.match(adminCss, /\.side-nav-group\.expanded \.side-subnav\s*\{/, 'Admin story submenu must expand independently before choosing a child view');
 assert.match(adminHtml, /class="side-subnav-label"/, 'Admin story submenu needs a visible context label');
 assert.match(adminCss, /\.side-subnav-label\s*\{/, 'Admin story submenu label needs a distinct visual treatment');
 assert.match(adminCss, /\.side-subnav button\{[^}]*min-height:41px!important/, 'Admin story status targets must be easy to read and click');
@@ -199,7 +202,9 @@ assert.match(appJs, /api\('\/api\/bootstrap',\s*\{\s*cache:\s*'no-store'\s*\}\)/
 assert.match(appJs, /api\('\/api\/settings',\s*\{\s*cache:\s*'no-store'\s*\}\)/, 'Settings requests must bypass stale browser caches');
 assert.match(appJs, /function hydratePublicCache\(/, 'Public pages need immediate cached rendering');
 assert.match(appJs, /storiesFromCache/, 'Cached stories need an explicit stale-data state');
-assert.match(appJs, /story\.status === status/, 'Library views must filter each story status separately');
+assert.match(appJs, /state\.libraryView === 'selected'[^\n]+story\.status === 'đã chọn'/, 'Library views must filter each story status separately');
+assert.match(appJs, /recentStoryIds\(\)/, 'Library needs local recent-story history');
+assert.match(appJs, /navigator\.share/, 'Story details need native sharing when available');
 assert.match(appJs, /story-card-mark/, 'Library cards need one consistent visual marker');
 assert.doesNotMatch(publicStoriesApi, /s-maxage|stale-while-revalidate/i, 'Story API must not cache changing vote totals');
 assert.doesNotMatch(publicSettingsApi, /s-maxage|stale-while-revalidate/i, 'Settings API must not cache cross-page changes');
