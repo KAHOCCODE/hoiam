@@ -5,6 +5,7 @@ const {
 const { requireAdmin } = require('../../_lib/auth');
 const { supabase, storiesPath, table } = require('../../_lib/supabase');
 const { audit } = require('../../_lib/audit');
+const { discoverCoverImage } = require('../../_lib/cover-image');
 
 const fields = [
   'id', 'title', 'linkstory', 'version', 'note', 'votes', 'status', 'youtubelink',
@@ -65,11 +66,17 @@ module.exports = async (req, res) => {
       return json(res, 400, { error: 'Link YouTube không hợp lệ.' });
     }
 
+    let thumbnailUrl = safeUrl(body.thumbnail_url);
+    if (!thumbnailUrl && linkstory) {
+      try { thumbnailUrl = await discoverCoverImage(linkstory); }
+      catch { /* ảnh bìa có thể bổ sung sau */ }
+    }
+
     const payload = {
       title,
       linkstory: linkstory || null,
       youtubelink: youtubelink || null,
-      thumbnail_url: safeUrl(body.thumbnail_url) || null,
+      thumbnail_url: thumbnailUrl || null,
       version: body.version === 'Edit' ? 'Edit' : 'Convert',
       note: safeMultilineText(body.note, { max: 5000 }),
       votes: Math.max(0, Math.floor(Number(body.votes || 0))),

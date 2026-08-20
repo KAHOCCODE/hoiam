@@ -5,6 +5,7 @@ const exactRoutes = new Map([
   ['admin/announcements', require('./_routes/admin/announcements/index')],
   ['admin/bootstrap', require('./_routes/admin/bootstrap')],
   ['admin/check-source', require('./_routes/admin/check-source')],
+  ['admin/cover-image', require('./_routes/admin/cover-image')],
   ['admin/donations', require('./_routes/admin/donations/index')],
   ['admin/login', require('./_routes/admin/login')],
   ['admin/logout', require('./_routes/admin/logout')],

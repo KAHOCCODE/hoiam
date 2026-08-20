@@ -14,9 +14,10 @@ assert.ok(router.resolveRoute('stories'));
 assert.ok(router.resolveRoute('bootstrap'));
 assert.ok(router.resolveRoute('admin/settings'));
 assert.ok(router.resolveRoute('admin/bootstrap'));
+assert.ok(router.resolveRoute('admin/cover-image'));
 assert.equal(router.resolveRoute('stories/92/vote').id, '92');
 assert.equal(router.resolveRoute('stories/178/metrics').id, '178');
 assert.equal(router.resolveRoute('admin/donations/12').id, '12');
 assert.equal(router.resolveRoute('unknown'), null);
 
-console.log('API router compatibility check passed (21 routes, 1 Vercel Function).');
+console.log('API router compatibility check passed (22 routes, 1 Vercel Function).');

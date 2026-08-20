@@ -5,6 +5,7 @@ const {
 const { requireAdmin } = require('../../_lib/auth');
 const { supabase, table } = require('../../_lib/supabase');
 const { audit } = require('../../_lib/audit');
+const { discoverCoverImage } = require('../../_lib/cover-image');
 
 const sourceStatuses = new Set(['normal', 'suspected', 'confirmed', 'replaced']);
 
@@ -51,6 +52,10 @@ module.exports = async (req, res) => {
     if ('source_reason' in body) payload.source_reason = safeMultilineText(body.source_reason, { max: 1000 });
     if ('source_deadline' in body) payload.source_deadline = safeDate(body.source_deadline);
     if ('source_warning_public' in body) payload.source_warning_public = body.source_warning_public === true;
+    if (body.auto_thumbnail === true && !payload.thumbnail_url && payload.linkstory) {
+      try { payload.thumbnail_url = await discoverCoverImage(payload.linkstory) || null; }
+      catch { /* vẫn cho phép lưu khi website nguồn không đọc được ảnh */ }
+    }
     if (payload.status === 'đã hoàn thành' && !('completedat' in body)) {
       payload.completedat = new Date().toISOString();
     }
