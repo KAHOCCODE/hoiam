@@ -78,7 +78,7 @@ function storageSet(key, value, session = false) {
   try { (session ? sessionStorage : localStorage).setItem(key, value); } catch { /* private mode */ }
 }
 
-const PUBLIC_CACHE_VERSION = '06128';
+const PUBLIC_CACHE_VERSION = '06129';
 const PUBLIC_CACHE_MAX_AGE = 6 * 60 * 60_000;
 
 function readPublicCache(name) {
