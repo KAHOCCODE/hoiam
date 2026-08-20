@@ -18,9 +18,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link href="/assets/vendor/fontawesome/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/assets/vendor/sweetalert2.min.css">
-  <link rel="stylesheet" href="/assets/site.css?v=06122">
+  <link rel="stylesheet" href="/assets/site.css?v=06126">
   <script src="/assets/vendor/sweetalert2.all.min.js" defer></script>
-  <script src="/assets/app.js?v=06122" defer></script>
+  <script src="/assets/app.js?v=06126" defer></script>
   <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
   <script defer src="/_vercel/insights/script.js"></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6051983418402912" crossorigin="anonymous"></script>
@@ -65,11 +65,10 @@
         </div>
       </div>
       <div class="hero-emblem" aria-hidden="true">
-        <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>
-        <span class="emblem-core"><i class="fa-solid fa-feather-pointed"></i></span>
-        <span class="float-icon float-heart"><i class="fa-solid fa-heart"></i></span>
-        <span class="float-icon float-star"><i class="fa-solid fa-star"></i></span>
-        <span class="float-icon float-book"><i class="fa-solid fa-book"></i></span>
+        <span class="echo-orbit echo-orbit-one"></span><span class="echo-orbit echo-orbit-two"></span>
+        <span class="echo-hole"></span>
+        <span class="echo-mascot"><i class="echo-ear echo-ear-left"></i><i class="echo-ear echo-ear-right"></i><b class="echo-eye echo-eye-left"></b><b class="echo-eye echo-eye-right"></b><i class="echo-blush echo-blush-left"></i><i class="echo-blush echo-blush-right"></i><span class="echo-sigil"><i class="fa-solid fa-headphones-simple"></i></span><i class="echo-paw echo-paw-left"></i><i class="echo-paw echo-paw-right"></i></span>
+        <span class="echo-greeting"><i class="fa-solid fa-sparkles"></i> Hồi Hồi đang nghe nè!</span>
       </div>
     </section>
 
@@ -106,12 +105,23 @@
             <i class="fa-solid fa-bookmark"></i><span>Đã chọn</span>
             <b id="selectedStoryCount">0</b>
           </button>
+          <button class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="storyGrid" data-library-view="voted">
+            <i class="fa-solid fa-heart-circle-check"></i><span>Đã vote</span><b id="votedStoryCount">0</b>
+          </button>
+          <button class="library-tab" type="button" role="tab" aria-selected="false" aria-controls="storyGrid" data-library-view="recent">
+            <i class="fa-solid fa-clock-rotate-left"></i><span>Gần đây</span><b id="recentStoryCount">0</b>
+          </button>
         </div>
-        <div class="filters" role="search">
+        <div id="libraryFilters" class="filters" role="search">
           <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="Tìm tên truyện…" autocomplete="off"></label>
-          <label class="filter-select"><i class="fa-solid fa-file-lines"></i><span class="sr-only">Loại bản</span><select id="versionFilter"><option value="all">Mọi loại bản</option><option value="Convert">Convert</option><option value="Edit">Edit</option></select></label>
-          <label class="filter-select"><i class="fa-solid fa-link"></i><span class="sr-only">Nguồn</span><select id="sourceFilter"><option value="all">Mọi nguồn</option></select></label>
+          <label class="filter-select filter-advanced"><i class="fa-solid fa-file-lines"></i><span class="sr-only">Loại bản</span><select id="versionFilter"><option value="all">Mọi loại bản</option><option value="Convert">Convert</option><option value="Edit">Edit</option></select></label>
+          <label class="filter-select filter-advanced"><i class="fa-solid fa-link"></i><span class="sr-only">Nguồn</span><select id="sourceFilter"><option value="all">Mọi nguồn</option></select></label>
           <label class="filter-select"><i class="fa-solid fa-arrow-down-wide-short"></i><span class="sr-only">Sắp xếp</span><select id="sortSelect"><option value="votes-desc">Vote cao → thấp</option><option value="votes-asc">Vote thấp → cao</option><option value="newest">Mới nhất</option><option value="oldest">Cũ nhất</option><option value="title">Tên A → Z</option></select></label>
+        </div>
+        <div class="library-filter-tools">
+          <button id="libraryFilterToggle" type="button" aria-expanded="false" aria-controls="libraryFilters"><i class="fa-solid fa-sliders"></i> Thêm bộ lọc</button>
+          <div id="libraryActiveFilters" class="active-filter-chips" aria-live="polite"></div>
+          <button id="libraryResetFilters" type="button"><i class="fa-solid fa-rotate-left"></i> Đặt lại</button>
         </div>
         <div id="storyGrid" class="story-grid" role="tabpanel" aria-live="polite"></div>
         <div class="center"><button id="loadMoreButton" class="button button-ghost" type="button" hidden>Xem thêm</button></div>
@@ -120,6 +130,7 @@
 
     <section class="section shell quick-actions">
       <button class="quick-card" data-show-selected type="button"><span><i class="fa-solid fa-bookmark"></i></span><strong>Xem truyện đã chọn</strong><small>Những truyện admin đang chuẩn bị</small></button>
+      <button class="quick-card" data-random-story type="button"><span><i class="fa-solid fa-dice"></i></span><strong>Rơi vào hố</strong><small>Để Hồi Hồi chọn ngẫu nhiên một truyện</small></button>
       <button class="quick-card" data-open-external-donation type="button"><span><i class="fa-solid fa-fish-fins"></i></span><strong>Đã tặng Cá?</strong><small>Báo donate qua YouTube hoặc email</small></button>
       <a class="quick-card" href="/guide.html"><span><i class="fa-solid fa-circle-question"></i></span><strong>Cần hướng dẫn?</strong><small>Xem quy định và cách sử dụng</small></a>
     </section>
